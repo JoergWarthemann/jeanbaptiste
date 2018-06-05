@@ -17,10 +17,10 @@ namespace jeanbaptiste::basic
     /** Recursively calculates a single term of a Horner schematized power series for sin/cos.
         Causes the recursive calculation of previous terms until (seriesStart >= seriesEnd) -
         thats where the break condition in the constexpr recursion matches.
-        @param[in] seriesStart ... Calculate series with terms starting with seriesStart.
-        @param[in] seriesEnd ... Calculate series with terms until seriesEnd.
-        @param[in] denominator ... Denominator of the fraction x, whose sin/cos is to be calculated.
-        @param[in] numerator ... Numerator of the fraction x, whose sin/cos is to be calculated.
+        \param[in] seriesStart ... Calculate series with terms starting with seriesStart.
+        \param[in] seriesEnd ... Calculate series with terms until seriesEnd.
+        \param[in] denominator ... Denominator of the fraction x, whose sin/cos is to be calculated.
+        \param[in] numerator ... Numerator of the fraction x, whose sin/cos is to be calculated.
     */
     template <typename T = double>
     constexpr std::decay_t<T> sineCosineSeries(const std::size_t seriesStart, const std::size_t seriesEnd, const std::size_t numerator, const std::size_t denominator)

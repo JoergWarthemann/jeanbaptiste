@@ -3,10 +3,10 @@
 namespace jeanbaptiste::basic
 {
     /** Recursively calculates an estimation of the square root of an integer.
-        @param[in] SeriesStart ... The point to start the recursion.
-        @param[in] SeriesEnd ... The end point of the recursion.
-        @param[in] Radicant ... The radicand that is to be square rooted.
-        @param[in] guess ... The current approach to the actual resulting value.
+        \param[in] SeriesStart ... The point to start the recursion.
+        \param[in] SeriesEnd ... The end point of the recursion.
+        \param[in] Radicant ... The radicand that is to be square rooted.
+        \param[in] guess ... The current approach to the actual resulting value.
     */
     template <typename T = double>
     constexpr std::decay_t<T> squareRoot(const std::size_t seriesStart, const std::size_t seriesEnd, const std::size_t radicant, const double guess)
