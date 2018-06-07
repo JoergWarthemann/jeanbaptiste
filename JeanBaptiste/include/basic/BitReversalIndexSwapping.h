@@ -96,7 +96,7 @@ namespace jeanbaptiste::basic
         */
         void operator()(Complex* data) const
         {
-            for (std::size_t i = 0; i < SampleCnt::value; ++i)
+            for (auto i = 0; i < SampleCnt::value; ++i)
             {
                 if (i < swapLookupTable[i])
                     std::swap(data[i], data[swapLookupTable[i]]);
