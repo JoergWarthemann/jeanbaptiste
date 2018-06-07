@@ -30,7 +30,7 @@ namespace jeanbaptiste::core
         {
             // quaternaryNodeDistance is the distance between elements (successive nodes) of a
             // quaternary tuple, e.g. ... 16, 4, 1.
-            unsigned quaternaryNodeDistance = SampleCnt::value >> 2;
+            auto quaternaryNodeDistance = SampleCnt::value >> 2;
                 
             // Recursion goes down. Calculation starts in the last recursion stage with 4 nodes and goes up: 16, 64, ... .
             recursionLevel_.apply(data, groupNodeIdx);
@@ -46,7 +46,7 @@ namespace jeanbaptiste::core
             Complex twiddleFactor(1.0, 0.0);
 
             // Run through quaternary tuples of the current group. idxNode0 flags the tuple start.
-            for (unsigned idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
+            for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
             {
                 // Create twiddle factors.
                 typename Complex::value_type temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
@@ -55,9 +55,9 @@ namespace jeanbaptiste::core
                 Complex w3n4 = wn2 * wn4;
 
                 // Create tuple node indexes.
-                unsigned idxNode1 = idxNode0 + quaternaryNodeDistance;
-                unsigned idxNode2 = idxNode1 + quaternaryNodeDistance;
-                unsigned idxNode3 = idxNode2 + quaternaryNodeDistance;
+                auto idxNode1 = idxNode0 + quaternaryNodeDistance;
+                auto idxNode2 = idxNode1 + quaternaryNodeDistance;
+                auto idxNode3 = idxNode2 + quaternaryNodeDistance;
 
                 // DIT radix-4 butterfly:
                 // X[r]            = (Y[r] + G[r] * W^2r) +  (Z[r] * W^r + H[r] * W^3r)
@@ -119,10 +119,10 @@ namespace jeanbaptiste::core
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
             typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode1].real();
@@ -171,10 +171,10 @@ namespace jeanbaptiste::core
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
             typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode1].real();
@@ -243,7 +243,7 @@ namespace jeanbaptiste::core
         {
             // quaternaryNodeDistance is the distance between elements (successive nodes) of a
             // quaternary tuple, e.g. ... 16, 4, 1.
-            unsigned quaternaryNodeDistance = SampleCnt::value >> 2;
+            auto quaternaryNodeDistance = SampleCnt::value >> 2;
 
             // Create twiddle factor multiplier for trigonometric recurrence.
             Complex twiddleMultiplier(
@@ -253,7 +253,7 @@ namespace jeanbaptiste::core
             Complex twiddleFactor(1.0, 0.0);
 
             // Run through quaternary tuples of the current group. idxNode0 flags the tuple start.
-            for (unsigned idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
+            for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
             {
                 // Create twiddle factors.
                 typename Complex::value_type temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
@@ -262,9 +262,9 @@ namespace jeanbaptiste::core
                 Complex w3n4 = wn2 * wn4;
 
                 // Create tuple node indexes.
-                unsigned idxNode1 = idxNode0 + quaternaryNodeDistance;
-                unsigned idxNode2 = idxNode1 + quaternaryNodeDistance;
-                unsigned idxNode3 = idxNode2 + quaternaryNodeDistance;
+                auto idxNode1 = idxNode0 + quaternaryNodeDistance;
+                auto idxNode2 = idxNode1 + quaternaryNodeDistance;
+                auto idxNode3 = idxNode2 + quaternaryNodeDistance;
 
                 // DIF radix-4 butterfly:
                 // y[l] =  (x[l] + x[l + N/2]) +  (x[l + N/4] + x[l + 3N/4])
@@ -332,10 +332,10 @@ namespace jeanbaptiste::core
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
             typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode2].real();
@@ -384,10 +384,10 @@ namespace jeanbaptiste::core
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
             typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode2].real();
