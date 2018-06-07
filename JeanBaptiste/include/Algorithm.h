@@ -6,6 +6,7 @@
 #include <cassert>
 #include "core/Radix2.h"
 #include "core/Radix4.h"
+#include "core/SplitRadix.h"
 #include "ExecutableAlgorithm.h"
 #include "Options.h"
 
@@ -99,11 +100,32 @@ namespace jeanbaptiste
 
         static constexpr auto splitRadixSubtaskTypes(void)
         {
-            return hana::tuple_t<
-                basic::BitReversalIndexSwapping<
-                    std::integral_constant<typename Stage::value_type, 1 << Stage::value>,
-                    Complex>
-                >;
+            return hana::if_(
+                hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
+                    hana::tuple_t<
+                        basic::BitReversalIndexSwapping<
+                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            Complex>,
+                        core::SplitRadixDIT<
+                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(getDirectionType())::type,
+                            Complex>,
+                        basic::Normalization<
+                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(hana::int_c<0>)::type,
+                            Complex>>,
+                    hana::tuple_t<
+                        core::SplitRadixDIF<
+                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(getDirectionType())::type,
+                            Complex>,
+                        basic::BitReversalIndexSwapping<
+                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            Complex>,
+                        basic::Normalization<
+                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(hana::int_c<0>)::type,
+                            Complex>>);
         }
 
         /** Creates a tupel of sub task types at compilation time. Sub tasks belong to a FFT task.
