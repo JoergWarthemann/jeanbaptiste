@@ -31,19 +31,25 @@ int main()
     };
 
     std::cout << "FFT:\n";
-    jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Time, jbo::Direction_Forward, 
-	//jbo::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Forward, 
+    //jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, 
+	//jb::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Forward,
+    jb::AlgorithmFactory<1, 6, jbo::Radix_Split_2_4, jbo::Decimation_In_Time, jbo::Direction_Forward,  
         jbo::Window_None, std::complex<double>> algorithmFactory;
-    auto algorithm = algorithmFactory.getAlgorithm(4);
+    //auto algorithm = algorithmFactory.getAlgorithm(4);
 	//auto algorithm = algorithmFactory.getAlgorithm(2);
+    auto algorithm = algorithmFactory.getAlgorithm(4);
     algorithm->operator()(&complexData[0]);
 
     for (auto value : complexData)
         std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
 
     std::cout << "IFFT:\n";
-    jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Time, jbo::Direction_Backward, 
+    //jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Backward, 
+    //jb::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Backward,
+    jb::AlgorithmFactory<1, 6, jbo::Radix_Split_2_4, jbo::Decimation_In_Time, jbo::Direction_Backward,
         jbo::Window_None, std::complex<double>> inverseAlgorithmFactory;
+    //auto inverseAlgorithm = inverseAlgorithmFactory.getAlgorithm(4);
+    //auto inverseAlgorithm = inverseAlgorithmFactory.getAlgorithm(2);
     auto inverseAlgorithm = inverseAlgorithmFactory.getAlgorithm(4);
     inverseAlgorithm->operator()(&complexData[0]);
 

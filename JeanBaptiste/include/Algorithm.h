@@ -6,7 +6,7 @@
 #include <cassert>
 #include "core/Radix2.h"
 #include "core/Radix4.h"
-#include "core/SplitRadix.h"
+#include "core/RadixSplit24.h"
 #include "ExecutableAlgorithm.h"
 #include "Options.h"
 
@@ -30,7 +30,7 @@ namespace jeanbaptiste
     {
         static constexpr auto getDirectionType(void)
         {
-            return hana::if_(hana::decltype_(Direction{}) == hana::type_c<jbo::Direction_Forward>, hana::int_c<1>, hana::int_c<-1>);
+            return hana::if_(hana::decltype_(Direction{}) == hana::type_c<jbo::Direction_Forward>, std::integral_constant<int, 1>{}, std::integral_constant<int, -1>{});
         }
 
         static constexpr auto getWindowType(void)
@@ -44,27 +44,27 @@ namespace jeanbaptiste
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
                         basic::BitReversalIndexSwapping<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
                         core::Radix2DIT<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionType())::type,
                             Complex>,
                         basic::Normalization<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
-                            typename decltype(hana::int_c<0>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                            typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>,
                     hana::tuple_t<
                         core::Radix2DIF<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionType())::type,
                             Complex>,
                         basic::BitReversalIndexSwapping<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
                         basic::Normalization<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
-                            typename decltype(hana::int_c<0>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                            typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>);
         }
 
@@ -74,57 +74,57 @@ namespace jeanbaptiste
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
                         basic::BitReversalIndexSwapping<
-                            typename decltype(hana::int_c<1 << (Stage::value << 1)>)::type,
+                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             Complex>,
                         core::Radix4DIT<
-                            typename decltype(hana::int_c<1 << (Stage::value << 1)>)::type,
+                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             typename decltype(getDirectionType())::type,
                             Complex>,
                         basic::Normalization<
-                            typename decltype(hana::int_c<1 << (Stage::value << 1)>)::type,
-                            typename decltype(hana::int_c<0>)::type,
+                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
+                            typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>,
                     hana::tuple_t<
                         core::Radix4DIF<
-                            typename decltype(hana::int_c<1 << (Stage::value << 1)>)::type,
+                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             typename decltype(getDirectionType())::type,
                             Complex>,
                         basic::BitReversalIndexSwapping<
-                            typename decltype(hana::int_c<1 << (Stage::value << 1)>)::type,
+                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             Complex>,
                         basic::Normalization<
-                            typename decltype(hana::int_c<1 << (Stage::value << 1)>)::type,
-                            typename decltype(hana::int_c<0>)::type,
+                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
+                            typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>);
         }
 
-        static constexpr auto splitRadixSubtaskTypes(void)
+        static constexpr auto radixSplit24SubtaskTypes(void)
         {
             return hana::if_(
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
                         basic::BitReversalIndexSwapping<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
-                        core::SplitRadixDIT<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                        core::RadixSplit24DIT<
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionType())::type,
                             Complex>,
                         basic::Normalization<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
-                            typename decltype(hana::int_c<0>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                            typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>,
                     hana::tuple_t<
-                        core::SplitRadixDIF<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                        core::RadixSplit24DIF<
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionType())::type,
                             Complex>,
                         basic::BitReversalIndexSwapping<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
                         basic::Normalization<
-                            typename decltype(hana::int_c<1 << Stage::value>)::type,
-                            typename decltype(hana::int_c<0>)::type,
+                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                            typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>);
         }
 
@@ -138,7 +138,7 @@ namespace jeanbaptiste
             else if constexpr (hana::decltype_(Radix{}) == hana::type_c<jbo::Radix_4>)
                 return radix4SubTaskTypes();
             else
-                return splitRadixSubtaskTypes();
+                return radixSplit24SubtaskTypes();
         }
 
         using SubTasks = typename decltype(hana::unpack(createTupleOfSubTaskTypes(), hana::template_<hana::tuple>))::type;

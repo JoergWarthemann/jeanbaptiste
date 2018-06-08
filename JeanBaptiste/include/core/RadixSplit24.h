@@ -14,11 +14,13 @@ namespace jeanbaptiste::core
     template<typename SampleCnt,
              typename DirectionFactor,
              typename Complex>
-    class SplitRadixDIT
-        : public SubTask<SplitRadixDIT<SampleCnt, DirectionFactor, Complex>,
+    class RadixSplit24DIT
+        : public SubTask<RadixSplit24DIT<SampleCnt, DirectionFactor, Complex>,
                          Complex>
     {
-        SplitRadixDIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
+        //static_assert(SampleCnt::value == 16 || SampleCnt::value == 8 || SampleCnt::value == 4 || SampleCnt::value == 2 || SampleCnt::value == 1 || SampleCnt::value == 0, "Invalid sample count");
+
+        RadixSplit24DIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
 
         void executeSimpleRadix2Butterflies(Complex* data) const
         {
@@ -135,8 +137,8 @@ namespace jeanbaptiste::core
         \param Complex ... The complex type.
     */
     template<typename Complex>
-    class SplitRadixDIT<std::integral_constant<unsigned, 4>, std::integral_constant<unsigned, 1>, Complex>
-        : public SubTask<SplitRadixDIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>,
+    class RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
+        : public SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>,
                          Complex>
     {
     public:
@@ -198,9 +200,9 @@ namespace jeanbaptiste::core
     /** Specialization for case SampleCnt=4, direction=-1 (backward).
         \param Complex ... The complex type.
     */
-    template<typename  Complex>
-    class SplitRadixDIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
-        : public SubTask<SplitRadixDIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>,
+    template<typename Complex>
+    class RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
+        : public SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>,
                          Complex>
     {
     public:
@@ -264,8 +266,8 @@ namespace jeanbaptiste::core
     */
     template<typename DirectionFactor,
              typename Complex>
-    class SplitRadixDIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
-        : public SubTask<SplitRadixDIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>,
+    class RadixSplit24DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
+        : public SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>,
                          Complex>
     {
     public:
@@ -274,7 +276,7 @@ namespace jeanbaptiste::core
             apply(data);
         }
 
-        void apply(Complex* data, unsigned groupNodeIdx = 0)const
+        void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
             executeRecursion(data, groupNodeIdx, 2);
         }
@@ -291,11 +293,11 @@ namespace jeanbaptiste::core
     template<typename SampleCnt,
              typename DirectionFactor,
              typename Complex>
-    class SplitRadixDIF
-        : public SubTask<SplitRadixDIF<SampleCnt, DirectionFactor, Complex>,
+    class RadixSplit24DIF
+        : public SubTask<RadixSplit24DIF<SampleCnt, DirectionFactor, Complex>,
                          Complex>
     {
-        SplitRadixDIF<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
+        RadixSplit24DIF<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
 
         void executeSimpleRadix2Butterflies(Complex* data) const
         {
@@ -410,8 +412,8 @@ namespace jeanbaptiste::core
         \param Complex ... The complex type.
     */
     template<typename Complex>
-    class SplitRadixDIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
-        : public SubTask<SplitRadixDIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>,
+    class RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
+        : public SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>,
                          Complex>
     {
     public:
@@ -471,8 +473,8 @@ namespace jeanbaptiste::core
         \param Complex ... The complex type.
     */
     template<typename Complex>
-    class SplitRadixDIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
-        : public SubTask<SplitRadixDIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>,
+    class RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
+        : public SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>,
                          Complex>
     {
     public:
@@ -534,8 +536,8 @@ namespace jeanbaptiste::core
     */
     template<typename DirectionFactor,
              typename Complex>
-    class SplitRadixDIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
-        : public SubTask<SplitRadixDIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>,
+    class RadixSplit24DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
+        : public SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>,
                          Complex>
     {
     public:
