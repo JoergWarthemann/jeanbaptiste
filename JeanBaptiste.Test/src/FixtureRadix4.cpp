@@ -57,9 +57,4 @@ BOOST_FIXTURE_TEST_SUITE(Radix4TestSuite, Radix4Fixture)
         runAlgorithms(fftFactory.getAlgorithm(3), ifftFactory.getAlgorithm(3));
     }
 
-    BOOST_AUTO_TEST_CASE(wait)
-    {
-        std::cin.get();
-    }
-
 BOOST_AUTO_TEST_SUITE_END()

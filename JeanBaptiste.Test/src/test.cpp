@@ -3,4 +3,4 @@
 
 #include "FixtureRadix2.cpp"
 #include "FixtureRadix4.cpp"
-//#include "FixtureRadixSplit24.cpp"
+#include "FixtureRadixSplit24.cpp"
