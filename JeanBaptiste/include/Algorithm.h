@@ -103,17 +103,17 @@ namespace jeanbaptiste
             return hana::if_(
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
-                        /*basic::BitReversalIndexSwapping<
+                        basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            Complex>,*/
+                            Complex>,
                         core::RadixSplit24DIT<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionType())::type,
-                            Complex>/*,
+                            Complex>,
                         basic::Normalization<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>*/>,
+                            Complex>>,
                     hana::tuple_t<
                         core::RadixSplit24DIF<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
