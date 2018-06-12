@@ -272,18 +272,36 @@ namespace jeanbaptiste::core
     {
     public:
         void operator()(Complex* data) const
-        {
-            apply(data);
-        }
+        {}
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
-        {
-            executeRecursion(data, groupNodeIdx, 2);
-        }
+        {}
 
         void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
         {}
     };
+
+    /** Specialization for case SampleCnt=1.
+        \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+        \param Complex ... The complex type.
+    */
+    template<typename DirectionFactor,
+             typename Complex>
+    class RadixSplit24DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
+        : public SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>,
+                         Complex>
+    {
+    public:
+        void operator()(Complex* data) const
+        {}
+
+        void apply(Complex*, unsigned int) const
+        {}
+
+        void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
+        {}
+    };
+
 
     /** Performs a split radix decimation in frequency FFT using template metaprogramming.
         \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
@@ -329,6 +347,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned groupNodeIdx, unsigned totalSampleCnt) const
         {
+            auto n = SampleCnt::value;
+            
             // dualNodeDistance is the distance between elements (successive nodes) of a 
             // dual tuple in a stage, e.g. ..., 16, 8, 4.
             // quaternaryNodeDistance is the distance between elements (successive nodes) of a
@@ -542,16 +562,33 @@ namespace jeanbaptiste::core
     {
     public:
         void operator()(Complex* data) const
-        {
-            apply(data);
-        }
+        {}
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
-        {
-            executeRecursion(data, groupNodeIdx, 2);
-        }
+        {}
 
         void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
-        { }
+        {}
+    };
+
+    /** Specialization for case SampleCnt=1.
+        \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+        \param Complex ... The complex type.
+    */
+    template<typename DirectionFactor,
+             typename Complex>
+    class RadixSplit24DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
+        : public SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>,
+                         Complex>
+    {
+    public:
+        void operator()(Complex* data) const
+        {}
+
+        void apply(Complex*, unsigned int) const
+        {}
+
+        void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
+        {}
     };
 }
