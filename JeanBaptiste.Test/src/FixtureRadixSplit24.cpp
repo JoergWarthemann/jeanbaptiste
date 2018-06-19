@@ -57,9 +57,4 @@ BOOST_FIXTURE_TEST_SUITE(RadixSplit24TestSuite, RadixSplit24Fixture)
         runAlgorithms(fftFactory.getAlgorithm(6), ifftFactory.getAlgorithm(6));
     }
 
-    BOOST_AUTO_TEST_CASE(wait)
-    {
-        std::cin.get();
-    }
-
 BOOST_AUTO_TEST_SUITE_END()
