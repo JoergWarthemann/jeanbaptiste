@@ -88,7 +88,7 @@ namespace jeanbaptiste::basic
         }
 
         static constexpr auto significantBitShiftLookupTable_ = createSignificantBitShiftLookupTable();
-        static constexpr auto swapLookupTable = getSwapIndicesLookupTable();
+        static constexpr auto swapLookupTable_ = getSwapIndicesLookupTable();
 
     public:
         /** Swaps all elements of data based on their index and its bit reversed counterpart index.
@@ -98,8 +98,8 @@ namespace jeanbaptiste::basic
         {
             for (auto i = 0; i < SampleCnt::value; ++i)
             {
-                if (i < swapLookupTable[i])
-                    std::swap(data[i], data[swapLookupTable[i]]);
+                if (i < swapLookupTable_[i])
+                    std::swap(data[i], data[swapLookupTable_[i]]);
             }
         }
     };
