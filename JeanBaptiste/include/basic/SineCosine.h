@@ -34,6 +34,12 @@ namespace jeanbaptiste::basic
     /** Calculation of sine by a Horner schematized power series:
         sin x = x (1 - x^2 (1/3! - x^2/5! + x^4/7! - x^6/9! ...))
               = x (1 - x^2 (1/3! - x^2 (1/5! - x^2 (1/7! - x^2 (1/9! ...)))))
+
+       The value of which the sine is to be calculated is passed as fraction:
+       x = (2*pi*I) / N, where I is the numerator and N is the denominator.
+
+       \param[in] numerator ... The numerator of the fraction.
+       \param[in] denominator ... The denominator of the fraction.
     */
     template <typename T = double>
     constexpr std::decay_t<T> sine(const std::size_t numerator, const std::size_t denominator)
@@ -50,6 +56,12 @@ namespace jeanbaptiste::basic
     /* Calculation of cosine by a Horner schematized power series:
        cos x = 1 - x^2 (1/2! - x^2/4! + x^4/6! - x^6/8! ...)
              = 1 - x^2 (1/2! - x^2 (1/4! - x^2 (1/6! - x^2 (1/8! ...))))
+
+       The value of which the cosine is to be calculated is passed as fraction:
+       x = (2*pi*I) / N, where I is the numerator and N is the denominator.
+
+       \param[in] numerator ... The numerator of the fraction.
+       \param[in] denominator ... The denominator of the fraction.
     */
     template <typename T = double>
     constexpr std::decay_t<T> cosine(const std::size_t numerator, const std::size_t denominator)
