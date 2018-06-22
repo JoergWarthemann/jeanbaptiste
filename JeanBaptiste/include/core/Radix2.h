@@ -1,8 +1,11 @@
 #pragma once
 
 #include "../basic/SineCosine.h"
+#include <boost/math/constants/constants.hpp>
 #include <complex>
 #include "../SubTask.h"
+
+namespace constants = boost::math::constants;
 
 namespace jeanbaptiste::core
 {
@@ -28,6 +31,8 @@ namespace jeanbaptiste::core
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
+            using ValueType = typename Complex::value_type;
+
             // dualNodeDistance is the distance between elements (successive nodes) of a 
             // dual tuple, e.g. ..., 8, 4, 2, 1.
             auto dualNodeDistance = SampleCnt::value >> 1;
@@ -37,9 +42,9 @@ namespace jeanbaptiste::core
             recursionLevel_.apply(data, groupNodeIdx + dualNodeDistance);
 
             // Create twiddle factor multiplier for trigonometric recurrence.
-            Complex twiddleMultiplier(
-                static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
@@ -232,14 +237,16 @@ namespace jeanbaptiste::core
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
+            using ValueType = typename Complex::value_type;
+
             // dualNodeDistance is the distance between elements (successive nodes) of a 
             // dual tuple, e.g. ..., 8, 4, 2, 1.
             auto dualNodeDistance = SampleCnt::value >> 1;
 
             // Create twiddle factor multiplier for trigonometric recurrence.
-            Complex twiddleMultiplier(
-                static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 

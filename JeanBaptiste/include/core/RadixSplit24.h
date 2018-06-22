@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../basic/SineCosine.h"
+#include <boost/math/constants/constants.hpp>
 #include <complex>
 #include "../SubTask.h"
 
@@ -18,8 +19,6 @@ namespace jeanbaptiste::core
         : public SubTask<RadixSplit24DIT<SampleCnt, DirectionFactor, Complex>,
                          Complex>
     {
-        //static_assert(SampleCnt::value == 16 || SampleCnt::value == 8 || SampleCnt::value == 4 || SampleCnt::value == 2 || SampleCnt::value == 1 || SampleCnt::value == 0, "Invalid sample count");
-
         RadixSplit24DIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
 
         void executeSimpleRadix2Butterflies(Complex* data) const
@@ -52,6 +51,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned groupNodeIdx, unsigned totalSampleCnt) const
         {
+            using ValueType = typename Complex::value_type;
+
             // Recursion goes down. Calculation starts in the last recursion stage with n nodes and goes down: ..., 8, 4.
             recursionLevel_.executeRecursion(data, groupNodeIdx, totalSampleCnt);
 
@@ -68,16 +69,16 @@ namespace jeanbaptiste::core
             unsigned dualNodeDistance = SampleCnt::value;
             unsigned quaternaryNodeDistance = SampleCnt::value >> 2;
 
-            Complex twiddleMultiplier(
-				static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+				static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
             for (unsigned currentGroupIdx = groupNodeIdx, groupIdxEnd = (groupNodeIdx + quaternaryNodeDistance); currentGroupIdx < groupIdxEnd; ++currentGroupIdx)
             {
                 // Create twiddle factors for Radix-4 butterflies x(4n + 1) and x(4n + 3).
-				typename Complex::value_type temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
+				ValueType temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
                 Complex wn4(twiddleFactor.real() * temp, twiddleFactor.imag() * temp);
                 Complex w3n4 = wn4 * wn4 * wn4;
 
@@ -154,6 +155,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
         {
+            using ValueType = typename Complex::value_type;
+
             auto segmentIdx = groupNodeIdx;
             auto lShapedNodeDistance = 8;
 
@@ -168,10 +171,10 @@ namespace jeanbaptiste::core
                     auto idxNode3    = idxNode2        + 1;
 
                     // Temporary results.
-                    typename Complex::value_type tmpReal0 = data[idxNode3].real() + data[idxNode2].real();
-                    typename Complex::value_type tmpImag1 = data[idxNode3].imag() + data[idxNode2].imag();
-                    typename Complex::value_type tmpReal2 = data[idxNode3].imag() - data[idxNode2].imag();
-                    typename Complex::value_type tmpImag3 = data[idxNode3].real() - data[idxNode2].real();
+                    ValueType tmpReal0 = data[idxNode3].real() + data[idxNode2].real();
+                    ValueType tmpImag1 = data[idxNode3].imag() + data[idxNode2].imag();
+                    ValueType tmpReal2 = data[idxNode3].imag() - data[idxNode2].imag();
+                    ValueType tmpImag3 = data[idxNode3].real() - data[idxNode2].real();
 
                     auto temp0 = data[idxNode0];
                     auto temp1 = data[idxNode1];
@@ -218,6 +221,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
         {
+            using ValueType = typename Complex::value_type;
+
             auto segmentIdx = groupNodeIdx;
             auto lShapedNodeDistance = 8;
 
@@ -232,10 +237,10 @@ namespace jeanbaptiste::core
                     auto idxNode3    = idxNode2        + 1;
 
                     // Temporary results.
-                    typename Complex::value_type tmpReal0 = data[idxNode3].real() + data[idxNode2].real();
-                    typename Complex::value_type tmpImag1 = data[idxNode3].imag() + data[idxNode2].imag();
-                    typename Complex::value_type tmpReal2 = data[idxNode3].imag() - data[idxNode2].imag();
-                    typename Complex::value_type tmpImag3 = data[idxNode3].real() - data[idxNode2].real();
+                    ValueType tmpReal0 = data[idxNode3].real() + data[idxNode2].real();
+                    ValueType tmpImag1 = data[idxNode3].imag() + data[idxNode2].imag();
+                    ValueType tmpReal2 = data[idxNode3].imag() - data[idxNode2].imag();
+                    ValueType tmpImag3 = data[idxNode3].real() - data[idxNode2].real();
 
                     auto temp0 = data[idxNode0];
                     auto temp1 = data[idxNode1];
@@ -347,6 +352,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned groupNodeIdx, unsigned totalSampleCnt) const
         {
+            using ValueType = typename Complex::value_type;
+
             auto n = SampleCnt::value;
             
             // dualNodeDistance is the distance between elements (successive nodes) of a 
@@ -362,16 +369,16 @@ namespace jeanbaptiste::core
             auto dualNodeDistance = SampleCnt::value;
             auto quaternaryNodeDistance = SampleCnt::value >> 2;
 
-            Complex twiddleMultiplier(
-				static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+				static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
             for (unsigned currentGroupIdx = groupNodeIdx, groupIdxEnd = (groupNodeIdx + quaternaryNodeDistance); currentGroupIdx < groupIdxEnd; ++currentGroupIdx)
             {
                 // Create twiddle factors for Radix-4 butterflies x(4n + 1) and x(4n + 3).
-                typename Complex::value_type temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
+                ValueType temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
                 Complex wn4(twiddleFactor.real() * temp, twiddleFactor.imag() * temp);
                 Complex w3n4 = wn4 * wn4 * wn4;
 
@@ -449,6 +456,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
         {
+            using ValueType = typename Complex::value_type;
+
             auto segmentIdx = groupNodeIdx;
             auto lShapedNodeDistance = 8;
 
@@ -463,10 +472,10 @@ namespace jeanbaptiste::core
                     auto idxNode3    = idxNode2        + 1;
 
                     // Temporary results.
-                    typename Complex::value_type tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
-                    typename Complex::value_type tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
-                    typename Complex::value_type tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
-                    typename Complex::value_type tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
+                    ValueType tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
+                    ValueType tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
+                    ValueType tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
+                    ValueType tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
 
                     // Conduct 'L' shaped DIF butterfly.
                     data[idxNode0] += data[idxNode2];
@@ -510,6 +519,8 @@ namespace jeanbaptiste::core
 
         void executeRecursion(Complex* data, unsigned int groupNodeIdx, unsigned totalSampleCnt) const
         {
+            using ValueType = typename Complex::value_type;
+
             auto segmentIdx = groupNodeIdx;
             auto lShapedNodeDistance = 8;
 
@@ -524,10 +535,10 @@ namespace jeanbaptiste::core
                     auto idxNode3    = idxNode2        + 1;
 
                     // Temporary results.
-                    typename Complex::value_type tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
-                    typename Complex::value_type tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
-                    typename Complex::value_type tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
-                    typename Complex::value_type tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
+                    ValueType tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
+                    ValueType tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
+                    ValueType tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
+                    ValueType tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
 
                     // Conduct 'L' shaped DIF butterfly.
                     data[idxNode0] += data[idxNode2];
