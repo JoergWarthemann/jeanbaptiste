@@ -1,9 +1,6 @@
 #pragma once
 
-#include <boost/math/constants/constants.hpp>
 #include <type_traits>
-
-namespace constants = boost::math::constants;
 
 /** std::decay returns the underlying type by removing reference and const.
     Use the shorthand std::decay_t<const X&> instead of std::decay<const X&>::type.
