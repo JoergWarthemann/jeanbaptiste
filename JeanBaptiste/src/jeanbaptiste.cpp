@@ -6,7 +6,7 @@
 #include <iostream>
 #include <memory>
 
-#include "../include/windowing/BartlettWindow.h"
+#include "../include/basic/SineCosine.h"
 
 namespace constants = boost::math::constants;
 namespace hana = boost::hana;
@@ -68,8 +68,8 @@ int main()
     const double s11 = std::sin(pi/6);
     const double s12 = std::sin(-3*pi/4);
 
-    constexpr double s21 = jeanbaptiste::basic::sine<double>(1, 6);
-    constexpr double s22 = -jeanbaptiste::basic::sine<double>(3, 4);
+    //constexpr double s21 = jeanbaptiste::basic::sine<double>(1, 6);
+    //constexpr double s22 = -jeanbaptiste::basic::sine<double>(3, 4);
 
     constexpr double d1 = 1.0 / 6.0 * constants::pi<double>();
     constexpr double d2 = constants::pi<double>();
