@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../basic/SineCosine.h"
+#include <boost/math/constants/constants.hpp>
 #include <complex>
 #include "../SubTask.h"
 
@@ -28,9 +29,11 @@ namespace jeanbaptiste::core
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
+            using ValueType = typename Complex::value_type;
+
             // quaternaryNodeDistance is the distance between elements (successive nodes) of a
             // quaternary tuple, e.g. ... 16, 4, 1.
-            unsigned quaternaryNodeDistance = SampleCnt::value >> 2;
+            auto quaternaryNodeDistance = SampleCnt::value >> 2;
                 
             // Recursion goes down. Calculation starts in the last recursion stage with 4 nodes and goes up: 16, 64, ... .
             recursionLevel_.apply(data, groupNodeIdx);
@@ -39,25 +42,25 @@ namespace jeanbaptiste::core
             recursionLevel_.apply(data, groupNodeIdx + quaternaryNodeDistance * 3);
 
             // Create twiddle factor multiplier for trigonometric recurrence.
-            Complex twiddleMultiplier(
-                static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
             // Run through quaternary tuples of the current group. idxNode0 flags the tuple start.
-            for (unsigned idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
+            for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
             {
                 // Create twiddle factors.
-                typename Complex::value_type temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
+                ValueType temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
                 Complex wn4(twiddleFactor.real() * temp, twiddleFactor.imag() * temp);
                 Complex wn2 = wn4 * wn4;
                 Complex w3n4 = wn2 * wn4;
 
                 // Create tuple node indexes.
-                unsigned idxNode1 = idxNode0 + quaternaryNodeDistance;
-                unsigned idxNode2 = idxNode1 + quaternaryNodeDistance;
-                unsigned idxNode3 = idxNode2 + quaternaryNodeDistance;
+                auto idxNode1 = idxNode0 + quaternaryNodeDistance;
+                auto idxNode2 = idxNode1 + quaternaryNodeDistance;
+                auto idxNode3 = idxNode2 + quaternaryNodeDistance;
 
                 // DIT radix-4 butterfly:
                 // X[r]            = (Y[r] + G[r] * W^2r) +  (Z[r] * W^r + H[r] * W^3r)
@@ -118,22 +121,24 @@ namespace jeanbaptiste::core
             // Multiplication with j results in a 90° rotation of the complex vector in the complex plane.
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
+            using ValueType = typename Complex::value_type;
+
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
-            typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode1].real();
-            typename Complex::value_type tmpReal2 = data[idxNode2].real() + data[idxNode3].real();
-            typename Complex::value_type tmpImag1 = data[idxNode0].imag() + data[idxNode1].imag();
-            typename Complex::value_type tmpImag2 = data[idxNode2].imag() + data[idxNode3].imag();
+            ValueType tmpReal1 = data[idxNode0].real() + data[idxNode1].real();
+            ValueType tmpReal2 = data[idxNode2].real() + data[idxNode3].real();
+            ValueType tmpImag1 = data[idxNode0].imag() + data[idxNode1].imag();
+            ValueType tmpImag2 = data[idxNode2].imag() + data[idxNode3].imag();
 
-            typename Complex::value_type tmpReal3 = data[idxNode0].real() - data[idxNode1].real();
-            typename Complex::value_type tmpReal4 = data[idxNode2].imag() - data[idxNode3].imag();
-            typename Complex::value_type tmpImag3 = data[idxNode0].imag() - data[idxNode1].imag();
-            typename Complex::value_type tmpImag4 = data[idxNode2].real() - data[idxNode3].real();
+            ValueType tmpReal3 = data[idxNode0].real() - data[idxNode1].real();
+            ValueType tmpReal4 = data[idxNode2].imag() - data[idxNode3].imag();
+            ValueType tmpImag3 = data[idxNode0].imag() - data[idxNode1].imag();
+            ValueType tmpImag4 = data[idxNode2].real() - data[idxNode3].real();
 
             data[idxNode0].real(tmpReal1 + tmpReal2);
             data[idxNode0].imag(tmpImag1 + tmpImag2);
@@ -170,22 +175,24 @@ namespace jeanbaptiste::core
             // Multiplication with j results in a 90� rotation of the complex vector in the complex plane.
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
+            using ValueType = typename Complex::value_type;
+
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
-            typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode1].real();
-            typename Complex::value_type tmpReal2 = data[idxNode2].real() + data[idxNode3].real();
-            typename Complex::value_type tmpImag1 = data[idxNode0].imag() + data[idxNode1].imag();
-            typename Complex::value_type tmpImag2 = data[idxNode2].imag() + data[idxNode3].imag();
+            ValueType tmpReal1 = data[idxNode0].real() + data[idxNode1].real();
+            ValueType tmpReal2 = data[idxNode2].real() + data[idxNode3].real();
+            ValueType tmpImag1 = data[idxNode0].imag() + data[idxNode1].imag();
+            ValueType tmpImag2 = data[idxNode2].imag() + data[idxNode3].imag();
 
-            typename Complex::value_type tmpReal3 = data[idxNode0].real() - data[idxNode1].real();
-            typename Complex::value_type tmpReal4 = data[idxNode2].imag() - data[idxNode3].imag();
-            typename Complex::value_type tmpImag3 = data[idxNode0].imag() - data[idxNode1].imag();
-            typename Complex::value_type tmpImag4 = data[idxNode2].real() - data[idxNode3].real();
+            ValueType tmpReal3 = data[idxNode0].real() - data[idxNode1].real();
+            ValueType tmpReal4 = data[idxNode2].imag() - data[idxNode3].imag();
+            ValueType tmpImag3 = data[idxNode0].imag() - data[idxNode1].imag();
+            ValueType tmpImag4 = data[idxNode2].real() - data[idxNode3].real();
 
             data[idxNode0].real(tmpReal1 + tmpReal2);
             data[idxNode0].imag(tmpImag1 + tmpImag2);
@@ -241,30 +248,32 @@ namespace jeanbaptiste::core
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
+            using ValueType = typename Complex::value_type;
+
             // quaternaryNodeDistance is the distance between elements (successive nodes) of a
             // quaternary tuple, e.g. ... 16, 4, 1.
-            unsigned quaternaryNodeDistance = SampleCnt::value >> 2;
+            auto quaternaryNodeDistance = SampleCnt::value >> 2;
 
             // Create twiddle factor multiplier for trigonometric recurrence.
-            Complex twiddleMultiplier(
-				static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+				static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
             // Run through quaternary tuples of the current group. idxNode0 flags the tuple start.
-            for (unsigned idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
+            for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + quaternaryNodeDistance); idxNode0 < idxEnd; ++idxNode0)
             {
                 // Create twiddle factors.
-                typename Complex::value_type temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
+                ValueType temp = 1.5 - 0.5 * (twiddleFactor.real() * twiddleFactor.real() + twiddleFactor.imag() * twiddleFactor.imag());
                 Complex wn4(twiddleFactor.real() * temp, twiddleFactor.imag() * temp);
                 Complex wn2 = wn4 * wn4;
                 Complex w3n4 = wn2 * wn4;
 
                 // Create tuple node indexes.
-                unsigned idxNode1 = idxNode0 + quaternaryNodeDistance;
-                unsigned idxNode2 = idxNode1 + quaternaryNodeDistance;
-                unsigned idxNode3 = idxNode2 + quaternaryNodeDistance;
+                auto idxNode1 = idxNode0 + quaternaryNodeDistance;
+                auto idxNode2 = idxNode1 + quaternaryNodeDistance;
+                auto idxNode3 = idxNode2 + quaternaryNodeDistance;
 
                 // DIF radix-4 butterfly:
                 // y[l] =  (x[l] + x[l + N/2]) +  (x[l + N/4] + x[l + 3N/4])
@@ -331,22 +340,24 @@ namespace jeanbaptiste::core
             // Multiplication with j results in a 90� rotation of the complex vector in the complex plane.
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
+            using ValueType = typename Complex::value_type;
+
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
-            typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode2].real();
-            typename Complex::value_type tmpReal2 = data[idxNode1].real() + data[idxNode3].real();
-            typename Complex::value_type tmpImag1 = data[idxNode0].imag() + data[idxNode2].imag();
-            typename Complex::value_type tmpImag2 = data[idxNode1].imag() + data[idxNode3].imag();
+            ValueType tmpReal1 = data[idxNode0].real() + data[idxNode2].real();
+            ValueType tmpReal2 = data[idxNode1].real() + data[idxNode3].real();
+            ValueType tmpImag1 = data[idxNode0].imag() + data[idxNode2].imag();
+            ValueType tmpImag2 = data[idxNode1].imag() + data[idxNode3].imag();
 
-            typename Complex::value_type tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
-            typename Complex::value_type tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
-            typename Complex::value_type tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
-            typename Complex::value_type tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
+            ValueType tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
+            ValueType tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
+            ValueType tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
+            ValueType tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
 
             data[idxNode0].real(tmpReal1 + tmpReal2);
             data[idxNode0].imag(tmpImag1 + tmpImag2);
@@ -383,22 +394,24 @@ namespace jeanbaptiste::core
             // Multiplication with j results in a 90� rotation of the complex vector in the complex plane.
             // So we just need need 2 * (N = 4) = 8 complex additions.
 
+            using ValueType = typename Complex::value_type;
+
             // Create tuple node indexes.
-            unsigned idxNode0 = groupNodeIdx;
-            unsigned idxNode1 = idxNode0 + 1;
-            unsigned idxNode2 = idxNode1 + 1;
-            unsigned idxNode3 = idxNode2 + 1;
+            auto idxNode0 = groupNodeIdx;
+            auto idxNode1 = idxNode0 + 1;
+            auto idxNode2 = idxNode1 + 1;
+            auto idxNode3 = idxNode2 + 1;
 
             // Temporary results.
-            typename Complex::value_type tmpReal1 = data[idxNode0].real() + data[idxNode2].real();
-            typename Complex::value_type tmpReal2 = data[idxNode1].real() + data[idxNode3].real();
-            typename Complex::value_type tmpImag1 = data[idxNode0].imag() + data[idxNode2].imag();
-            typename Complex::value_type tmpImag2 = data[idxNode1].imag() + data[idxNode3].imag();
+            ValueType tmpReal1 = data[idxNode0].real() + data[idxNode2].real();
+            ValueType tmpReal2 = data[idxNode1].real() + data[idxNode3].real();
+            ValueType tmpImag1 = data[idxNode0].imag() + data[idxNode2].imag();
+            ValueType tmpImag2 = data[idxNode1].imag() + data[idxNode3].imag();
 
-            typename Complex::value_type tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
-            typename Complex::value_type tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
-            typename Complex::value_type tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
-            typename Complex::value_type tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
+            ValueType tmpReal3 = data[idxNode0].real() - data[idxNode2].real();
+            ValueType tmpReal4 = data[idxNode1].imag() - data[idxNode3].imag();
+            ValueType tmpImag3 = data[idxNode0].imag() - data[idxNode2].imag();
+            ValueType tmpImag4 = data[idxNode1].real() - data[idxNode3].real();
 
             data[idxNode0].real(tmpReal1 + tmpReal2);
             data[idxNode0].imag(tmpImag1 + tmpImag2);

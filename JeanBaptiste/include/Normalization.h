@@ -24,7 +24,7 @@ namespace jeanbaptiste
         // Normalize each sample with 1/sqrt(N) dependent on FFT mode (real, complex) and direction (forward, backward).
         void apply(Complex<T>* data)
         {
-            for (unsigned int i = 0; i < SampleCnt::value; ++i)
+            for (auto i = 0; i < SampleCnt::value; ++i)
             {
                 data[i] *= static_cast<T>(1 / basic::squareRoot<T>(0, 8, kDenominator_));
             }

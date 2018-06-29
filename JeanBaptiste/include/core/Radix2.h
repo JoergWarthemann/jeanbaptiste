@@ -1,8 +1,11 @@
 #pragma once
 
 #include "../basic/SineCosine.h"
+#include <boost/math/constants/constants.hpp>
 #include <complex>
 #include "../SubTask.h"
+
+namespace constants = boost::math::constants;
 
 namespace jeanbaptiste::core
 {
@@ -28,25 +31,27 @@ namespace jeanbaptiste::core
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
+            using ValueType = typename Complex::value_type;
+
             // dualNodeDistance is the distance between elements (successive nodes) of a 
             // dual tuple, e.g. ..., 8, 4, 2, 1.
-            unsigned dualNodeDistance = SampleCnt::value >> 1;
+            auto dualNodeDistance = SampleCnt::value >> 1;
 
             // Recursion goes down. Calculation starts in the last recursion stage with 2 nodes and goes up: 4, 8, ...
             recursionLevel_.apply(data, groupNodeIdx);
             recursionLevel_.apply(data, groupNodeIdx + dualNodeDistance);
 
             // Create twiddle factor multiplier for trigonometric recurrence.
-            Complex twiddleMultiplier(
-                static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
             // Run through dual nodes within the current group.
-            for (unsigned idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0)
+            for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0)
             {
-                unsigned idxNode1 = idxNode0 + dualNodeDistance;
+                auto idxNode1 = idxNode0 + dualNodeDistance;
                 // DIT radix-2 butterfly:
                 // X[r]            = G[r] + H[r] * W^r
                 // X[r + N/2]    = G[r] - H[r] * W^r
@@ -87,7 +92,7 @@ namespace jeanbaptiste::core
             // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since 
             // twiddle factor is 1.
             // Nodes 0 and 1.
-            Complex temp = data[groupNodeIdx + 1];
+            auto temp = data[groupNodeIdx + 1];
             data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
             data[groupNodeIdx] += temp;
 
@@ -134,7 +139,7 @@ namespace jeanbaptiste::core
             // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since 
             // twiddle factor is 1.
             // Nodes 0 and 1.
-            Complex temp = data[groupNodeIdx + 1];
+            auto temp = data[groupNodeIdx + 1];
             data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
             data[groupNodeIdx] += temp;
 
@@ -183,7 +188,7 @@ namespace jeanbaptiste::core
         {
             // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle 
             // factor is 1.
-            Complex temp = data[groupNodeIdx + 1];
+            auto temp = data[groupNodeIdx + 1];
             data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
             data[groupNodeIdx] += temp;
         }
@@ -232,21 +237,23 @@ namespace jeanbaptiste::core
 
         void apply(Complex* data, unsigned groupNodeIdx = 0) const
         {
+            using ValueType = typename Complex::value_type;
+
             // dualNodeDistance is the distance between elements (successive nodes) of a 
             // dual tuple, e.g. ..., 8, 4, 2, 1.
-            unsigned dualNodeDistance = SampleCnt::value >> 1;
+            auto dualNodeDistance = SampleCnt::value >> 1;
 
             // Create twiddle factor multiplier for trigonometric recurrence.
-            Complex twiddleMultiplier(
-                static_cast<typename Complex::value_type>(-2.0 * basic::sine<typename Complex::value_type>(1, SampleCnt::value) * basic::sine<typename Complex::value_type>(1, SampleCnt::value)),
-                static_cast<typename Complex::value_type>(DirectionFactor::value * basic::sine<typename Complex::value_type>(2, SampleCnt::value)));
+            constexpr Complex twiddleMultiplier(
+                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
             // Run through dual nodes within the current group.
-            for (unsigned idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0)
+            for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0)
             {
-                unsigned idxNode1 = idxNode0 + dualNodeDistance;
+                auto idxNode1 = idxNode0 + dualNodeDistance;
                 // DIF radix-2 butterfly:
                 // g[l] = x[l] + x[l + N/2]
                 // h[l] = (x[l] - x[l + N/2]) * W^l
@@ -257,7 +264,7 @@ namespace jeanbaptiste::core
                 //
                 // node1: sum of node1 and node2.
                 // node2: (diff off node1 - node2) * twiddle factor.
-                Complex sum(data[idxNode0] + data[idxNode1]);
+                auto sum(data[idxNode0] + data[idxNode1]);
                 data[idxNode1] = (data[idxNode0] - data[idxNode1]) * twiddleFactor;
                 data[idxNode0] = sum;
 
@@ -291,7 +298,7 @@ namespace jeanbaptiste::core
             // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
             // twiddle factor is 1.
             // Nodes 0 and 2.
-            Complex temp = data[groupNodeIdx + 2];
+            auto temp = data[groupNodeIdx + 2];
             data[groupNodeIdx + 2] = data[groupNodeIdx] - temp;
             data[groupNodeIdx] += temp;
 
@@ -338,7 +345,7 @@ namespace jeanbaptiste::core
             // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
             // twiddle factor is 1.
             // Nodes 0 and 2.
-            Complex temp = data[groupNodeIdx + 2];
+            auto temp = data[groupNodeIdx + 2];
             data[groupNodeIdx + 2] = data[groupNodeIdx] - temp;
             data[groupNodeIdx] += temp;
 
@@ -386,7 +393,7 @@ namespace jeanbaptiste::core
         {
             // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle 
             // factor is 1.
-            Complex temp = data[groupNodeIdx + 1];
+            auto temp = data[groupNodeIdx + 1];
             data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
             data[groupNodeIdx] += temp;
         }
