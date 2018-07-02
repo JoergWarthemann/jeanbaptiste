@@ -65,16 +65,16 @@ int main()
     //jeanbaptiste::windowing::BartlettWindow<std::integral_constant<unsigned, 16>, std::complex<double>> bartlett;
 
     const double pi = std::acos(-1);
-    const double s11 = std::sin(pi/6);
-    const double s12 = std::sin(-3*pi/4);
+    const double s11 = std::cos(pi/6);
+    const double s12 = std::cos(-3*pi/4);
 
     //constexpr double s21 = jeanbaptiste::basic::sine<double>(1, 6);
     //constexpr double s22 = -jeanbaptiste::basic::sine<double>(3, 4);
 
     constexpr double d1 = 1.0 / 6.0 * constants::pi<double>();
     constexpr double d2 = constants::pi<double>();
-    constexpr double s31 = jeanbaptiste::basic::sine<double>(1.0 / 6.0 * constants::pi<double>());
-    constexpr double s32 = jeanbaptiste::basic::sine<double>(-3.0 / 4.0 * constants::pi<double>());
+    constexpr double s31 = jeanbaptiste::basic::cosine<double>(1.0 / 6.0 * constants::pi<double>());
+    constexpr double s32 = jeanbaptiste::basic::cosine<double>(-3.0 / 4.0 * constants::pi<double>());
     
 
     // pi*n   pi   2*pi*n - N*pi        2*n - N

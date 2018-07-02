@@ -42,6 +42,22 @@ BOOST_FIXTURE_TEST_SUITE(SinCosTestSuite, SinCosFixture)
             BOOST_TEST(std::fabs(std::sin(x) - jbb::sine<double>(x)) < 0.000000000001);
     }
 
+    BOOST_AUTO_TEST_CASE(float_cosine_from_minus_2pi_to_plus_2_pi)
+    {
+        BOOST_TEST_MESSAGE("Running cosine computation in float range [-2pi ... 2pi].");
+
+        for (float x = -constants::two_pi<float>(); x <=constants::two_pi<float>(); x += 0.1)
+            BOOST_TEST(std::fabs(std::cos(x) - jbb::cosine<float>(x)) < 0.0001);
+    }
+
+    BOOST_AUTO_TEST_CASE(double_cosine_from_minus_2pi_to_plus_2_pi)
+    {
+        BOOST_TEST_MESSAGE("Running cosine computation in double range [-2pi ... 2pi].");
+
+        for (double x = -constants::two_pi<double>(); x <=constants::two_pi<double>(); x += 0.1)
+            BOOST_TEST(std::fabs(std::cos(x) - jbb::cosine<double>(x)) < 0.00000000001);
+    }
+
     BOOST_AUTO_TEST_CASE(wait)
     {
         std::cin.get();
