@@ -58,9 +58,4 @@ BOOST_FIXTURE_TEST_SUITE(SinCosTestSuite, SinCosFixture)
             BOOST_TEST(std::fabs(std::cos(x) - jbb::cosine<double>(x)) < 0.00000000001);
     }
 
-    BOOST_AUTO_TEST_CASE(wait)
-    {
-        std::cin.get();
-    }
-
 BOOST_AUTO_TEST_SUITE_END()
