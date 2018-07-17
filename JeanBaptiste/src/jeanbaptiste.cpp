@@ -83,6 +83,8 @@ int main()
 
     //constexpr double s23 = jeanbaptiste::basic::sine<double>(2*n - N, 2*N);
 
+    constexpr float f1 = std::abs(-1.6);
+
     int i = 0;
 
     // std::vector<std::complex<double>> complexData =
