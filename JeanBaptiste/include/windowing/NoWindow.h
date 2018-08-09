@@ -1,8 +1,8 @@
-#pragma once
+ #pragma once
 
 #include "../SubTask.h"
 
-namespace DSP
+namespace jeanbaptiste::windowing
 {
     /** Creates an empty window (rectangular) for a specified sample count.
         \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
