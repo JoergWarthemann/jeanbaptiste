@@ -10,10 +10,9 @@
 namespace jeanbaptiste::windowing
 {
     template <typename SampleCnt,
-              typename DirectionFactor,
               typename Complex>
     class BartlettWindow
-        : public SubTask<BartlettWindow<SampleCnt, DirectionFactor, Complex>,
+        : public SubTask<BartlettWindow<SampleCnt, Complex>,
                          Complex>
     {
         using ValueType = typename Complex::value_type;

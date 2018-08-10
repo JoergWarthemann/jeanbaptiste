@@ -87,7 +87,7 @@ int main()
     constexpr double f2 = jb::basic::abs(-1.6);
 
     //jw::BartlettWindow<hana::int_c<128>, jbo::Direction_Forward, std::complex<double>> bartlett;
-    jw::BartlettWindow<std::integral_constant<int, 16>, jbo::Direction_Forward, std::complex<double>> bartlett;
+    jw::BartlettWindow<std::integral_constant<int, 16>, std::complex<double>> bartlett;
     bartlett(&complexData[0]);
 
     int i = 0;

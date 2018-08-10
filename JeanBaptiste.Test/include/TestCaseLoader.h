@@ -129,7 +129,7 @@ public:
         {
             // Create an empty property tree object
             boost::property_tree::ptree tree;
-            boost::property_tree::read_xml(narrow(file_), tree);
+            boost::property_tree::read_xml(file_, tree);
 
             std::string line;
 
