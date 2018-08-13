@@ -2,10 +2,10 @@
 
 #include "../basic/Abs.h"
 #include "../basic/SineCosine.h"
+#include "ExecuteWindowOnComplexData.h"
 #include <functional>
 #include <iostream>
 #include "../SubTask.h"
-#include "WindowExecutionFunctor.h"
 
 namespace jeanbaptiste::windowing
 {
@@ -42,7 +42,7 @@ namespace jeanbaptiste::windowing
     public:
         void operator()(Complex* data) const
         {
-            std::transform(data, data + SampleCnt::value, windowSamples_.begin(),data, WindowExecutionFunctor<Complex>());
+            std::transform(data, data + SampleCnt::value, windowSamples_.begin(),data, ExecuteWindowOnComplexData<Complex>());
         }
     };
 }

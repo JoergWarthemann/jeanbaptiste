@@ -42,17 +42,17 @@ public:
         \param[out] workingSet ... The set of calculated data.
         \param[out] expectedOutput ... The set of expected output data.
     */
-    void checkOutput(std::vector<std::complex<T>>& workingSet, std::vector<std::complex<T>>& expectedOutput)
+   template <std::size_t ArraySize>
+    void checkOutput(std::vector<T>& workingSet, std::vector<T>& expectedOutput)
     {
         //BOOST_CHECK_EQUAL_COLLECTIONS(workingSet.begin(), workingSet.end(), expectedOutput.begin(), expectedOutput.end());
 
         if (workingSet.size() != expectedOutput.size())
-           BOOST_TEST(false, "The lengths of both vectors need to be equal.");
+           BOOST_TEST(false, "The lengths of both arrays need to be equal.");
 
         for (auto i = 0; i < expectedOutput.size(); ++i)
            BOOST_TEST(
-                  ((std::abs(workingSet[i].real() - expectedOutput[i].real()) <= static_cast<T>(kPrecision))
-               &&  (std::abs(workingSet[i].imag() - expectedOutput[i].imag()) <= static_cast<T>(kPrecision))),
+               (std::abs(workingSet[i] - expectedOutput[i]) <= static_cast<T>(kPrecision)),
                (boost::format("Mismatch at position %s: (%s, %si) != (%s, %si)")
                   % i
                   % workingSet[i].real()

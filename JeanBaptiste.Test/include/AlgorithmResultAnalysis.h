@@ -21,6 +21,28 @@ public:
         \param[in] file ... The file path.
         \param[in] identifier1 ... The 1st data tag identifier.
         \param[out] workingSet ... The set of working (input) data.
+        \param[in] identifier2 ... The 2nd data tag identifier.
+        \param[out] expected ... The set of expected (output) data.
+    */
+    void initialize(const std::string& file, std::string identifier1, std::vector<T>& workingSet, std::string identifier2, std::vector<T>& expected)
+    {
+        BOOST_TEST_MESSAGE("Initialize data.");
+
+        try
+        {
+            TestCaseLoader<T> loader(file);
+            BOOST_TEST(loader.getData(identifier1, workingSet, identifier2, expected), "Error loading test data.");
+        }
+        catch (std::exception ex)
+        {
+            BOOST_TEST(false, (boost::format("Exception caught loading test data. %s") % ex.what()).str());
+        }
+    }
+
+    /** Loads the test case data.
+        \param[in] file ... The file path.
+        \param[in] identifier1 ... The 1st data tag identifier.
+        \param[out] workingSet ... The set of working (input) data.
         \param[out] expected1 ... The 1st set of expected (output) data.
         \param[in] identifier2 ... The 2nd data tag identifier.
         \param[out] expected2 ... The 2nd set of expected (output) data.

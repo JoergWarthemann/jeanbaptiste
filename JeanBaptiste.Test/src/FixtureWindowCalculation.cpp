@@ -37,6 +37,8 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
         jw::BartlettWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
 
+        _analysis.checkOutput(workingSet_, expectedOut_);
+
         int i = 0;
     }
 
