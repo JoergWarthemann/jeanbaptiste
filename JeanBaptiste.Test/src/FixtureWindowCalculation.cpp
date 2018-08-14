@@ -3,10 +3,12 @@
 #include "../include/WindowingAnalysis.h"
 #include "../../JeanBaptiste/include/windowing/BartlettWindow.h"
 #include <string>
+#include "../../JeanBaptiste/include/tools/RealComplexConversion.h"
 
 namespace ut = boost::unit_test;
 namespace jb = jeanbaptiste;
 namespace jw = jeanbaptiste::windowing;
+namespace jt = jeanbaptiste::tools;
 
 class WindowCalculationFixture
 {
@@ -37,7 +39,9 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
         jw::BartlettWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
 
-        _analysis.checkOutput(workingSet_, expectedOut_);
+        //_analysis.checkOutput(workingSet_, expectedOut_);
+        jt::Real2Complex<std::integral_constant<int, kSampleCnt_>, std::complex<double>> converter;
+        // converter()();
 
         int i = 0;
     }
