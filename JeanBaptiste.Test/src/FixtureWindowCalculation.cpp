@@ -1,14 +1,14 @@
 #include <boost/test/unit_test.hpp>
 #include <complex>
 #include "../include/WindowingAnalysis.h"
+#include "../../JeanBaptiste/include/tools/RealComplexConversion.h"
 #include "../../JeanBaptiste/include/windowing/BartlettWindow.h"
 #include <string>
-#include "../../JeanBaptiste/include/tools/RealComplexConversion.h"
 
 namespace ut = boost::unit_test;
 namespace jb = jeanbaptiste;
-namespace jw = jeanbaptiste::windowing;
 namespace jt = jeanbaptiste::tools;
+namespace jw = jeanbaptiste::windowing;
 
 class WindowCalculationFixture
 {
@@ -17,6 +17,7 @@ protected:
     std::vector<double> expectedOut_;
     static const unsigned kSampleCnt_ = 128;
     Utilities::WindowingAnalysis<double> _analysis;
+    jt::Real2Complex<std::complex<double>> _real2ComplexConverter;
 
 public:
     WindowCalculationFixture()
@@ -27,6 +28,12 @@ public:
 
     ~WindowCalculationFixture()
     {}
+
+    //void check()
+    //{
+    //    std::vector<std::complex<double>> 
+    //    _converter()(expectedOut_, );
+    //}
 };
 
 
@@ -39,9 +46,11 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
         jw::BartlettWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
 
-        //_analysis.checkOutput(workingSet_, expectedOut_);
-        jt::Real2Complex<std::integral_constant<int, kSampleCnt_>, std::complex<double>> converter;
-        // converter()();
+        auto complexData = _real2ComplexConverter(workingSet_);
+        bartlett(&complexData[0]);
+        //auto realData = _complex2RealConverter(complexData);
+
+        //_analysis.checkOutput(&realData[0], &expectedOut_[0])
 
         int i = 0;
     }

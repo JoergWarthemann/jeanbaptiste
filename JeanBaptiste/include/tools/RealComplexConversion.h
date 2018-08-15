@@ -1,23 +1,24 @@
 #pragma once
 
-//#include "../../../gsl/include/gsl/span"
-#include "../../../gsl/span"
+#include <vector>
+#include <complex>
 
 namespace jeanbaptiste::tools
 {
-    template<typename SampleCnt,
-             typename Complex>
+    template<typename Complex>
 	class Real2Complex
 	{
 		using ValueType = typename Complex::value_type;
 
 	public:
-		void operator()(gsl::span<const ValueType> realIn, gsl::span<Complex> complexOut) const
+		std::vector<Complex> operator()(const std::vector<ValueType>& realIn) const
 		{
-			int i = 0;
-			//if ((realIn != nullptr) && (complexOut != nullptr))
-			//	for (unsigned i = 0; i < SampleCnt; ++i, ++realIn)
-			//		complexOut[i].real(*realIn);
+			std::vector<Complex> result(realIn.size());
+
+			for (std::size_t i = 0, iEnd = realIn.size(); i < iEnd; ++i)
+				result[i].real(realIn[i]);
+
+			return result;
 		}
 	};
 }
