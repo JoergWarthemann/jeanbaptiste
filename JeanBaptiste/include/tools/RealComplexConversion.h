@@ -21,4 +21,21 @@ namespace jeanbaptiste::tools
 			return result;
 		}
 	};
+
+	template<typename Complex>
+	class Complex2Real
+	{
+		using ValueType = typename Complex::value_type;
+
+	public:
+		std::vector<ValueType> operator()(const std::vector<Complex>& complexIn) const
+		{
+			std::vector<ValueType> result(complexIn.size());
+
+			for (std::size_t i = 0, iEnd = complexIn.size(); i < iEnd; ++i)
+				result[i] = complexIn[i].real();
+
+			return result;
+		}
+	};
 }

@@ -42,7 +42,6 @@ public:
         \param[out] workingSet ... The set of calculated data.
         \param[out] expectedOutput ... The set of expected output data.
     */
-   template <std::size_t ArraySize>
     void checkOutput(std::vector<T>& workingSet, std::vector<T>& expectedOutput)
     {
         //BOOST_CHECK_EQUAL_COLLECTIONS(workingSet.begin(), workingSet.end(), expectedOutput.begin(), expectedOutput.end());
@@ -53,12 +52,10 @@ public:
         for (auto i = 0; i < expectedOutput.size(); ++i)
            BOOST_TEST(
                (std::abs(workingSet[i] - expectedOutput[i]) <= static_cast<T>(kPrecision)),
-               (boost::format("Mismatch at position %s: (%s, %si) != (%s, %si)")
+               (boost::format("Mismatch at position %s: %s != %s")
                   % i
-                  % workingSet[i].real()
-                  % workingSet[i].imag()
-                  % expectedOutput[i].real()
-                  % expectedOutput[i].imag()).str());
+                  % workingSet[i]
+                  % expectedOutput[i]).str());
     }
 };
 

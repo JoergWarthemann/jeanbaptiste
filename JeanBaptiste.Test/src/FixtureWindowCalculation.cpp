@@ -3,6 +3,7 @@
 #include "../include/WindowingAnalysis.h"
 #include "../../JeanBaptiste/include/tools/RealComplexConversion.h"
 #include "../../JeanBaptiste/include/windowing/BartlettWindow.h"
+#include "../../JeanBaptiste/include/windowing/BlackmanHarrisWindow.h"
 #include <string>
 
 namespace ut = boost::unit_test;
@@ -18,6 +19,7 @@ protected:
     static const unsigned kSampleCnt_ = 128;
     Utilities::WindowingAnalysis<double> _analysis;
     jt::Real2Complex<std::complex<double>> _real2ComplexConverter;
+    jt::Complex2Real<std::complex<double>> _complex2RealConverter;
 
 public:
     WindowCalculationFixture()
@@ -48,11 +50,23 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
         auto complexData = _real2ComplexConverter(workingSet_);
         bartlett(&complexData[0]);
+        auto realData = _complex2RealConverter(complexData);
+
+        _analysis.checkOutput(realData, expectedOut_);
+    }
+
+    BOOST_AUTO_TEST_CASE(blackman_harris)
+    {
+        BOOST_TEST_MESSAGE("Checking blackman harris window samples.");
+        _analysis.initialize("././test cases/WinBlackmanHarrisTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+
+        jw::BlackmanHarrisWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
+
+        //auto complexData = _real2ComplexConverter(workingSet_);
+        //bartlett(&complexData[0]);
         //auto realData = _complex2RealConverter(complexData);
-
-        //_analysis.checkOutput(&realData[0], &expectedOut_[0])
-
-        int i = 0;
+//
+        //_analysis.checkOutput(realData, expectedOut_);
     }
 
     BOOST_AUTO_TEST_CASE(wait)

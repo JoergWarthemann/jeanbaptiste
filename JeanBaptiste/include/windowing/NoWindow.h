@@ -9,7 +9,6 @@ namespace jeanbaptiste::windowing
         \param Complex ... The complex type.
     */
     template <typename SampleCnt,
-              typename DirectionFactor,
               typename Complex>
     class NoWindow
         : public SubTask<NoWindow<SampleCnt, Complex>,
