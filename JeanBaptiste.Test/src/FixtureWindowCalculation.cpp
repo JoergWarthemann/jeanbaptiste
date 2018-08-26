@@ -60,13 +60,13 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
         BOOST_TEST_MESSAGE("Checking blackman harris window samples.");
         _analysis.initialize("././test cases/WinBlackmanHarrisTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
-        jw::BlackmanHarrisWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
+        jw::BlackmanHarrisWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> blackmanHarris;
 
-        //auto complexData = _real2ComplexConverter(workingSet_);
-        //bartlett(&complexData[0]);
-        //auto realData = _complex2RealConverter(complexData);
-//
-        //_analysis.checkOutput(realData, expectedOut_);
+        auto complexData = _real2ComplexConverter(workingSet_);
+        blackmanHarris(&complexData[0]);
+        auto realData = _complex2RealConverter(complexData);
+
+        _analysis.checkOutput(realData, expectedOut_);
     }
 
     BOOST_AUTO_TEST_CASE(wait)
