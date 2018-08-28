@@ -14,17 +14,15 @@ namespace jeanbaptiste::windowing
 {
     template <typename SampleCnt,
               typename Complex>
-    class BlackmanWindow
-        : public SubTask<BlackmanWindow<SampleCnt, Complex>,
+    class CosineWindow
+        : public SubTask<CosineWindow<SampleCnt, Complex>,
                          Complex>
     {
         using ValueType = typename Complex::value_type;
 
         static constexpr ValueType createSample(const std::size_t index)
         {
-            return 0.42
-                 - 0.5  * jeanbaptiste::basic::cosine<double>(kTwoPiDividedBySampleCnt  * index)
-                 + 0.08 * jeanbaptiste::basic::cosine<double>(kFourPiDividedBySampleCnt * index);
+            return jeanbaptiste::basic::cosine<double>(kPiDividedBySampleCnt  * index - constants::half_pi<double>());
         }
 
         template<std::size_t... Indices>
@@ -41,22 +39,21 @@ namespace jeanbaptiste::windowing
             return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
         }
 
-        static constexpr double kTwoPiDividedBySampleCnt = 2.0 * constants::pi<double>() / SampleCnt::value;
-        static constexpr double kFourPiDividedBySampleCnt = 2.0 * kTwoPiDividedBySampleCnt;
+        static constexpr double kPiDividedBySampleCnt = constants::pi<double>() / SampleCnt::value;
         static constexpr auto windowSamples_ = getWindowSamples();
 
     public:
-        /** Fills the internal vector with values that represent a Blackman window within SampleCnt samples.
+        /** Fills the internal vector with values that represent a cosine window within SampleCnt samples.
             
             1
-                       .
-                    .......                                  / 2Pi * n \               / 4Pi * n \
-                   .........         w(n) = 0.42 - 0.5 * cos|  ——————— | + 0.08 * cos |  ——————— |
-                  ...........                                \    N    /               \    N    /
-                 .............
-               .................
-            +————————————————————
-            0                    N-1
+                       ...
+                    .........                      / Pi * n    Pi \
+                  .............         w(n) = cos|  ——————— - —— |
+                .................                  \    N       2 /
+               ...................
+              .....................
+            +———————————————————————
+            0                      N-1
 		*/
         void operator()(Complex* data) const
         {
