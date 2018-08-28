@@ -3,6 +3,7 @@
 #include "../include/WindowingAnalysis.h"
 #include "../../JeanBaptiste/include/tools/RealComplexConversion.h"
 #include "../../JeanBaptiste/include/windowing/BartlettWindow.h"
+#include "../../JeanBaptiste/include/windowing/BlackmanWindow.h"
 #include "../../JeanBaptiste/include/windowing/BlackmanHarrisWindow.h"
 #include <string>
 
@@ -64,6 +65,20 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
         auto complexData = _real2ComplexConverter(workingSet_);
         blackmanHarris(&complexData[0]);
+        auto realData = _complex2RealConverter(complexData);
+
+        _analysis.checkOutput(realData, expectedOut_);
+    }
+
+    BOOST_AUTO_TEST_CASE(blackman)
+    {
+        BOOST_TEST_MESSAGE("Checking blackman window samples.");
+        _analysis.initialize("././test cases/WinBlackmanTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+
+        jw::BlackmanWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> blackman;
+
+        auto complexData = _real2ComplexConverter(workingSet_);
+        blackman(&complexData[0]);
         auto realData = _complex2RealConverter(complexData);
 
         _analysis.checkOutput(realData, expectedOut_);
