@@ -49,8 +49,8 @@ namespace jeanbaptiste::windowing
 
         static constexpr unsigned kHalfSampleCnt_ = SampleCnt::value >> 1;
         static constexpr double kTwoPiDividedBySampleCnt = 2.0 * constants::pi<double>() / SampleCnt::value;
-        static constexpr double kFourPiDividedBySampleCnt = /*2.0 * kTwoPiDividedBySampleCnt;*/4.0 * constants::pi<double>() / SampleCnt::value;
-        static constexpr double kSixPiDividedBySampleCnt = /*3.0 * kTwoPiDividedBySampleCnt;*/6.0 * constants::pi<double>() / SampleCnt::value;
+        static constexpr double kFourPiDividedBySampleCnt = 2.0 * kTwoPiDividedBySampleCnt;
+        static constexpr double kSixPiDividedBySampleCnt = 3.0 * kTwoPiDividedBySampleCnt;
         static constexpr auto windowSamples_ = getWindowSamples();
 
     public:
