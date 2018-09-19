@@ -131,7 +131,7 @@
 		-0.977508
 	</in>
 	<out>
-	<!-- cos(2*pi*n/9.743) * Bartlett window -->
+	<!-- in * Bartlett window -->
 		-0.453981
 		-0.496391
 		-0.337434

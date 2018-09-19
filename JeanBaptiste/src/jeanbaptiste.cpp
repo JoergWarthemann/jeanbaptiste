@@ -17,6 +17,16 @@ namespace jb = jeanbaptiste;
 namespace jbo = jeanbaptiste::options;
 namespace jw = jeanbaptiste::windowing;
 
+void blackmanTest(void)
+{
+    const double pi = std::acos(-1);
+
+    for (int i=0; i<128; ++i)
+    {
+        std::cout << i << ": " << (0.42 - 0.5  * std::cos(2.0 * pi / 128  * i) + 0.08 * std::cos(4.0 * pi / 128 * i)) ;
+    }
+}
+
 int main()
 {
     std::array<std::complex<double>, 16> complexData =
@@ -91,6 +101,9 @@ int main()
     bartlett(&complexData[0]);
 
     int i = 0;
+
+    //blackmanTest();
+    //std::cin.get();
 
     // std::vector<std::complex<double>> complexData =
     // {
