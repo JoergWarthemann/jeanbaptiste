@@ -9,6 +9,7 @@
 #include "../../JeanBaptiste/include/windowing/FlatTopWindow.h"
 #include "../../JeanBaptiste/include/windowing/HammingWindow.h"
 #include "../../JeanBaptiste/include/windowing/VonHannWindow.h"
+#include "../../JeanBaptiste/include/windowing/WelchWindow.h"
 #include <string>
 
 namespace ut = boost::unit_test;
@@ -139,6 +140,20 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
         auto complexData = _real2ComplexConverter(workingSet_);
         vonHannWin(&complexData[0]);
+        auto realData = _complex2RealConverter(complexData);
+
+        _analysis.checkOutput(realData, expectedOut_);
+    }
+
+    BOOST_AUTO_TEST_CASE(welch)
+    {
+        BOOST_TEST_MESSAGE("Checking Welch window samples.");
+        _analysis.initialize("././test cases/WinWelchTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+
+        jw::WelchWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> welchWin;
+
+        auto complexData = _real2ComplexConverter(workingSet_);
+        welchWin(&complexData[0]);
         auto realData = _complex2RealConverter(complexData);
 
         _analysis.checkOutput(realData, expectedOut_);

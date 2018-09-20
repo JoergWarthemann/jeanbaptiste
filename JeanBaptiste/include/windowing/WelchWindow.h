@@ -2,27 +2,29 @@
 
 #include "../basic/Abs.h"
 #include "../basic/SineCosine.h"
-#include <boost/math/constants/constants.hpp>
 #include "ExecuteWindowOnComplexData.h"
 #include <functional>
 #include <iostream>
 #include "../SubTask.h"
 
-namespace constants = boost::math::constants;
-
 namespace jeanbaptiste::windowing
 {
     template <typename SampleCnt,
               typename Complex>
-    class VonHannWindow
-        : public SubTask<VonHannWindow<SampleCnt, Complex>,
+    class WelchWindow
+        : public SubTask<WelchWindow<SampleCnt, Complex>,
                          Complex>
     {
         using ValueType = typename Complex::value_type;
 
         static constexpr ValueType createSample(const std::size_t index)
         {
-            return 0.5 * (1.0 + jeanbaptiste::basic::cosine<double>(kTwoPiDividedBySampleCnt * (index - static_cast<ValueType>(kHalfSampleCnt_))));
+            auto temp = [&index]() constexpr
+            {
+                return (index - kHalfSampleCntMinusOne_) * kHalfSampleCntPlusOneReciprocal_;
+            };
+
+            return 1.0 - temp() * temp();
         }
 
         template<std::size_t... Indices>
@@ -39,20 +41,20 @@ namespace jeanbaptiste::windowing
             return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
         }
 
-        static constexpr double kTwoPiDividedBySampleCnt = 2.0 * constants::pi<double>() / SampleCnt::value;
-        static constexpr unsigned kHalfSampleCnt_ = SampleCnt::value >> 1;
+        static constexpr double kHalfSampleCntMinusOne_ = (SampleCnt::value - 1) / 2.0;
+        static constexpr double kHalfSampleCntPlusOneReciprocal_ = 1.0 / ((SampleCnt::value + 1) / 2.0);
         static constexpr auto windowSamples_ = getWindowSamples();
 
     public:
-        /** Fills the internal vector with values that represent a von Hann window within SampleCnt samples.
+        /** Fills the internal vector with values that represent a Welch window within SampleCnt samples.
             
-            1
-                       ...                           /                    \
-                    .........                       |         / 2Pi * n \  |
-                   ...........         w(n) = 0.5 * | 1 + cos|  ———————  | |
-                  .............                     |         \    N    /  |
-                 ...............                     \                    /
-              .....................
+            1                                       /     N-1  \ 2
+                      .....                        |  n - ———   |
+                    .........                      |       2    |
+                  .............         w(n) = 1 - |————————————|
+                .................                  |    N+1     |
+               ...................                 |    ———     |
+              .....................                 \    2     /
             +———————————————————————
             0                      N-1
 		*/
