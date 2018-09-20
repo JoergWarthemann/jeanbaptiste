@@ -39,9 +39,8 @@ namespace jeanbaptiste::basic
 
         // Sine starts with the 2nd element of the power series: x^1 = x.
         // The number of terms affects the precision of the calculated sin value.
-        // 46 terms is enough for 8 byte datatypes respecting rounding errors.
-        // 36 terms is enough for 4 byte datatypes respecting rounding errors.
-        return x * sineCosineSeries<T>(2, (sizeof(T) > 4) ? 46 : 36, x);
+        // It differs when dealing with 4 or 8 byte datatypes respecting rounding errors.
+        return x * sineCosineSeries<T>(2, (sizeof(T) > 4) ? 76 : 66, x);
     }
 
     /* Calculation of cosine by a Horner schematized power series:
@@ -56,8 +55,7 @@ namespace jeanbaptiste::basic
 
         // Cosine starts with the 1st element of the power series : x^0 = 1.
         // The number of terms affects the precision of the calculated cos value.
-        // 45 terms is enough for 8 byte datatypes respecting rounding errors.
-        // 35 terms is enough for 4 byte datatypes respecting rounding errors.
-        return sineCosineSeries<T>(1, (sizeof(T) > 4) ? 45 : 35, x);
+        // It differs when dealing with 4 or 8 byte datatypes respecting rounding errors.
+        return sineCosineSeries<T>(1, (sizeof(T) > 4) ? 75 : 65, x);
     }
 }
