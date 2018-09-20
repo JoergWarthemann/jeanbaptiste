@@ -7,6 +7,7 @@
 #include "../../JeanBaptiste/include/windowing/BlackmanHarrisWindow.h"
 #include "../../JeanBaptiste/include/windowing/CosineWindow.h"
 #include "../../JeanBaptiste/include/windowing/FlatTopWindow.h"
+#include "../../JeanBaptiste/include/windowing/HammingWindow.h"
 #include <string>
 
 namespace ut = boost::unit_test;
@@ -46,7 +47,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
     BOOST_AUTO_TEST_CASE(bartlett)
     {
-        BOOST_TEST_MESSAGE("Checking bartlett window samples.");
+        BOOST_TEST_MESSAGE("Checking Bartlett window samples.");
         _analysis.initialize("././test cases/WinBartlettTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::BartlettWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
@@ -60,7 +61,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
     BOOST_AUTO_TEST_CASE(blackman_harris)
     {
-        BOOST_TEST_MESSAGE("Checking blackman harris window samples.");
+        BOOST_TEST_MESSAGE("Checking Blackman Harris window samples.");
         _analysis.initialize("././test cases/WinBlackmanHarrisTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::BlackmanHarrisWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> blackmanHarris;
@@ -74,7 +75,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
     BOOST_AUTO_TEST_CASE(blackman)
     {
-        BOOST_TEST_MESSAGE("Checking blackman window samples.");
+        BOOST_TEST_MESSAGE("Checking Blackman window samples.");
         _analysis.initialize("././test cases/WinBlackmanTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::BlackmanWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> blackman;
@@ -88,7 +89,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
     BOOST_AUTO_TEST_CASE(cosine)
     {
-        BOOST_TEST_MESSAGE("Checking cosine window samples.");
+        BOOST_TEST_MESSAGE("Checking Cosine window samples.");
         _analysis.initialize("././test cases/WinCosineTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::CosineWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> cosineWin;
@@ -102,13 +103,27 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
 
     BOOST_AUTO_TEST_CASE(flat_top)
     {
-        BOOST_TEST_MESSAGE("Checking cosine window samples.");
+        BOOST_TEST_MESSAGE("Checking Flat Top window samples.");
         _analysis.initialize("././test cases/WinFlatTopTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::FlatTopWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> flatTopWin;
 
         auto complexData = _real2ComplexConverter(workingSet_);
         flatTopWin(&complexData[0]);
+        auto realData = _complex2RealConverter(complexData);
+
+        _analysis.checkOutput(realData, expectedOut_);
+    }
+
+    BOOST_AUTO_TEST_CASE(hamming)
+    {
+        BOOST_TEST_MESSAGE("Checking Hamming window samples.");
+        _analysis.initialize("././test cases/WinHammingTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+
+        jw::HammingWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> hammingWin;
+
+        auto complexData = _real2ComplexConverter(workingSet_);
+        hammingWin(&complexData[0]);
         auto realData = _complex2RealConverter(complexData);
 
         _analysis.checkOutput(realData, expectedOut_);
