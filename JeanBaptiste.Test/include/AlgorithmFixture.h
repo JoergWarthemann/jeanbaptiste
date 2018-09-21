@@ -23,6 +23,12 @@ public:
     AlgorithmFixture(void) = default;
     virtual ~AlgorithmFixture(void) = default;
 
+    void runAlgorithm(AlgorithmType fft)
+    {
+        fft->operator()(&workingSet_[0]);
+        algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
+    }
+
     void runAlgorithms(AlgorithmType fft, AlgorithmType ifft)
     {
         fft->operator()(&workingSet_[0]);

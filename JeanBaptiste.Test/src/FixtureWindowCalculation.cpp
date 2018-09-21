@@ -36,12 +36,6 @@ public:
 
     ~WindowCalculationFixture()
     {}
-
-    //void check()
-    //{
-    //    std::vector<std::complex<double>> 
-    //    _converter()(expectedOut_, );
-    //}
 };
 
 
@@ -157,11 +151,6 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
         auto realData = _complex2RealConverter(complexData);
 
         _analysis.checkOutput(realData, expectedOut_);
-    }
-
-    BOOST_AUTO_TEST_CASE(wait)
-    {
-        std::cin.get();
     }
 
 BOOST_AUTO_TEST_SUITE_END()

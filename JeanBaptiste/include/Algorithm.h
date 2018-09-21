@@ -37,7 +37,7 @@ namespace jeanbaptiste
     class Algorithm
         : public ExecutableAlgorithm<Complex>
     {
-        /* Creates a value of the selected direction type at compilation time.
+        /** Creates a value of the selected direction type at compilation time.
             \return value ... The selected value.
         */
         static constexpr auto getDirectionValue(void)
@@ -48,7 +48,7 @@ namespace jeanbaptiste
                     std::integral_constant<int, -1>{});
         }
 
-        /* Creates a value of the selected window type at compilation time.
+        /** Creates a value of the selected window type at compilation time.
             \return value ... The selected value.
         */
         static constexpr auto getWindowValue(void)
@@ -92,7 +92,7 @@ namespace jeanbaptiste
                 ))))))));
         }
 
-        /* Creates a tupel of sub task type values belonging to a radix 2 task at compilation time.
+        /** Creates a tupel of sub task type values belonging to a radix 2 task at compilation time.
             \return hana::tuple_t ... A tuple of sub task type values.
         */
         static constexpr auto radix2SubTaskTypeValues(void)
@@ -127,7 +127,7 @@ namespace jeanbaptiste
                             Complex>>);
         }
 
-        /* Creates a tupel of sub task type values belonging to a radix 4 task at compilation time.
+        /** Creates a tupel of sub task type values belonging to a radix 4 task at compilation time.
             \return hana::tuple_t ... A tuple of sub task type values.
         */
         static constexpr auto radix4SubTaskTypeValues(void)
@@ -162,7 +162,7 @@ namespace jeanbaptiste
                             Complex>>);
         }
 
-        /* Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
+        /** Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
             \return hana::tuple_t ... A tuple of sub task type values.
         */
         static constexpr auto radixSplit24SubtaskTypeValues(void)
