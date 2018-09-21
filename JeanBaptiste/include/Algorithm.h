@@ -37,12 +37,21 @@ namespace jeanbaptiste
     class Algorithm
         : public ExecutableAlgorithm<Complex>
     {
-        static constexpr auto getDirectionType(void)
+        /* Creates a value of the selected direction type at compilation time.
+            \return value ... The selected value.
+        */
+        static constexpr auto getDirectionValue(void)
         {
-            return hana::if_(hana::decltype_(Direction{}) == hana::type_c<jbo::Direction_Forward>, std::integral_constant<int, 1>{}, std::integral_constant<int, -1>{});
+            return hana::if_(
+                hana::decltype_(Direction{}) == hana::type_c<jbo::Direction_Forward>,
+                    std::integral_constant<int, 1>{},
+                    std::integral_constant<int, -1>{});
         }
 
-        static constexpr auto getWindowType(void)
+        /* Creates a value of the selected window type at compilation time.
+            \return value ... The selected value.
+        */
+        static constexpr auto getWindowValue(void)
         {
             return
                 hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Bartlett>,
@@ -83,28 +92,31 @@ namespace jeanbaptiste
                 ))))))));
         }
 
-        static constexpr auto radix2SubTaskTypes(void)
+        /* Creates a tupel of sub task type values belonging to a radix 2 task at compilation time.
+            \return hana::tuple_t ... A tuple of sub task type values.
+        */
+        static constexpr auto radix2SubTaskTypeValues(void)
         {
             return hana::if_(
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
+                        decltype(getWindowValue()),
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
                         core::Radix2DIT<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(getDirectionType())::type,
+                            typename decltype(getDirectionValue())::type,
                             Complex>,
                         basic::Normalization<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>/*,
-                        getWindowType()*/
-                            >,
+                            Complex>>,
                     hana::tuple_t<
+                        decltype(getWindowValue()),
                         core::Radix2DIF<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(getDirectionType())::type,
+                            typename decltype(getDirectionValue())::type,
                             Complex>,
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
@@ -115,26 +127,31 @@ namespace jeanbaptiste
                             Complex>>);
         }
 
-        static constexpr auto radix4SubTaskTypes(void)
+        /* Creates a tupel of sub task type values belonging to a radix 4 task at compilation time.
+            \return hana::tuple_t ... A tuple of sub task type values.
+        */
+        static constexpr auto radix4SubTaskTypeValues(void)
         {
             return hana::if_(
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
+                        decltype(getWindowValue()),
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             Complex>,
                         core::Radix4DIT<
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
-                            typename decltype(getDirectionType())::type,
+                            typename decltype(getDirectionValue())::type,
                             Complex>,
                         basic::Normalization<
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>,
                     hana::tuple_t<
+                        decltype(getWindowValue()),
                         core::Radix4DIF<
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
-                            typename decltype(getDirectionType())::type,
+                            typename decltype(getDirectionValue())::type,
                             Complex>,
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
@@ -145,26 +162,31 @@ namespace jeanbaptiste
                             Complex>>);
         }
 
-        static constexpr auto radixSplit24SubtaskTypes(void)
+        /* Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
+            \return hana::tuple_t ... A tuple of sub task type values.
+        */
+        static constexpr auto radixSplit24SubtaskTypeValues(void)
         {
             return hana::if_(
                 hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
                     hana::tuple_t<
+                        decltype(getWindowValue()),
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
                         core::RadixSplit24DIT<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(getDirectionType())::type,
+                            typename decltype(getDirectionValue())::type,
                             Complex>,
                         basic::Normalization<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(std::integral_constant<int, 0>{})::type,
                             Complex>>,
                     hana::tuple_t<
+                        decltype(getWindowValue()),
                         core::RadixSplit24DIF<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(getDirectionType())::type,
+                            typename decltype(getDirectionValue())::type,
                             Complex>,
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
@@ -175,22 +197,22 @@ namespace jeanbaptiste
                             Complex>>);
         }
 
-        /** Creates a tupel of sub task types at compilation time. Sub tasks belong to a FFT task.
-            \return hana::tuple_t ... A tuple of sub tasks.
+        /** Creates a tupel of sub task type values at compilation time. Sub tasks belong to a FFT task.
+            \return hana::tuple_t ... A tuple of sub task type values.
         */
-        static constexpr auto createTupleOfSubTaskTypes(void)
+        static constexpr auto createTupleOfSubTaskTypeValues(void)
         {
             if constexpr (hana::decltype_(Radix{}) == hana::type_c<jbo::Radix_2>)
-                return radix2SubTaskTypes();
+                return radix2SubTaskTypeValues();
             else if constexpr (hana::decltype_(Radix{}) == hana::type_c<jbo::Radix_4>)
-                return radix4SubTaskTypes();
+                return radix4SubTaskTypeValues();
             else
-                return radixSplit24SubtaskTypes();
+                return radixSplit24SubtaskTypeValues();
         }
 
-        using SubTasks = typename decltype(hana::unpack(createTupleOfSubTaskTypes(), hana::template_<hana::tuple>))::type;
+        using SubTaskTypes = typename decltype(hana::unpack(createTupleOfSubTaskTypeValues(), hana::template_<hana::tuple>))::type;
 
-        SubTasks tupleOfSubTasks_;
+        SubTaskTypes tupleOfSubTasks_;
 
     public:
         /** Executes all sub tasks sequentially.

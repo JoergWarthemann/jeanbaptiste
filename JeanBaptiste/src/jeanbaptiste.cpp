@@ -52,6 +52,8 @@ int main()
     for (auto value : complexData)
        std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
 
+    std::cin.get();
+
     //std::cout << "IFFT:\n";
     //jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Backward, 
     ////jb::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Backward,
@@ -123,8 +125,6 @@ int main()
 
     // for (auto value : complexData)
     //     std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
-
-    // std::cin.get();
 
     return 0;
 }
