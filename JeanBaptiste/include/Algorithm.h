@@ -9,6 +9,15 @@
 #include "core/RadixSplit24.h"
 #include "ExecutableAlgorithm.h"
 #include "Options.h"
+#include "windowing/BartlettWindow.h"
+#include "windowing/BlackmanHarrisWindow.h"
+#include "windowing/BlackmanWindow.h"
+#include "windowing/CosineWindow.h"
+#include "windowing/FlatTopWindow.h"
+#include "windowing/HammingWindow.h"
+#include "windowing/NoWindow.h"
+#include "windowing/VonHannWindow.h"
+#include "windowing/WelchWindow.h"
 
 namespace hana = boost::hana;
 namespace jbo = jeanbaptiste::options;
@@ -35,7 +44,43 @@ namespace jeanbaptiste
 
         static constexpr auto getWindowType(void)
         {
-
+            return
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Bartlett>,
+                    windowing::BartlettWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Blackman>,
+                    windowing::BlackmanWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_BlackmanHarris>,
+                    windowing::BlackmanHarrisWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Cosine>,
+                    windowing::CosineWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_FlatTop>,
+                    windowing::FlatTopWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Hamming>,
+                    windowing::HammingWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_vonHann>,
+                    windowing::VonHannWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Welch>,
+                    windowing::WelchWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{},
+                    windowing::NoWindow<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{}
+                ))))))));
         }
 
         static constexpr auto radix2SubTaskTypes(void)
@@ -53,7 +98,9 @@ namespace jeanbaptiste
                         basic::Normalization<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>,
+                            Complex>/*,
+                        getWindowType()*/
+                            >,
                     hana::tuple_t<
                         core::Radix2DIF<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,

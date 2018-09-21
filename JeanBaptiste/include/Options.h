@@ -10,4 +10,12 @@ namespace jeanbaptiste::options
     struct Radix_4 {};
     struct Radix_Split_2_4 {};
     struct Window_None {};
+    struct Window_Bartlett {};
+    struct Window_BlackmanHarris {};
+    struct Window_Blackman {};
+    struct Window_Cosine {};
+    struct Window_FlatTop {};
+    struct Window_Hamming {};
+    struct Window_vonHann {};
+    struct Window_Welch {};
 }

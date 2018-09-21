@@ -17,16 +17,6 @@ namespace jb = jeanbaptiste;
 namespace jbo = jeanbaptiste::options;
 namespace jw = jeanbaptiste::windowing;
 
-void blackmanTest(void)
-{
-    const double pi = std::acos(-1);
-
-    for (int i=0; i<128; ++i)
-    {
-        std::cout << i << ": " << (0.42 - 0.5  * std::cos(2.0 * pi / 128  * i) + 0.08 * std::cos(4.0 * pi / 128 * i)) ;
-    }
-}
-
 int main()
 {
     std::array<std::complex<double>, 16> complexData =
@@ -49,19 +39,19 @@ int main()
 		std::complex<double>( 1.0f, 0.0f)
     };
 
-    //std::cout << "FFT:\n";
-    //jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, 
-	////jb::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Forward,
-    ////jb::AlgorithmFactory<1, 6, jbo::Radix_Split_2_4, jbo::Decimation_In_Time, jbo::Direction_Forward,  
-    //    jbo::Window_None, std::complex<double>> algorithmFactory;
+    std::cout << "FFT:\n";
+    jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, 
+	//jb::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Forward,
+    //jb::AlgorithmFactory<1, 6, jbo::Radix_Split_2_4, jbo::Decimation_In_Time, jbo::Direction_Forward,  
+       jbo::Window_None, std::complex<double>> algorithmFactory;
+    auto algorithm = algorithmFactory.getAlgorithm(4);
+	//auto algorithm = algorithmFactory.getAlgorithm(2);
     //auto algorithm = algorithmFactory.getAlgorithm(4);
-	////auto algorithm = algorithmFactory.getAlgorithm(2);
-    ////auto algorithm = algorithmFactory.getAlgorithm(4);
-    //algorithm->operator()(&complexData[0]);
-//
-    //for (auto value : complexData)
-    //    std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
-//
+    algorithm->operator()(&complexData[0]);
+
+    for (auto value : complexData)
+       std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
+
     //std::cout << "IFFT:\n";
     //jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Backward, 
     ////jb::AlgorithmFactory<1, 6, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Backward,
@@ -76,34 +66,28 @@ int main()
     //    std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
 
     ///////////////////////////////////
-    //jeanbaptiste::windowing::BartlettWindow<std::integral_constant<unsigned, 16>, std::complex<double>> bartlett;
+    // const double pi = std::acos(-1);
+    // const double s11 = std::cos(pi/6);
+    // const double s12 = std::cos(-3*pi/4);
 
-    const double pi = std::acos(-1);
-    const double s11 = std::cos(pi/6);
-    const double s12 = std::cos(-3*pi/4);
+    // constexpr double d1 = 1.0 / 6.0 * constants::pi<double>();
+    // constexpr double d2 = constants::pi<double>();
+    // constexpr double s31 = jeanbaptiste::basic::cosine<double>(1.0 / 6.0 * constants::pi<double>());
+    // constexpr double s32 = jeanbaptiste::basic::cosine<double>(-3.0 / 4.0 * constants::pi<double>());
 
-    constexpr double d1 = 1.0 / 6.0 * constants::pi<double>();
-    constexpr double d2 = constants::pi<double>();
-    constexpr double s31 = jeanbaptiste::basic::cosine<double>(1.0 / 6.0 * constants::pi<double>());
-    constexpr double s32 = jeanbaptiste::basic::cosine<double>(-3.0 / 4.0 * constants::pi<double>());
+    // // pi*n   pi   2*pi*n - N*pi        2*n - N
+    // // ---- - -- = ------------- = pi * --------
+    // //   N     2         2*N               2*N
 
-    // pi*n   pi   2*pi*n - N*pi        2*n - N
-    // ---- - -- = ------------- = pi * --------
-    //   N     2         2*N               2*N
+    // //constexpr double s23 = jeanbaptiste::basic::sine<double>(2*n - N, 2*N);
 
-    //constexpr double s23 = jeanbaptiste::basic::sine<double>(2*n - N, 2*N);
+    // double f1 = std::abs(-1.6);
+    // constexpr double f2 = jb::basic::abs(-1.6);
 
-    double f1 = std::abs(-1.6);
-    constexpr double f2 = jb::basic::abs(-1.6);
+    // jw::BartlettWindow<std::integral_constant<int, 16>, std::complex<double>> bartlett;
+    // bartlett(&complexData[0]);
 
-    //jw::BartlettWindow<hana::int_c<128>, jbo::Direction_Forward, std::complex<double>> bartlett;
-    jw::BartlettWindow<std::integral_constant<int, 16>, std::complex<double>> bartlett;
-    bartlett(&complexData[0]);
-
-    int i = 0;
-
-    //blackmanTest();
-    //std::cin.get();
+    ///////////////////////
 
     // std::vector<std::complex<double>> complexData =
     // {
