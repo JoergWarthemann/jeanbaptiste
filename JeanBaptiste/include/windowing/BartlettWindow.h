@@ -19,7 +19,7 @@ namespace jeanbaptiste::windowing
 
         static constexpr ValueType createSample(const std::size_t index)
         {
-            return 1.0 - basic::abs<ValueType>(index - static_cast<ValueType>(kHalfSampleCnt_)) / SampleCnt::value;
+            return 1.0 - basic::abs<ValueType>(index - static_cast<ValueType>(kHalfSampleCnt_)) / kHalfSampleCnt_;
         }
 
         template<std::size_t... Indices>
@@ -43,14 +43,15 @@ namespace jeanbaptiste::windowing
         /** Fills the internal vector with values that represent a Bartlett window within SampleCnt samples.
 
             1
-                        .
-                      .....                      |n|
-                    .........         w(n) = 1 - ———
-                  .............                   N
-                .................
-              .....................
-            +———————————————————————
-            0                      N-1
+                          .                                 N
+                        .....                         | n - — |
+                      .........                             2
+                    .............          w(n) = 1 - —————————
+                  .................                       N
+                .....................                     —
+              .........................                   2
+            +———————————————————————————
+            0                        N-1
 		*/
         void operator()(Complex* data) const
         {

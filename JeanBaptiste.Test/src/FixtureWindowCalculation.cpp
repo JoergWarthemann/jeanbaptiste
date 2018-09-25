@@ -153,4 +153,9 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
         _analysis.checkOutput(realData, expectedOut_);
     }
 
+BOOST_AUTO_TEST_CASE(wait)
+    {
+        std::cin.get();
+    }
+
 BOOST_AUTO_TEST_SUITE_END()
