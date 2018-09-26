@@ -1,12 +1,12 @@
 #pragma once
 
-#include "HeronSquareRoot.h"
+#include "../basic/HeronSquareRoot.h"
 #include <complex>
 #include "../SubTask.h"
 
-namespace jeanbaptiste::basic
+namespace jeanbaptiste::normalization
 {
-    /** Normalizes FFT results.
+    /** Normalizes FFT results. Divides each frequency value by the square root of the sample length.
         \param SampleCnt ... The count of samples to deal with.
         \param DenominatorShiftFactor ... An additional shift factor that is to be applied on the normalization factors denominator
                                           in real FFT backward mode.
@@ -15,8 +15,8 @@ namespace jeanbaptiste::basic
     template<typename SampleCnt,
              typename DenominatorShiftFactor,
              typename Complex>
-    class Normalization
-        : public SubTask<Normalization<SampleCnt, DenominatorShiftFactor, Complex>,
+    class SquareRootNormalization
+        : public SubTask<SquareRootNormalization<SampleCnt, DenominatorShiftFactor, Complex>,
                          Complex>
     {
         /** Calculates the value used as denominator when normalizing data.

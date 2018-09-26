@@ -33,11 +33,11 @@ BOOST_FIXTURE_TEST_SUITE(Radix4TestSuite, Radix4Fixture)
 
         // Create Radix-4 DIF FFT algorithms for sample counts 4 ... 1024.
         jb::AlgorithmFactory<1, 5, jbo::Radix_4, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_None,
-        std::complex<double>> fftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> fftFactory;
 
         // Create Radix-4 DIF IFFT algorithms for sample counts 4 ... 1024.
         jb::AlgorithmFactory<1, 5, jbo::Radix_4, jbo::Decimation_In_Frequency, jbo::Direction_Backward, jbo::Window_None,
-        std::complex<double>> ifftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> ifftFactory;
 
         runAlgorithms(fftFactory.getAlgorithm(3), ifftFactory.getAlgorithm(3));
     }
@@ -48,11 +48,11 @@ BOOST_FIXTURE_TEST_SUITE(Radix4TestSuite, Radix4Fixture)
 
         // Create Radix-4 DIT FFT algorithms for sample counts 4 ... 1024.
         jb::AlgorithmFactory<1, 5, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Forward, jbo::Window_None,
-        std::complex<double>> fftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> fftFactory;
 
         // Create Radix-4 DIT IFFT algorithms for sample counts 4 ... 1024.
         jb::AlgorithmFactory<1, 5, jbo::Radix_4, jbo::Decimation_In_Time, jbo::Direction_Backward, jbo::Window_None,
-        std::complex<double>> ifftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> ifftFactory;
 
         runAlgorithms(fftFactory.getAlgorithm(3), ifftFactory.getAlgorithm(3));
     }

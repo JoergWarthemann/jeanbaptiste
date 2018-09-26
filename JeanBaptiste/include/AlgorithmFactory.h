@@ -24,6 +24,7 @@ namespace jeanbaptiste
               typename Decimation,
               typename Direction,
               typename Window,
+              typename Normalization,
               typename Complex>
     class AlgorithmFactory
     {
@@ -39,7 +40,8 @@ namespace jeanbaptiste
             return hana::unpack(stages, [](auto... stage)
             {
                 return hana::make_map(hana::make_pair(stage, hana::template_<Algorithm>(stage, hana::type_c<Radix>,
-                    hana::type_c<Decimation>, hana::type_c<Direction>, hana::type_c<Window>, hana::type_c<Complex>))...);
+                    hana::type_c<Decimation>, hana::type_c<Direction>, hana::type_c<Window>, hana::type_c<Normalization>,
+                    hana::type_c<Complex>))...);
             });
         }
 

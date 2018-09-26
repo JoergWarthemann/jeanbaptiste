@@ -33,11 +33,11 @@ BOOST_FIXTURE_TEST_SUITE(RadixSplit24TestSuite, RadixSplit24Fixture)
 
         // Create Split-Radix-2-4 DIF FFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_None,
-        std::complex<double>> fftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> fftFactory;
 
         // Create Split-Radix-2-4 DIF IFFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Frequency, jbo::Direction_Backward, jbo::Window_None,
-        std::complex<double>> ifftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> ifftFactory;
 
         runAlgorithms(fftFactory.getAlgorithm(6), ifftFactory.getAlgorithm(6));
     }
@@ -48,11 +48,11 @@ BOOST_FIXTURE_TEST_SUITE(RadixSplit24TestSuite, RadixSplit24Fixture)
 
         // Create Split-Radix-2-4 DIT FFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Time, jbo::Direction_Forward, jbo::Window_None,
-        std::complex<double>> fftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> fftFactory;
 
         // Create Split-Radix-2-4 DIT IFFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Time, jbo::Direction_Backward, jbo::Window_None,
-        std::complex<double>> ifftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> ifftFactory;
 
         runAlgorithms(fftFactory.getAlgorithm(6), ifftFactory.getAlgorithm(6));
     }

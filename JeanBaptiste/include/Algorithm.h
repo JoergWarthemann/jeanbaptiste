@@ -1,13 +1,14 @@
 #pragma once
 
 #include "basic/BitReversalIndexSwapping.h"
-#include "basic/Normalization.h"
 #include <boost/hana.hpp>
 #include <cassert>
 #include "core/Radix2.h"
 #include "core/Radix4.h"
 #include "core/RadixSplit24.h"
 #include "ExecutableAlgorithm.h"
+#include "normalization/NoNormalization.h"
+#include "normalization/SquareRootNormalization.h"
 #include "Options.h"
 #include "windowing/BartlettWindow.h"
 #include "windowing/BlackmanHarrisWindow.h"
@@ -33,6 +34,7 @@ namespace jeanbaptiste
               typename Decimation,
               typename Direction,
               typename Window,
+              typename Normalization,
               typename Complex>
     class Algorithm
         : public ExecutableAlgorithm<Complex>
@@ -92,6 +94,23 @@ namespace jeanbaptiste
                 ))))))));
         }
 
+        /** Creates a value of the selected normalization type at compilation time.
+            \return value ... The selected value.
+        */
+        static constexpr auto getRadix2NormalizationValue(void)
+        {
+            return
+                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Square_Root>,
+                    normalization::SquareRootNormalization<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        typename decltype(std::integral_constant<int, 0>{})::type,
+                        Complex>{},
+                    normalization::NoNormalization<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        Complex>{}
+                );
+         }
+
         /** Creates a tupel of sub task type values belonging to a radix 2 task at compilation time.
             \return hana::tuple_t ... A tuple of sub task type values.
         */
@@ -108,10 +127,7 @@ namespace jeanbaptiste
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionValue())::type,
                             Complex>,
-                        basic::Normalization<
-                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>,
+                        decltype(getRadix2NormalizationValue())>,
                     hana::tuple_t<
                         decltype(getWindowValue()),
                         core::Radix2DIF<
@@ -121,10 +137,25 @@ namespace jeanbaptiste
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
-                        basic::Normalization<
-                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>);
+                        decltype(getRadix2NormalizationValue())>);
+        }
+
+        /** Creates a value of the selected normalization type at compilation time.
+            \return value ... The selected value.
+        */
+        static constexpr auto getRadix4NormalizationValue(void)
+        {
+            return
+                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Square_Root>,
+                    normalization::SquareRootNormalization<
+                        typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
+                        typename decltype(std::integral_constant<int, 0>{})::type,
+                        Complex>{},
+                    normalization::NoNormalization<
+                        typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
+                        Complex>{}
+                );
+ 
         }
 
         /** Creates a tupel of sub task type values belonging to a radix 4 task at compilation time.
@@ -143,10 +174,7 @@ namespace jeanbaptiste
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             typename decltype(getDirectionValue())::type,
                             Complex>,
-                        basic::Normalization<
-                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
-                            typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>,
+                        decltype(getRadix4NormalizationValue())>,
                     hana::tuple_t<
                         decltype(getWindowValue()),
                         core::Radix4DIF<
@@ -156,10 +184,7 @@ namespace jeanbaptiste
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                             Complex>,
-                        basic::Normalization<
-                            typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
-                            typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>);
+                        decltype(getRadix4NormalizationValue())>);
         }
 
         /** Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
@@ -178,10 +203,7 @@ namespace jeanbaptiste
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             typename decltype(getDirectionValue())::type,
                             Complex>,
-                        basic::Normalization<
-                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>,
+                        decltype(getRadix2NormalizationValue())>,
                     hana::tuple_t<
                         decltype(getWindowValue()),
                         core::RadixSplit24DIF<
@@ -191,10 +213,7 @@ namespace jeanbaptiste
                         basic::BitReversalIndexSwapping<
                             typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                             Complex>,
-                        basic::Normalization<
-                            typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
-                            typename decltype(std::integral_constant<int, 0>{})::type,
-                            Complex>>);
+                        decltype(getRadix2NormalizationValue())>);
         }
 
         /** Creates a tupel of sub task type values at compilation time. Sub tasks belong to a FFT task.

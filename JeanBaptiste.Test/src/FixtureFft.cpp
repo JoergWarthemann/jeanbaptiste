@@ -17,7 +17,7 @@ public:
     {
         BOOST_TEST_MESSAGE("Setup fixture: cos(2*pi*n/10) of 128 samples.");
 
-		algorithmResult_.initialize("././test cases/cosine (n=128) + Bartlett.xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+		//algorithmResult_.initialize("././test cases/cosine (n=128) + Bartlett.xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
     }
 
     ~FFTFixture()
@@ -31,15 +31,17 @@ BOOST_FIXTURE_TEST_SUITE(FftTestSuite, FFTFixture)
     {
         BOOST_TEST_MESSAGE("Running radix 2 DIF FFT and IFFT.");
 
+        algorithmResult_.initialize("././test cases/cosine (n=128) + Bartlett.xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+
         // Create Radix-2 DIF FFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_Bartlett,
-            std::complex<double>> fftFactory;
+            jbo::Normalization_Square_Root, std::complex<double>> fftFactory;
 
         runAlgorithm(fftFactory.getAlgorithm(7));
 
         // Create Radix-2 DIF IFFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Backward, jbo::Window_None,
-            std::complex<double>> ifftFactory;
+            jbo::Normalization_No, std::complex<double>> ifftFactory;
 
         //runAlgorithms(fftFactory.getAlgorithm(7), ifftFactory.getAlgorithm(7));
     }
