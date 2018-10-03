@@ -32,9 +32,6 @@ public:
     void runAlgorithms(AlgorithmType fft, AlgorithmType ifft)
     {
         fft->operator()(&workingSet_[0]);
-        // for (auto value : workingSet_)
-        //     std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
-
 
         algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
 
