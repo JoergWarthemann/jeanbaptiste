@@ -1,5 +1,5 @@
 # Specify the minimum version for CMake.
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.8.0)
 # Project's name.
 project(jeanbaptiste VERSION 0.1.0)
 
@@ -24,7 +24,7 @@ set(Boost_USE_RELEASE_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-find_package(Boost 1.67.0 COMPONENTS)
+find_package(Boost 1.68.0 COMPONENTS)
 if(Boost_FOUND)   
     # Set boost include directory.
     include_directories(${Boost_INCLUDE_DIRS})
