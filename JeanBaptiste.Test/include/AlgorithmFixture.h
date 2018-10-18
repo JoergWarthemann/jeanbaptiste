@@ -32,8 +32,10 @@ public:
     void runAlgorithms(AlgorithmType fft, AlgorithmType ifft)
     {
         fft->operator()(&workingSet_[0]);
-
         algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
+
+        //for (auto i = 0; i < workingSet_.size(); ++i)
+        //    std::cout << i << ": " << workingSet_.at(i).real() << " " << workingSet_.at(i).imag() << "i" << std::endl;
 
         ifft->operator()(&workingSet_[0]);
         algorithmResult_.checkOutput(workingSet_, expectedOutIFFT_);
