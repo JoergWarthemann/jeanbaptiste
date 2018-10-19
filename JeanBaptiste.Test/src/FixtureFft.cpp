@@ -16,8 +16,6 @@ public:
         : AlgorithmFixture()
     {
         BOOST_TEST_MESSAGE("Setup fixture: cos(2*pi*n/10) of 128 samples.");
-
-		//algorithmResult_.initialize("././test cases/cosine (n=128) + Bartlett.xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
     }
 
     ~FFTFixture()

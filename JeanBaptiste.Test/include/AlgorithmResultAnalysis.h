@@ -14,7 +14,7 @@ namespace Utilities
 template<typename T>
 class AlgorithmResultAnalysis
 {
-    const double kPrecision = 0.00001;
+    const double kPrecision = 0.0001;
 
 public:
     /** Loads the test case data.
