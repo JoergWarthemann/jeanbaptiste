@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include "StringConversion.h"
@@ -14,7 +15,8 @@ namespace Utilities {
 template<typename T>
 class TestCaseLoader
 {
-    std::string file_;
+    boost::filesystem::path file_;
+    //std::string file_;
 
     /** Converts a single string with 2 numbers into a complex number.
         \param[in] line ... The string.
@@ -62,7 +64,7 @@ class TestCaseLoader
 
 public:
     TestCaseLoader(const std::string& file)
-        : file_(file)
+        : file_(boost::filesystem::system_complete(file))
     {}
 
     ~TestCaseLoader(void)
@@ -78,11 +80,16 @@ public:
     bool getData(std::string identifier1, std::vector< std::complex<T> >& dataIn, std::vector< std::complex<T> >& expected1,
         std::string identifier2, std::vector< std::complex<T> >& expected2)
     {
-        if (!file_.empty())
+        //BOOST_TEST_MESSAGE(boost::filesystem::current_path().string());
+        //BOOST_TEST_MESSAGE(file_);
+        ////BOOST_TEST_MESSAGE(boost::filesystem::canonical(boost::filesystem::current_path(), file_).string());
+        //BOOST_TEST_MESSAGE(boost::filesystem::system_complete(file_).string());
+
+        if (boost::filesystem::exists(file_))
         {
             // Create an empty property tree object
             boost::property_tree::ptree tree;
-            boost::property_tree::read_xml(file_, tree);
+            boost::property_tree::read_xml(file_.string(), tree);
 
             std::string line;
 
@@ -125,11 +132,11 @@ public:
     */
     bool getData(std::string identifier1, std::vector<T>& dataIn, std::string identifier2, std::vector<T>& expected)
     {
-        if (!file_.empty())
+        if (boost::filesystem::exists(file_))
         {
             // Create an empty property tree object
             boost::property_tree::ptree tree;
-            boost::property_tree::read_xml(file_, tree);
+            boost::property_tree::read_xml(file_.string(), tree);
 
             std::string line;
 
