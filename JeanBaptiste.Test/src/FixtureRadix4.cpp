@@ -17,7 +17,7 @@ public:
     {
         BOOST_TEST_MESSAGE("Setup fixture: square pulse of 64 samples.");
 
-		algorithmResult_.initialize("././test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+		algorithmResult_.initialize("../../test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
     }
 
     ~Radix4Fixture()

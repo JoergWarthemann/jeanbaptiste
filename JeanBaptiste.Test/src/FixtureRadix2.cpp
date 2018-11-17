@@ -20,7 +20,7 @@ public:
           initialized_(false)
     {
         BOOST_TEST_MESSAGE("Setup fixture: square pulse of 64 samples.");
-        BOOST_TEST((initialized_ = algorithmResult_.initialize("./test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Error loading test data.");
+        BOOST_TEST((initialized_ = algorithmResult_.initialize("../../test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Error loading test data.");
     }
 
     ~Radix2Fixture()
@@ -64,11 +64,6 @@ BOOST_FIXTURE_TEST_SUITE(Radix2TestSuite, Radix2Fixture)
             jbo::Normalization_Square_Root, std::complex<double>> ifftFactory;
 
         runAlgorithms(fftFactory.getAlgorithm(6), ifftFactory.getAlgorithm(6));
-    }
-
-    BOOST_AUTO_TEST_CASE(wait)
-    {
-        std::cin.get();
     }
 
 BOOST_AUTO_TEST_SUITE_END()

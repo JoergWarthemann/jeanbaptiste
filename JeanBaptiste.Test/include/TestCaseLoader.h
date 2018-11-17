@@ -80,11 +80,6 @@ public:
     bool getData(std::string identifier1, std::vector< std::complex<T> >& dataIn, std::vector< std::complex<T> >& expected1,
         std::string identifier2, std::vector< std::complex<T> >& expected2)
     {
-        //BOOST_TEST_MESSAGE(boost::filesystem::current_path().string());
-        //BOOST_TEST_MESSAGE(file_);
-        ////BOOST_TEST_MESSAGE(boost::filesystem::canonical(boost::filesystem::current_path(), file_).string());
-        //BOOST_TEST_MESSAGE(boost::filesystem::system_complete(file_).string());
-
         if (boost::filesystem::exists(file_))
         {
             // Create an empty property tree object

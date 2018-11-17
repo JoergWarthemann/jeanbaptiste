@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(bartlett)
     {
         BOOST_TEST_MESSAGE("Checking Bartlett window samples.");
-        analysis_.initialize("././test cases/WinBartlettTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinBartlettTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::BartlettWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> bartlett;
 
@@ -58,7 +58,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(blackman_harris)
     {
         BOOST_TEST_MESSAGE("Checking Blackman Harris window samples.");
-        analysis_.initialize("././test cases/WinBlackmanHarrisTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinBlackmanHarrisTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::BlackmanHarrisWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> blackmanHarris;
 
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(blackman)
     {
         BOOST_TEST_MESSAGE("Checking Blackman window samples.");
-        analysis_.initialize("././test cases/WinBlackmanTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinBlackmanTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::BlackmanWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> blackman;
 
@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(cosine)
     {
         BOOST_TEST_MESSAGE("Checking Cosine window samples.");
-        analysis_.initialize("././test cases/WinCosineTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinCosineTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::CosineWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> cosineWin;
 
@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(flat_top)
     {
         BOOST_TEST_MESSAGE("Checking Flat Top window samples.");
-        analysis_.initialize("././test cases/WinFlatTopTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinFlatTopTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::FlatTopWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> flatTopWin;
 
@@ -114,7 +114,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(hamming)
     {
         BOOST_TEST_MESSAGE("Checking Hamming window samples.");
-        analysis_.initialize("././test cases/WinHammingTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinHammingTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::HammingWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> hammingWin;
 
@@ -128,7 +128,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(von_hann)
     {
         BOOST_TEST_MESSAGE("Checking von Hann window samples.");
-        analysis_.initialize("././test cases/WinvonHannTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinvonHannTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::VonHannWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> vonHannWin;
 
@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_SUITE(WindowCalculationTestSuite, WindowCalculationFixture)
     BOOST_AUTO_TEST_CASE(welch)
     {
         BOOST_TEST_MESSAGE("Checking Welch window samples.");
-        analysis_.initialize("././test cases/WinWelchTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
+        analysis_.initialize("../../test cases/WinWelchTest.xml", "win.in", workingSet_, "win.out", expectedOut_);
 
         jw::WelchWindow<std::integral_constant<int, kSampleCnt_>, std::complex<double>> welchWin;
 
