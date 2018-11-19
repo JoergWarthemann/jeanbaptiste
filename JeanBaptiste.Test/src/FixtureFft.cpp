@@ -42,7 +42,7 @@ BOOST_FIXTURE_TEST_SUITE(FftTestSuite, FFTFixture)
     {
         BOOST_TEST_MESSAGE("Running radix 2 DIF FFT and IFFT on unwindowed data.");
 
-        algorithmResult_.initialize("././test cases/cosine (n=128).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+        algorithmResult_.initialize("../../test cases/cosine (n=128).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
 
         // Create Radix-2 DIF FFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_None,
