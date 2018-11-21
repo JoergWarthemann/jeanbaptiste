@@ -11,13 +11,15 @@ namespace jbo = jeanbaptiste::options;
 class Radix4Fixture
     : public AlgorithmFixture
 {
+protected:
+    bool initialized_;
+    
 public:
     Radix4Fixture()
         : AlgorithmFixture()
     {
         BOOST_TEST_MESSAGE("Setup fixture: square pulse of 64 samples.");
-
-		algorithmResult_.initialize("../../test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+        BOOST_TEST((initialized_ = algorithmResult_.initialize("../../test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Loading test data failed.");
     }
 
     ~Radix4Fixture()
@@ -29,6 +31,9 @@ BOOST_FIXTURE_TEST_SUITE(Radix4TestSuite, Radix4Fixture)
  
     BOOST_AUTO_TEST_CASE(fft_radix_4_dif)
     {
+        if (!initialized_)
+            return;
+
         BOOST_TEST_MESSAGE("Running radix 4 DIF FFT and IFFT.");
 
         // Create Radix-4 DIF FFT algorithms for sample counts 4 ... 1024.
@@ -44,6 +49,9 @@ BOOST_FIXTURE_TEST_SUITE(Radix4TestSuite, Radix4Fixture)
 
     BOOST_AUTO_TEST_CASE(fft_radix_4_dit)
     {
+        if (!initialized_)
+            return;
+
         BOOST_TEST_MESSAGE("Running radix 4 DIT FFT and IFFT.");
 
         // Create Radix-4 DIT FFT algorithms for sample counts 4 ... 1024.

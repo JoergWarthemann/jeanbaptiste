@@ -23,19 +23,21 @@ public:
         \param[in] identifier2 ... The 2nd data tag identifier.
         \param[out] expected ... The set of expected (output) data.
     */
-    void initialize(const std::string& file, std::string identifier1, std::vector<T>& workingSet, std::string identifier2, std::vector<T>& expected)
+    bool initialize(const std::string& file, std::string identifier1, std::vector<T>& workingSet, std::string identifier2, std::vector<T>& expected)
     {
         BOOST_TEST_MESSAGE("Initialize data.");
 
         try
         {
             TestCaseLoader<T> loader(file);
-            BOOST_TEST(loader.getData(identifier1, workingSet, identifier2, expected), "Error loading test data.");
+            return loader.getData(identifier1, workingSet, identifier2, expected);
         }
         catch (std::exception ex)
         {
             BOOST_TEST(false, (boost::format("Exception caught loading test data. %s") % ex.what()).str());
         }
+
+        return false;
     }
 
     /** Checks the algorithm output data against a set of expected output data.

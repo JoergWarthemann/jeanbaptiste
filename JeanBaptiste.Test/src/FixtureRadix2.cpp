@@ -20,7 +20,7 @@ public:
           initialized_(false)
     {
         BOOST_TEST_MESSAGE("Setup fixture: square pulse of 64 samples.");
-        BOOST_TEST((initialized_ = algorithmResult_.initialize("../../test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Error loading test data.");
+        BOOST_TEST((initialized_ = algorithmResult_.initialize("../../test cases/square pulse (n=64).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Loading test data failed.");
     }
 
     ~Radix2Fixture()

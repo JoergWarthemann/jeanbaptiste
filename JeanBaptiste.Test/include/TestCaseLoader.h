@@ -27,7 +27,7 @@ class TestCaseLoader
 
         std::string::size_type posEnd = std::string::npos;
         std::string::size_type posStart = std::string::npos;
-        if    ((posStart = line.find('\t')) != std::string::npos)
+        if ((posStart = line.find('\t')) != std::string::npos)
         {
             T real, imag;
             std::string tmp = line.substr(0, posStart);

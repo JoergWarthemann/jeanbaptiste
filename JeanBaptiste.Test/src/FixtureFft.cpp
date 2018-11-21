@@ -11,6 +11,9 @@ namespace jbo = jeanbaptiste::options;
 class FFTFixture
     : public AlgorithmFixture
 {
+protected:
+    bool initialized_;
+
 public:
     FFTFixture()
         : AlgorithmFixture()
@@ -27,9 +30,11 @@ BOOST_FIXTURE_TEST_SUITE(FftTestSuite, FFTFixture)
 
     BOOST_AUTO_TEST_CASE(fft_radix_2_dif_bartlett)
     {
-        BOOST_TEST_MESSAGE("Running radix 2 DIF FFT on windowed data.");
+        BOOST_TEST((initialized_ = algorithmResult_.initialize("../../test cases/cosine (n=128) + Bartlett.xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Loading test data failed.");
+        if (!initialized_)
+            return;
 
-        algorithmResult_.initialize("../../test cases/cosine (n=128) + Bartlett.xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+        BOOST_TEST_MESSAGE("Running radix 2 DIF FFT on windowed data.");
 
         // Create Radix-2 DIF FFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_Bartlett,
@@ -40,9 +45,11 @@ BOOST_FIXTURE_TEST_SUITE(FftTestSuite, FFTFixture)
 
     BOOST_AUTO_TEST_CASE(fft_radix_2_dif)
     {
-        BOOST_TEST_MESSAGE("Running radix 2 DIF FFT and IFFT on unwindowed data.");
+        BOOST_TEST((initialized_ = algorithmResult_.initialize("../../test cases/cosine (n=128).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_)), "Loading test data failed.");
+        if (!initialized_)
+            return;
 
-        algorithmResult_.initialize("../../test cases/cosine (n=128).xml", "fft.in", workingSet_, expectedOutIFFT_, "fft.out", expectedOutFFT_);
+        BOOST_TEST_MESSAGE("Running radix 2 DIF FFT and IFFT on unwindowed data.");
 
         // Create Radix-2 DIF FFT algorithms for sample counts 2 ... 256.
         jb::AlgorithmFactory<1, 8, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_None,
