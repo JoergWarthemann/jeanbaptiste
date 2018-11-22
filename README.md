@@ -1,7 +1,6 @@
 # JeanBaptiste
 
-JeanBaptiste is an easy to use implementation of FFT (Fast Fourier Transform). It intensively makes use of template metaprogramming and constant expressions to move as much of the necessary computations as possible into compilation time.
-
+JeanBaptiste is an easy to use implementation of FFT (Fast Fourier Transform). It intensively makes use of template metaprogramming and constant expressions to move as much of the necessary computations as possible into compilation time.  
 In order to make using compile time generated types easier and to give back some flexibility to the user boost::hana is used.
 
 ## Features
@@ -22,7 +21,7 @@ In order to make using compile time generated types easier and to give back some
 
 ## Implementation
 
-All transform algorithms are implemented using their recursive definition based on template metaprogramming. Transform lengths are compile time constants. Although flexibility is given to the user by allowing him to select the right one from a boost::hana powered factory at execution time.
+All transform algorithms are implemented using their recursive definition and based on template metaprogramming. Transform lengths are compile time constants. Despite that runtime flexibility is given to the user by allowing him to select the right transform length from a boost::hana powered factory.
 
 Partially computing twiddle factors at compilation time reduces the calculation cost at runtime.
 
@@ -35,3 +34,6 @@ cmake, VSCode
 ## Usage
 
 ## What's next?
+
+* Implementation of the real FFT algorithm
+* 
