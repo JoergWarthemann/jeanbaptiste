@@ -2,14 +2,22 @@
 
 JeanBaptiste is an easy to use implementation of FFT (Fast Fourier Transform). It intensively makes use of template metaprogramming and constant expressions to move as much of the necessary computations as possible into compilation time.
 
+In order to make using compile time generated types easier and to give back some flexibility to the user boost::hana is used.
+
 ## Features
 
 * different cases of the Cooley-Tukey algorithm
     * radix-2
     * radix-4
     * split-radix-2-4
-* square root normalization
-* different types of window functions (e.g. Bartlett, Hamming, von Hann)
+* different cases of normalization
+    * square root
+    * division by sample count
+* different types of window functions
+    * Bartlett
+    * Hamming
+    * von Hann
+    * ...
 * runtime selection of transform length
 
 ## Implementation

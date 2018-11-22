@@ -39,13 +39,22 @@ int main()
 		std::complex<double>( 1.0f, 0.0f)
     };
 
-    std::cout << "FFT:\n";
-
+    std::cout << "Applying FFT:\n";
     jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, 
-       jbo::Window_None, jbo::Normalization_No, std::complex<double>> algorithmFactory;
+       jbo::Window_None, jbo::Normalization_Square_Root, std::complex<double>> algorithmFactory;
 
     auto algorithm = algorithmFactory.getAlgorithm(4);
     algorithm->operator()(&complexData[0]);
+
+    for (auto value : complexData)
+       std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
+
+	std::cout << "\nApplying iFFT:\n";
+	jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Backward, 
+       jbo::Window_None, jbo::Normalization_Square_Root, std::complex<double>> iAlgorithmFactory;
+
+	auto iAlgorithm = iAlgorithmFactory.getAlgorithm(4);
+    iAlgorithm->operator()(&complexData[0]);
 
     for (auto value : complexData)
        std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";

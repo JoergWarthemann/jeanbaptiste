@@ -7,6 +7,7 @@ namespace jeanbaptiste::options
     struct Decimation_In_Frequency {};
     struct Decimation_In_Time {};
     struct Normalization_No {};
+    struct Normalization_Division_By_Length {};
     struct Normalization_Square_Root {};
     struct Radix_2 {};
     struct Radix_4 {};

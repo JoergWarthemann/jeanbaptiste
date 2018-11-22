@@ -7,6 +7,7 @@
 #include "core/Radix4.h"
 #include "core/RadixSplit24.h"
 #include "ExecutableAlgorithm.h"
+#include "normalization/DivisionByLengthNormalization.h"
 #include "normalization/NoNormalization.h"
 #include "normalization/SquareRootNormalization.h"
 #include "Options.h"
@@ -100,6 +101,11 @@ namespace jeanbaptiste
         static constexpr auto getRadix2NormalizationValue(void)
         {
             return
+                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Division_By_Length>,
+                    normalization::DivisionByLengthNormalization<
+                        typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
+                        typename decltype(std::integral_constant<int, 0>{})::type,
+                        Complex>{},
                 hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Square_Root>,
                     normalization::SquareRootNormalization<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
@@ -108,7 +114,7 @@ namespace jeanbaptiste
                     normalization::NoNormalization<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{}
-                );
+                ));
          }
 
         /** Creates a tupel of sub task type values belonging to a radix 2 task at compilation time.
@@ -146,6 +152,11 @@ namespace jeanbaptiste
         static constexpr auto getRadix4NormalizationValue(void)
         {
             return
+                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Division_By_Length>,
+                    normalization::DivisionByLengthNormalization<
+                        typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
+                        typename decltype(std::integral_constant<int, 0>{})::type,
+                        Complex>{},
                 hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Square_Root>,
                     normalization::SquareRootNormalization<
                         typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
@@ -154,7 +165,7 @@ namespace jeanbaptiste
                     normalization::NoNormalization<
                         typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                         Complex>{}
-                );
+                ));
  
         }
 
