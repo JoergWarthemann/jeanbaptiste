@@ -72,5 +72,5 @@ algorithm->operator()(&sampleData[0]);
 
 ## Further development
 
-* integrating the real FFT algorithm
-* making use of expression templates
+* integrate the real FFT algorithm
+* make use of expression templates to remove temporaries and increase efficiency
