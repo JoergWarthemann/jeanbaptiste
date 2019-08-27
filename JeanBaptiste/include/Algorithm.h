@@ -46,7 +46,7 @@ namespace jeanbaptiste
         static constexpr auto getDirectionValue(void)
         {
             return hana::if_(
-                hana::decltype_(Direction{}) == hana::type_c<jbo::Direction_Forward>,
+                hana::typeid_(Direction{}) == hana::type<jbo::Direction_Forward>{},
                     std::integral_constant<int, 1>{},
                     std::integral_constant<int, -1>{});
         }
@@ -57,35 +57,35 @@ namespace jeanbaptiste
         static constexpr auto getWindowValue(void)
         {
             return
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Bartlett>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_Bartlett>{},
                     windowing::BartlettWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Blackman>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_Blackman>{},
                     windowing::BlackmanWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_BlackmanHarris>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_BlackmanHarris>{},
                     windowing::BlackmanHarrisWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Cosine>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_Cosine>{},
                     windowing::CosineWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_FlatTop>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_FlatTop>{},
                     windowing::FlatTopWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Hamming>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_Hamming>{},
                     windowing::HammingWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_vonHann>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_vonHann>{},
                     windowing::VonHannWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Window{}) == hana::type_c<jbo::Window_Welch>,
+                hana::if_(hana::typeid_(Window{}) == hana::type<jbo::Window_Welch>{},
                     windowing::WelchWindow<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         Complex>{},
@@ -101,12 +101,12 @@ namespace jeanbaptiste
         static constexpr auto getRadix2NormalizationValue(void)
         {
             return
-                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Division_By_Length>,
+                hana::if_(hana::typeid_(Normalization{}) == hana::type<jbo::Normalization_Division_By_Length>{},
                     normalization::DivisionByLengthNormalization<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         typename decltype(std::integral_constant<int, 0>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Square_Root>,
+                hana::if_(hana::typeid_(Normalization{}) == hana::type<jbo::Normalization_Square_Root>{},
                     normalization::SquareRootNormalization<
                         typename decltype(std::integral_constant<int, 1 << Stage::value>{})::type,
                         typename decltype(std::integral_constant<int, 0>{})::type,
@@ -123,7 +123,7 @@ namespace jeanbaptiste
         static constexpr auto radix2SubTaskTypeValues(void)
         {
             return hana::if_(
-                hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
+                hana::typeid_(Decimation{}) == hana::type<jbo::Decimation_In_Time>{},
                     hana::tuple_t<
                         decltype(getWindowValue()),
                         basic::BitReversalIndexSwapping<
@@ -152,12 +152,12 @@ namespace jeanbaptiste
         static constexpr auto getRadix4NormalizationValue(void)
         {
             return
-                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Division_By_Length>,
+                hana::if_(hana::typeid_(Normalization{}) == hana::type<jbo::Normalization_Division_By_Length>{},
                     normalization::DivisionByLengthNormalization<
                         typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                         typename decltype(std::integral_constant<int, 0>{})::type,
                         Complex>{},
-                hana::if_(hana::decltype_(Normalization{}) == hana::type_c<jbo::Normalization_Square_Root>,
+                hana::if_(hana::typeid_(Normalization{}) == hana::type<jbo::Normalization_Square_Root>{},
                     normalization::SquareRootNormalization<
                         typename decltype(std::integral_constant<int, 1 << (Stage::value << 1)>{})::type,
                         typename decltype(std::integral_constant<int, 0>{})::type,
@@ -175,7 +175,7 @@ namespace jeanbaptiste
         static constexpr auto radix4SubTaskTypeValues(void)
         {
             return hana::if_(
-                hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
+                hana::typeid_(Decimation{}) == hana::type<jbo::Decimation_In_Time>{},
                     hana::tuple_t<
                         decltype(getWindowValue()),
                         basic::BitReversalIndexSwapping<
@@ -204,7 +204,7 @@ namespace jeanbaptiste
         static constexpr auto radixSplit24SubtaskTypeValues(void)
         {
             return hana::if_(
-                hana::decltype_(Decimation{}) == hana::type_c<jbo::Decimation_In_Time>,
+                hana::typeid_(Decimation{}) == hana::type<jbo::Decimation_In_Time>{},
                     hana::tuple_t<
                         decltype(getWindowValue()),
                         basic::BitReversalIndexSwapping<
@@ -232,9 +232,9 @@ namespace jeanbaptiste
         */
         static constexpr auto createTupleOfSubTaskTypeValues(void)
         {
-            if constexpr (hana::decltype_(Radix{}) == hana::type_c<jbo::Radix_2>)
+            if constexpr (hana::typeid_(Radix{}) == hana::type<jbo::Radix_2>{})
                 return radix2SubTaskTypeValues();
-            else if constexpr (hana::decltype_(Radix{}) == hana::type_c<jbo::Radix_4>)
+            else if constexpr (hana::typeid_(Radix{}) == hana::type<jbo::Radix_4>{})
                 return radix4SubTaskTypeValues();
             else
                 return radixSplit24SubtaskTypeValues();
