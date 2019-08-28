@@ -14,5 +14,15 @@ namespace jeanbaptiste
 
         virtual void operator()(Complex* data) const
         {}
+
+        virtual std::size_t numberOfSamples(void) const
+        {
+            return 0;
+        }
+        
+        virtual std::size_t numberOfFrequencies(void) const
+        {
+            return 0;
+        }
     };
 }

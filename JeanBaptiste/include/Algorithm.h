@@ -40,6 +40,24 @@ namespace jeanbaptiste
     class Algorithm
         : public ExecutableAlgorithm<Complex>
     {
+        /** Calculates the number of samples that can be processed by this algorithm.
+        */
+        static constexpr auto getNumberOfSamples(void)
+        {
+            if constexpr (hana::typeid_(Radix{}) == hana::type<jbo::Radix_4>{})
+                return std::integral_constant<int, 1 << (Stage::value << 1)>{};
+            else
+                return std::integral_constant<int, 1 << Stage::value>{};
+        }
+
+        /** Calculates the number of frequencies that this algorithm puts out.
+            Shannon-Nyquist: half the sample count
+        */
+        static constexpr auto getNumberOfFrequencies(void)
+        {
+            return getNumberOfSamples() >> 1;
+        }
+
         /** Creates a value of the selected direction type at compilation time.
             \return value ... The selected value.
         */
@@ -254,6 +272,16 @@ namespace jeanbaptiste
             {
                 subTask(data);
             });
+        }
+
+        std::size_t numberOfSamples(void) const override
+        {
+            return getNumberOfSamples();
+        }
+        
+        std::size_t numberOfFrequencies(void) const override
+        {
+            return getNumberOfFrequencies();
         }
     };
 }

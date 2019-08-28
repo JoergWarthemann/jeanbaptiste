@@ -39,13 +39,16 @@ int main()
 		std::complex<double>( 1.0f, 0.0f)
     };
 
-    std::cout << "Applying FFT:\n";
     jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Forward, 
        jbo::Window_None, jbo::Normalization_Square_Root, std::complex<double>> algorithmFactory;
 
-    auto algorithm = algorithmFactory.getAlgorithm(4);
+	constexpr auto stage = 4;
+    auto algorithm = algorithmFactory.getAlgorithm(stage);
     algorithm->operator()(&complexData[0]);
 
+	std::cout << "Selected algorithm - stage: " << stage << ", samples: " << algorithm->numberOfSamples() << ", frequencies: " << algorithm->numberOfFrequencies() << "\n\n";
+
+	std::cout << "Applying FFT:\n";
     for (auto value : complexData)
        std::cout << std::setw(10) << std::setprecision(5) << value.real() << "\t" << value.imag() << "I\n";
 
@@ -53,7 +56,7 @@ int main()
 	jb::AlgorithmFactory<1, 6, jbo::Radix_2, jbo::Decimation_In_Frequency, jbo::Direction_Backward, 
        jbo::Window_None, jbo::Normalization_Square_Root, std::complex<double>> iAlgorithmFactory;
 
-	auto iAlgorithm = iAlgorithmFactory.getAlgorithm(4);
+	auto iAlgorithm = iAlgorithmFactory.getAlgorithm(stage);
     iAlgorithm->operator()(&complexData[0]);
 
     for (auto value : complexData)
