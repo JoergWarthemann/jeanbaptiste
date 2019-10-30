@@ -58,7 +58,7 @@ AlgorithmFactory<
 * `Normalization` defines whether a normalization is to be used. Options: `Normalization_No`, `Normalization_Division_By_Length` (result is normalized by a factor of 1/N), `Normalization_Square_Root` (result is normalized by a factor of 1/√N)
 * `Complex` defines the type of complex number which is to be used.
 
-Then the factory can be instructed to create the desired algorithm.
+Then the factory can be instructed to create the specified algorithm for the desired sample count.
 
 ```cpp
 auto algorithm = algorithmFactory.getAlgorithm(11);
