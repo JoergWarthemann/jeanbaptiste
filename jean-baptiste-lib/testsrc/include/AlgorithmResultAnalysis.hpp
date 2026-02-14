@@ -1,12 +1,19 @@
-#include <boost/format.hpp>
+#ifndef JEANBAPTISTE_UTILITIES_ALGORITHMRESULTANALYSIS_HPP_
+#define JEANBAPTISTE_UTILITIES_ALGORITHMRESULTANALYSIS_HPP_
+
 #include <boost/math/special_functions/next.hpp>
-#include <boost/test/unit_test.hpp>
+//#include <boost/test/unit_test.hpp>
 #include <complex>
+#include <format>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <iostream>
 #include <string>
-#include "TestCaseLoader.h"
 #include <vector>
 
-namespace tt = boost::test_tools;
+#include "TestCaseLoader.hpp"
+
+//namespace tt = boost::test_tools;
 
 namespace Utilities
 {
@@ -26,7 +33,8 @@ public:
     */
     bool initialize(const std::string& file, std::string identifier1, std::vector<T>& workingSet, std::string identifier2, std::vector<T>& expected)
     {
-        BOOST_TEST_MESSAGE("Initialize data.");
+        std::cout << "Initialize data." << std::endl;
+        //BOOST_TEST_MESSAGE("Initialize data.");
 
         try
         {
@@ -35,7 +43,8 @@ public:
         }
         catch (std::exception ex)
         {
-            BOOST_TEST(false, (boost::format("Exception caught loading test data. %s") % ex.what()).str());
+            //BOOST_TEST(false, (boost::format("Exception caught loading test data. %s") % ex.what()).str());
+            std::cout << "Exception occurred when loading test data. " << ex.what() << std::endl;
         }
 
         return false;
@@ -52,7 +61,8 @@ public:
     bool initialize(const std::string& file, std::string identifier1, std::vector<std::complex<T>>& workingSet, std::vector<std::complex<T>>& expected1, 
         std::string identifier2, std::vector<std::complex<T>>& expected2)
     {
-        BOOST_TEST_MESSAGE("Initialize data.");
+        //BOOST_TEST_MESSAGE("Initialize data.");
+        std::cout << "Initialize data." << std::endl;
 
         try
         {
@@ -61,7 +71,8 @@ public:
         }
         catch (std::exception ex)
         {
-            BOOST_TEST(false, (boost::format("Exception caught loading test data. %s") % ex.what()).str());
+            //BOOST_TEST(false, (boost::format("Exception caught loading test data. %s") % ex.what()).str());
+            std::cout << "Exception occurred when loading test data. " << ex.what() << std::endl;
         }
 
         return false;
@@ -73,22 +84,23 @@ public:
     */
     void checkOutput(std::vector<std::complex<T>>& workingSet, std::vector<std::complex<T>>& expectedOutput)
     {
-        //BOOST_CHECK_EQUAL_COLLECTIONS(workingSet.begin(), workingSet.end(), expectedOutput.begin(), expectedOutput.end());
-
-        if (workingSet.size() != expectedOutput.size())
-           BOOST_TEST(false, "The lengths of both vectors need to be equal.");
+        ASSERT_EQ(workingSet.size(), expectedOutput.size()) << "The lengths of both vectors need to be equal.";
 
         for (auto i = 0; i < expectedOutput.size(); ++i)
-           BOOST_TEST(
-                  ((std::abs(workingSet[i].real() - expectedOutput[i].real()) <= static_cast<T>(kPrecision))
-               &&  (std::abs(workingSet[i].imag() - expectedOutput[i].imag()) <= static_cast<T>(kPrecision))),
-               (boost::format("Mismatch at position %s: (%s, %si) != (%s, %si)")
-                  % i
-                  % workingSet[i].real()
-                  % workingSet[i].imag()
-                  % expectedOutput[i].real()
-                  % expectedOutput[i].imag()).str());
+        {
+            bool realMatch = std::abs(workingSet[i].real() - expectedOutput[i].real()) <= static_cast<T>(kPrecision);
+            bool imagMatch = std::abs(workingSet[i].imag() - expectedOutput[i].imag()) <= static_cast<T>(kPrecision);
+            EXPECT_TRUE(realMatch && imagMatch)
+                << std::format("Mismatch at position {}: ({}, {}i) != ({}, {}i)",
+                    i,
+                    workingSet[i].real(),
+                    workingSet[i].imag(),
+                    expectedOutput[i].real(),
+                    expectedOutput[i].imag());
+        }
     }
 };
 
 }
+
+#endif // JEANBAPTISTE_UTILITIES_ALGORITHMRESULTANALYSIS_HPP_

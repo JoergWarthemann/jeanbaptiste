@@ -1,5 +1,5 @@
-#ifndef JB_BASIC_SINECOSINE_HPP_
-#define JB_BASIC_SINECOSINE_HPP_
+#ifndef JEANBAPTISTE_BASIC_SINECOSINE_HPP_
+#define JEANBAPTISTE_BASIC_SINECOSINE_HPP_
 
 #include <boost/math/constants/constants.hpp>
 
@@ -77,4 +77,4 @@ constexpr std::decay_t<T> cosine(const T x)
 }
 } // namespace jeanbaptiste::basic
 
-#endif /* JB_BASIC_SINECOSINE_HPP_ */
+#endif // JEANBAPTISTE_BASIC_SINECOSINE_HPP_

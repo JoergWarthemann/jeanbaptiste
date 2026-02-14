@@ -1,5 +1,5 @@
-#ifndef JB_SUBTASK_HPP_
-#define JB_SUBTASK_HPP_
+#ifndef JEANBAPTISTE_SUBTASK_HPP_
+#define JEANBAPTISTE_SUBTASK_HPP_
 
 #include <span>
 
@@ -8,8 +8,7 @@ namespace jeanbaptiste {
     \param Derived ... The derived class being used in compile time inheritance.
     \param Complex ... Complex data type.
 */
-template <typename Derived,
-    typename Complex>
+template <typename Derived, typename Complex>
 class SubTask {
 public:
     // void operator()(Complex* data) const
@@ -24,4 +23,4 @@ public:
 };
 } // namespace jeanbaptiste
 
-#endif /* JB_SUBTASK_HPP_ */
+#endif // JEANBAPTISTE_SUBTASK_HPP_

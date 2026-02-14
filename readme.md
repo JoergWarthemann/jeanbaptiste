@@ -16,8 +16,16 @@
 * [ ] Replace all #pragma preprocessor commands by #ifdef
 * [x] Rewrite SubTask::operator() to use std::span (rewrite operator() as template function)
 * [ ] modernize Radix2 and Radix2Test
-* [ ] rewrite AlgorithmFixture.hpp and use it in Radix2Test.cpp
-* [ ] rewrite ExecutableAlgorithm.hpp
+* [ ] rewrite AlgorithmFixture.hpp using fold expressions and use it in Radix2Test.cpp
+* [ ] rewrite AlgorithmResultAnalysis.hpp and use it in Radix2Test.cpp to load sample data from files (use ranges)
+* [ ] rewrite ExecutableAlgorithm.hpp (prefer = default for destructor?)
+* [ ] override virtual base class destructors and make them default at least
+
+* [x] use std::span for sample range in SubTask::operator()
+* [ ] update TestCaseLoader to use std::string_view, std::filesystem
+* [ ] make Radix2Test go through all test files
+* [ ] use std::format instead of boost::format
+* [ ] use std::span for sample range in Radix2::operator()
 
 ------------------------------------------------------------------------------------------------------------------------
 

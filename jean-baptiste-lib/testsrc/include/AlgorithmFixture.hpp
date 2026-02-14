@@ -1,21 +1,21 @@
-#ifndef JB_TESTING_ALGORITHM_FIXTURE_HPP_
-#define JB_TESTING_ALGORITHM_FIXTURE_HPP_
+#ifndef JEANBAPTISTE_TESTING_ALGORITHM_FIXTURE_HPP_
+#define JEANBAPTISTE_TESTING_ALGORITHM_FIXTURE_HPP_
 
 #include <complex>
 #include <memory>
 
+#include "IExecutableAlgorithm.hpp"
 #include "AlgorithmResultAnalysis.hpp"
-#include "ExecutableAlgorithm.hpp"
 
 //#include "../include/AlgorithmResultAnalysis.h"
 //#include "../../JeanBaptiste/include/ExecutableAlgorithm.h"
 
-namespace JB::Testing {
+namespace jeanbaptiste::testing {
 
 class AlgorithmFixture
 {
 protected:
-    using AlgorithmType = std::unique_ptr<jb::ExecutableAlgorithm<std::complex<double>>>;
+    using AlgorithmType = std::unique_ptr<IExecutableAlgorithm<std::complex<double>>>;
 
 	std::vector<std::complex<double>> workingSet_;
 	std::vector<std::complex<double>> expectedOutFFT_;
@@ -27,22 +27,29 @@ public:
     AlgorithmFixture(void) = default;
     virtual ~AlgorithmFixture(void) = default;
 
-    void runAlgorithm(AlgorithmType fft)
+    // TODO: Keep runAlgorithm to execute and check a single algorithm
+    void runAlgorithm(AlgorithmType algorithm)
     {
-        fft->operator()(&workingSet_[0]);
+        // TODO: do only use a span on workingSet_.
+        algorithm->operator()(&workingSet_[0]);
         algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
     }
 
-    void runAlgorithms(AlgorithmType fft, AlgorithmType ifft)
+    template <typename ...Algorithm>
+    void runAlgorithms(Algorithm ... algorithm)
     {
-        fft->operator()(&workingSet_[0]);
-        algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
-
-        ifft->operator()(&workingSet_[0]);
-        algorithmResult_.checkOutput(workingSet_, expectedOutIFFT_);
+        runAlgorithm(algorithm ...);
     }
+    // void runAlgorithms(AlgorithmType fft, AlgorithmType ifft)
+    // {
+    //     fft->operator()(&workingSet_[0]);
+    //     algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
+
+    //     ifft->operator()(&workingSet_[0]);
+    //     algorithmResult_.checkOutput(workingSet_, expectedOutIFFT_);
+    // }
 };
 
-} // namespace JB::Testing
+} // namespace jeanbaptiste::testing
 
-#endif /* JB_TESTING_ALGORITHM_FIXTURE_HPP_ */
+#endif // JEANBAPTISTE_TESTING_ALGORITHM_FIXTURE_HPP_

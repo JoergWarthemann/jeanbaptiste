@@ -1,9 +1,11 @@
 #pragma once
 
-#include "../basic/SineCosine.h"
-#include <boost/math/constants/constants.hpp>
 #include <complex>
-#include "../SubTask.h"
+
+#include <boost/math/constants/constants.hpp>
+
+#include "tools/SineCosine.hpp"
+#include "tools/SubTask.hpp"
 
 namespace constants = boost::math::constants;
 
@@ -18,18 +20,23 @@ namespace jeanbaptiste::core
              typename DirectionFactor,
              typename Complex>
     class Radix2DIT
-        : public SubTask<Radix2DIT<SampleCnt, DirectionFactor, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIT<SampleCnt, DirectionFactor, Complex>, Complex>
     {
         Radix2DIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
 
     public:
-        void operator()(Complex* data) const
+        //void operator()(Complex* data) const
+        //{
+        //    apply(data);
+        //}
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned groupNodeIdx = 0) const
+    private:
+        //void apply(Complex* data, unsigned groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             using ValueType = typename Complex::value_type;
 
@@ -43,8 +50,13 @@ namespace jeanbaptiste::core
 
             // Create twiddle factor multiplier for trigonometric recurrence.
             constexpr Complex twiddleMultiplier(
-                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
-                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
+                static_cast<ValueType>(
+                    -2.0 *
+                    basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) *
+                    basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(
+                    DirectionFactor::value *
+                    basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
@@ -78,16 +90,23 @@ namespace jeanbaptiste::core
     */
     template<typename Complex>
     class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
-        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 4>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since 
             // twiddle factor is 1.
@@ -125,16 +144,23 @@ namespace jeanbaptiste::core
     */
     template<typename Complex>
     class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
-        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 4>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since 
             // twiddle factor is 1.
@@ -175,16 +201,23 @@ namespace jeanbaptiste::core
     template<typename DirectionFactor,
              typename Complex>
     class Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
-        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 2>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle 
             // factor is 1.
@@ -201,16 +234,23 @@ namespace jeanbaptiste::core
     template<typename DirectionFactor,
              typename Complex>
     class Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
-        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 1>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex*, unsigned int) const
+        //void apply(Complex*, unsigned int) const
+        void apply(std::span<Complex, SampleCnt::value>, unsigned) const
         {}
     };
 
@@ -224,18 +264,22 @@ namespace jeanbaptiste::core
              typename DirectionFactor,
              typename Complex>
     class Radix2DIF
-        : public SubTask<Radix2DIF<SampleCnt, DirectionFactor, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIF<SampleCnt, DirectionFactor, Complex>, Complex>
     {
         Radix2DIF<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
 
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             using ValueType = typename Complex::value_type;
 
@@ -245,8 +289,13 @@ namespace jeanbaptiste::core
 
             // Create twiddle factor multiplier for trigonometric recurrence.
             constexpr Complex twiddleMultiplier(
-                static_cast<ValueType>(-2.0 * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) * basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
-                static_cast<ValueType>(DirectionFactor::value * basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
+                static_cast<ValueType>(
+                    -2.0 *
+                    basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) *
+                    basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                static_cast<ValueType>(
+                    DirectionFactor::value *
+                    basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
             // Create transform factor.
             Complex twiddleFactor(1.0, 0.0);
 
@@ -284,16 +333,23 @@ namespace jeanbaptiste::core
     */
     template<typename Complex>
     class Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
-        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 4>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
             // twiddle factor is 1.
@@ -330,17 +386,27 @@ namespace jeanbaptiste::core
         \param Complex ... The complex type.
     */
     template<typename Complex>
-    class Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
-        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>,
-                         Complex>
+    class Radix2DIF<
+        std::integral_constant<unsigned, 4>,
+        std::integral_constant<int, -1>,
+        Complex>
+        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 4>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
             // twiddle factor is 1.
@@ -380,16 +446,23 @@ namespace jeanbaptiste::core
     template<typename DirectionFactor,
              typename Complex>
     class Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
-        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 2>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        //void apply(Complex* data, unsigned int groupNodeIdx = 0) const
+        void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
         {
             // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle 
             // factor is 1.
@@ -406,16 +479,23 @@ namespace jeanbaptiste::core
     template<typename DirectionFactor,
              typename Complex>
     class Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
-        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>,
-                         Complex>
+        : public SubTask<Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex>
     {
+    private:
+        using SampleCnt = std::integral_constant<unsigned, 1>;
+
     public:
-        void operator()(Complex* data) const
+        // void operator()(Complex* data) const
+        // {
+        //     apply(data);
+        // }
+        void operator()(std::span<Complex, SampleCnt::value> data) const
         {
             apply(data);
         }
 
-        void apply(Complex*, unsigned int) const
+        //void apply(Complex*, unsigned int) const
+        void apply(std::span<Complex, SampleCnt::value>, unsigned) const
         {}
     };
 }

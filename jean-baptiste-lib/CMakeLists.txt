@@ -7,7 +7,7 @@ set(LIBRARY_NAME jean-baptiste-lib)
 set(JEAN_BAPTISTE_LIB_SOURCES
     include/Algorithm.hpp
     include/AlgorithmFactory.hpp
-    include/ExecutableAlgorithm.hpp
+    include/IExecutableAlgorithm.hpp
     include/Options.hpp
     include/core/Radix2.hpp
     include/core/Radix4.hpp
@@ -65,6 +65,7 @@ find_library(GOOGLEMOCK_LIB libgmock.a)
 add_executable(${LIBRARY_NAME}-googletest
     ${JEAN_BAPTISTE_LIB_SOURCES}
     testsrc/src/BitReversalTest.cpp
+    testsrc/src/Radix2Test.cpp
     testsrc/src/SinCosTest.cpp
 
     testsrc/include/AlgorithmFixture.hpp

@@ -1,51 +1,69 @@
-#pragma once
+#ifndef JEANBAPTISTE_UTILITIES_TESTCASELOADER_HPP_
+#define JEANBAPTISTE_UTILITIES_TESTCASELOADER_HPP_
 
-#include <vector>
+#include <charconv>
 #include <complex>
-#include <string>
+#include <filesystem>
 #include <iostream>
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <vector>
+//#include <boost/algorithm/string.hpp>
+//#include <boost/filesystem.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include "StringConversion.h"
 
 namespace Utilities {
+
+inline std::string_view trim(std::string_view str) {
+    auto start = str.find_first_not_of(" \t\n\r\f\v");
+    if (start == std::string_view::npos) {
+        return std::string_view(); // All whitespace
+    }
+    
+    auto end = str.find_last_not_of(" \t\n\r\f\v");
+    
+    return str.substr(start, end - start + 1);
+}
 
 template<typename T>
 class TestCaseLoader
 {
-    boost::filesystem::path file_;
+    //boost::filesystem::path file_;
+    std::filesystem::path mFile{};
     //std::string file_;
 
     /** Converts a single string with 2 numbers into a complex number.
         \param[in] line ... The string.
     */
-    std::complex<T> extractComplexNumber(std::string& line)
+    //std::complex<T> extractComplexNumber(std::string& line)
+    std::pair<T, T> extractComplexArguments(std::string_view line)
     {
-        boost::algorithm::trim(line);
+        line = trim(line);
 
-        std::string::size_type posEnd = std::string::npos;
-        std::string::size_type posStart = std::string::npos;
-        if ((posStart = line.find('\t')) != std::string::npos)
-        {
+        std::string_view::size_type posEnd = std::string_view::npos;
+        std::string_view::size_type posStart = std::string_view::npos;
+        if ((posStart = line.find('\t')) != std::string_view::npos) {
             T real, imag;
-            std::string tmp = line.substr(0, posStart);
-            boost::algorithm::trim(tmp);
-            std::istringstream iss(tmp);
-            iss >> real;
+            std::string_view tmp = trim(line.substr(0, posStart));
+            std::from_chars(tmp.data(), tmp.data() + tmp.size(), real);
+
+            // std::istringstream iss(tmp);
+            // iss >> real;
             
-            iss.clear();
+            // iss.clear();
 
-            tmp = line.substr(posStart, posEnd - posStart);
-            boost::algorithm::trim(tmp);
-            iss.str(tmp);
-            iss >> imag;
+            // tmp = trim(line.substr(posStart, posEnd - posStart));
+            // iss.str(tmp);
+            // iss >> imag;
 
-            return std::complex<T>(real, imag);
+            std::from_chars(tmp.data(), tmp.data() + tmp.size(), imag);
+
+            return {real, imag};
         }
 
-        return std::complex<T>(0, 0);
+        throw std::invalid_argument("Invalid complex number format");
     }
     
     /** Converts a single string with 1 number into a number.
@@ -55,16 +73,19 @@ class TestCaseLoader
     {
         T result = T(0);
 
-        boost::algorithm::trim(line);
-        std::istringstream iss(line);
-        iss >> result;
+        line = trim(line);
+        std::from_chars(line.data(), line.data() + line.size(), result);
+
+        // boost::algorithm::trim(line);
+        // std::istringstream iss(line);
+        // iss >> result;
 
         return result;
     }
 
 public:
-    TestCaseLoader(const std::string& file)
-        : file_(boost::filesystem::system_complete(file))
+    TestCaseLoader(std::string_view file)
+        : mFfile(std::filesystem::system_complete(file))
     {}
 
     ~TestCaseLoader(void)
@@ -77,11 +98,11 @@ public:
         \param[out] identifier2 ... The 2nd data tag identifier.
         \param[out] expected2 ... The set of expected 2nd (output) data.
     */
-    bool getData(std::string identifier1, std::vector< std::complex<T> >& dataIn, std::vector< std::complex<T> >& expected1,
-        std::string identifier2, std::vector< std::complex<T> >& expected2)
+   // TODO: turn identifier1 into string_view, keep the vectors
+    bool getData(std::string_view identifier1, std::vector< std::complex<T> >& dataIn, std::vector< std::complex<T> >& expected1,
+        std::string_view identifier2, std::vector< std::complex<T> >& expected2)
     {
-        if (boost::filesystem::exists(file_))
-        {
+        if (std::filesystem::exists(file_)) {
             // Create an empty property tree object
             boost::property_tree::ptree tree;
             boost::property_tree::read_xml(file_.string(), tree);
@@ -90,24 +111,25 @@ public:
 
             // Load dataIn and expected2 data.
             std::stringstream linesIn1(tree.get<std::string>(identifier1));
-            while (std::getline(linesIn1, line))
-            {
+            while (std::getline(linesIn1, line)) {
                 boost::algorithm::trim(line);
-                if (!line.empty())
-                {
-                    std::complex<T> tmp = extractComplexNumber(line);
-                    dataIn.push_back(tmp);
-                    expected1.push_back(tmp);
+                if (!line.empty()) {
+                    auto [real, imag] = extractComplexArguments(line);
+                    dataIn.emplace_back(real, imag);
+                    expected1.emplace_back(real, imag);
+
+                    // dataIn.push_back(tmp);
+                    // expected1.push_back(tmp);
                 }
             }
 
             // Load expected2 data.
             std::stringstream linesIn2(tree.get<std::string>(identifier2));
-            while (std::getline(linesIn2, line))
-            {
+            while (std::getline(linesIn2, line)) {
                 boost::algorithm::trim(line);
-                if (!line.empty())
-                    expected2.push_back(extractComplexNumber(line));
+                if (!line.empty()) {
+                    expected2.emplace_back(extractComplexArguments(line));
+                }
             }
 
             if ((dataIn.size() > 0)
@@ -125,10 +147,9 @@ public:
         \param[in] identifier2 ... The 2nd data tag identifier.
         \param[out] expected ... The set of expected 2nd (output) data.
     */
-    bool getData(std::string identifier1, std::vector<T>& dataIn, std::string identifier2, std::vector<T>& expected)
+    bool getData(std::string_view identifier1, std::vector<T>& dataIn, std::string_view identifier2, std::vector<T>& expected)
     {
-        if (boost::filesystem::exists(file_))
-        {
+        if (std::filesystem::exists(mFfile)) {
             // Create an empty property tree object
             boost::property_tree::ptree tree;
             boost::property_tree::read_xml(file_.string(), tree);
@@ -137,11 +158,10 @@ public:
 
             // Load dataIn.
             std::stringstream linesIn1(tree.get<std::string>(identifier1));
-            while (std::getline(linesIn1, line))
-            {
+            while (std::getline(linesIn1, line)) {
                 boost::algorithm::trim(line);
                 if (!line.empty())
-                    dataIn.push_back(extractRealNumber(line));
+                    dataIn.emplace_back(extractRealNumber(line));
             }
 
             // Load expected data.
@@ -149,13 +169,15 @@ public:
             while (std::getline(linesIn2, line))
             {
                 boost::algorithm::trim(line);
-                if (!line.empty())
-                    expected.push_back(extractRealNumber(line));
+                if (!line.empty()) {
+                    expected.emplace_back(extractRealNumber(line));
+                }
             }
 
             if ((dataIn.size() > 0)
-                && (dataIn.size() == expected.size()))
+                && (dataIn.size() == expected.size())) {
                 return true;
+            }
         }
 
         return false;
@@ -163,3 +185,5 @@ public:
 };
 
 }
+
+#endif // JEANBAPTISTE_UTILITIES_TESTCASELOADER_HPP_

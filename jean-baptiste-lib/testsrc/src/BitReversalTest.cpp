@@ -8,7 +8,7 @@
 
 #include "tools/BitReversalIndexSwapping.hpp"
 
-namespace JB::Testing {
+namespace jeanbaptiste::testing {
 
 class BitReversalTest
     : public ::testing::Test {
@@ -85,4 +85,4 @@ TEST_F(BitReversalTest, SuccessfullyReversesNumbersOn8BitBase)
     checkReversedOperatingData<double, unsigned char, IndexCount::value>(std::span{data}, std::span{eightBitLookup});
 }
 
-} // namespace JB::Testing
+} // namespace jeanbaptiste::testing
