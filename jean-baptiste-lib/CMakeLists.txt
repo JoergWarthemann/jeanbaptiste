@@ -74,6 +74,7 @@ add_executable(${LIBRARY_NAME}-googletest
     testsrc/include/TestCaseLoader.hpp
     testsrc/include/WindowingAnalysis.hpp
     testsrc/src/main.cpp
+    testsrc/src/TestCaseLoader.cpp
     )
 
 target_include_directories(${LIBRARY_NAME}-googletest
@@ -88,11 +89,14 @@ target_link_libraries(${LIBRARY_NAME}-googletest
         ${GTEST_LIBRARIES}
     )
 
+target_compile_definitions(${LIBRARY_NAME}-googletest
+    PRIVATE
+        TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/testsrc/test-data"
+    )
+
 add_custom_command(TARGET ${LIBRARY_NAME}-googletest POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${TEST_WORKING_DIR}"
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${TEST_WORKING_DIR}/test-data"
-    COMMAND ${CMAKE_COMMAND} -E copy
-         "${CMAKE_CURRENT_SOURCE_DIR}/testsrc/test-data/*" ${TEST_WORKING_DIR}/test-data
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+         "${CMAKE_CURRENT_SOURCE_DIR}/testsrc/test-data" "${TEST_WORKING_DIR}/test-data"
     )
 
 add_dependencies(build-jean-baptiste-tests

@@ -1,7 +1,7 @@
-#ifndef JEANBAPTISTE_EXECUTABLE_ALGORITHM_HPP_
-#define JEANBAPTISTE_EXECUTABLE_ALGORITHM_HPP_
+#ifndef JEANBAPTISTE_IEXECUTABLE_ALGORITHM_HPP_
+#define JEANBAPTISTE_IEXECUTABLE_ALGORITHM_HPP_
 
-#include <complex>
+#include <span>
 
 namespace jeanbaptiste
 {
@@ -9,7 +9,8 @@ namespace jeanbaptiste
      * Defines a unique interface for dynamic algorithms.
      * @param Complex Complex data type.
      */
-    template <typename Complex = std::complex<double>>
+    template <typename Complex>
+        requires std::is_floating_point_v<typename Complex::value_type>
     class IExecutableAlgorithm
     {
     public:
@@ -21,4 +22,4 @@ namespace jeanbaptiste
     };
 }
 
-#endif // JEANBAPTISTE_EXECUTABLE_ALGORITHM_HPP_
+#endif // JEANBAPTISTE_IEXECUTABLE_ALGORITHM_HPP_

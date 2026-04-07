@@ -3,44 +3,48 @@
 
 #include <complex>
 #include <memory>
+#include <vector>
 
 #include "IExecutableAlgorithm.hpp"
 #include "AlgorithmResultAnalysis.hpp"
 
-//#include "../include/AlgorithmResultAnalysis.h"
-//#include "../../JeanBaptiste/include/ExecutableAlgorithm.h"
-
 namespace jeanbaptiste::testing {
 
-class AlgorithmFixture
-{
+/** Fixture for executable algorithms.
+    Provides common data and functions for algorithm tests.
+*/
+class AlgorithmFixture {
 protected:
-    using AlgorithmType = std::unique_ptr<IExecutableAlgorithm<std::complex<double>>>;
+    using TAlgorithmType = std::unique_ptr<IExecutableAlgorithm<std::complex<double>>>;
+    using TDataSetType = std::vector<double>;
+    using TComplexDataSetType = std::vector<std::complex<double>>;
 
-	std::vector<std::complex<double>> workingSet_;
-	std::vector<std::complex<double>> expectedOutFFT_;
-	std::vector<std::complex<double>> expectedOutIFFT_;
+	TComplexDataSetType mDataSetA;//mWorkingSet;
+	TComplexDataSetType mDataSetB;//mExpectedOutFFT;
+	//std::vector<std::complex<double>> mExpectedOutIFFT;
 
-	Utilities::AlgorithmResultAnalysis<double> algorithmResult_;
+	//AlgorithmResultAnalysis<double> mAlgorithmResult;
 
 public:
     AlgorithmFixture(void) = default;
     virtual ~AlgorithmFixture(void) = default;
 
-    // TODO: Keep runAlgorithm to execute and check a single algorithm
-    void runAlgorithm(AlgorithmType algorithm)
+    // TODO: Keep verifyAlgorithm to execute and check a single algorithm
+    void verifyAlgorithm(TAlgorithmType algorithm)
     {
         // TODO: do only use a span on workingSet_.
-        algorithm->operator()(&workingSet_[0]);
-        algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);
+        //algorithm->operator()(&mWorkingSet[0]);
+        algorithm->operator()(&mDataSetA[0]);
+        //mAlgorithmResult.checkOutput(mWorkingSet, mExpectedOutFFT);
+        AlgorithmResultAnalysis::compareComplexDataSets(mDataSetA, mDataSetB);
     }
 
     template <typename ...Algorithm>
-    void runAlgorithms(Algorithm ... algorithm)
+    void verifyAlgorithms(Algorithm ... algorithm)
     {
-        runAlgorithm(algorithm ...);
+        verifyAlgorithm(algorithm ...);
     }
-    // void runAlgorithms(AlgorithmType fft, AlgorithmType ifft)
+    // void runAlgorithms(TAlgorithmType fft, TAlgorithmType ifft)
     // {
     //     fft->operator()(&workingSet_[0]);
     //     algorithmResult_.checkOutput(workingSet_, expectedOutFFT_);

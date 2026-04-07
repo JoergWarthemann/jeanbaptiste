@@ -4,9 +4,11 @@
 #include <span>
 
 namespace jeanbaptiste {
-/** Uses CRTP to define a unique interface for compile time sub tasks.
-    \param Derived ... The derived class being used in compile time inheritance.
-    \param Complex ... Complex data type.
+
+/**
+ * Uses CRTP to define a unique interface for compile time sub tasks.
+ * \param Derived ... The derived class being used in compile time inheritance.
+ * \param Complex ... Complex data type.
 */
 template <typename Derived, typename Complex>
 class SubTask {
@@ -21,6 +23,7 @@ public:
         static_cast<Derived*>(this)->operator()(data);
     }
 };
+
 } // namespace jeanbaptiste
 
 #endif // JEANBAPTISTE_SUBTASK_HPP_
