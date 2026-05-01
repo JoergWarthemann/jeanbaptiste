@@ -1,0 +1,35 @@
+CompileFlags:
+  CompilationDatabase: build/Debug
+
+  Remove: 
+    # GCC-specific flags that Clang/clangd cannot understand
+    - "-fmax-errors=*"
+    - "-fprofile-abs-path"
+    - "-frecord-gcc-switches"
+    - "-feliminate-unused-debug-types"
+    - "-fmessage-length=*"
+    - "-fmacro-prefix-map=*"
+    - "-fstack-usage"
+    - "-fconcepts"
+    - "-fno-use-cxa-atexit"
+    # GCC-only warning flags
+    - "-Wno-psabi"
+    # ARM-specific flags only understood by GCC (not clang)
+    - "-mthumb"
+    - "-mthumb-interwork"
+    - "-mapcs-frame"
+    - "-mtpcs-frame"
+    # Linker flags that don't belong in compiler commands
+    - "-Wl,*"
+    - "-s"
+
+Diagnostics:
+  # Don't warn about headers not in compile_commands.json
+  Suppress:
+    - -Wunused-parameter
+
+InlayHints:
+  Enabled: No
+
+Index:
+  Background: Build

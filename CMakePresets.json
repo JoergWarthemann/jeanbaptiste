@@ -1,0 +1,42 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "linux_x86_Debug",
+      "displayName": "Linux x86 Debug",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "linux_x86_Release",
+      "displayName": "Linux x86 Release",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build/Release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux_x86_Debug",
+      "configurePreset": "linux_x86_Debug",
+      "jobs": 6
+    },
+    {
+      "name": "linux_x86_Release",
+      "configurePreset": "linux_x86_Release",
+      "jobs": 6
+    }
+  ]
+}
