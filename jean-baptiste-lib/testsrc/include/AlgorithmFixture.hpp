@@ -32,9 +32,7 @@ public:
     // TODO: Keep verifyAlgorithm to execute and check a single algorithm
     void verifyAlgorithm(TAlgorithmType algorithm)
     {
-        // TODO: do only use a span on workingSet_.
-        //algorithm->operator()(&mWorkingSet[0]);
-        algorithm->operator()(&mDataSetA[0]);
+        algorithm->operator()(mDataSetA);
         //mAlgorithmResult.checkOutput(mWorkingSet, mExpectedOutFFT);
         AlgorithmResultAnalysis::compareComplexDataSets(mDataSetA, mDataSetB);
     }

@@ -10,8 +10,8 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
 # Set the output folder for executable files.
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-# Use C++17.
-set(CMAKE_CXX_STANDARD 17)
+# Use C++23.
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set the main include directory.

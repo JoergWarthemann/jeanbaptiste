@@ -14,11 +14,8 @@ namespace jeanbaptiste
     class IExecutableAlgorithm
     {
     public:
-        virtual ~IExecutableAlgorithm()
-        {}
-
-        virtual void operator()(Complex* data) const
-        {}
+        virtual ~IExecutableAlgorithm() = default;
+        virtual void operator()(std::span<Complex> data) const = 0;
     };
 }
 

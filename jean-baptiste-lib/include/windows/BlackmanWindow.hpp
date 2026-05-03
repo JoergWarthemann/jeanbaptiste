@@ -1,66 +1,64 @@
-#pragma once
+#ifndef JEANBAPTISTE_WINDOWING_BLACKMANWINDOW_HPP_
+#define JEANBAPTISTE_WINDOWING_BLACKMANWINDOW_HPP_
 
-#include "../basic/Abs.h"
-#include "../basic/SineCosine.h"
-#include <boost/math/constants/constants.hpp>
-#include "ExecuteWindowOnComplexData.h"
-#include <functional>
-#include <iostream>
-#include "../SubTask.h"
+#include <algorithm>
+#include <array>
+#include <numbers>
+#include <span>
 
-namespace constants = boost::math::constants;
+#include "tools/SineCosine.hpp"
+#include "tools/SubTask.hpp"
+#include "windows/ExecuteWindowOnComplexData.hpp"
 
-namespace jeanbaptiste::windowing
-{
-    template <typename SampleCnt,
-              typename Complex>
-    class BlackmanWindow
-        : public SubTask<BlackmanWindow<SampleCnt, Complex>,
-                         Complex>
+namespace jeanbaptiste::windowing {
+
+template <typename SampleCnt, typename Complex>
+class BlackmanWindow
+    : public SubTask<BlackmanWindow<SampleCnt, Complex>, Complex> {
+public:
+    /**
+     * Fills the internal vector with values that represent a Blackman window within SampleCnt samples.
+     *
+     *  1
+     *             .
+     *          .......                                  / 2Pi * n \               / 4Pi * n \
+     *         .........         w(n) = 0.42 - 0.5 * cos|  ——————— | + 0.08 * cos |  ——————— |
+     *        ...........                                \    N    /               \    N    /
+     *       .............
+     *     .................
+     *  +————————————————————
+     *  0                    N-1
+     */
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
-        using ValueType = typename Complex::value_type;
+        std::transform(data.begin(), data.end(), mWindowSamples.begin(), data.begin(), ExecuteWindowOnComplexData<Complex>());
+    }
 
-        static constexpr ValueType createSample(const std::size_t index)
-        {
-            return 0.42
-                 - 0.5  * jeanbaptiste::basic::cosine<double>(kTwoPiDividedBySampleCnt  * index)
-                 + 0.08 * jeanbaptiste::basic::cosine<double>(kFourPiDividedBySampleCnt * index);
-        }
+private:
+    using ValueType = typename Complex::value_type;
 
-        template<std::size_t... Indices>
-        static constexpr auto createWindowSamples(std::index_sequence<Indices...>)
-        {
-            return std::array<ValueType, sizeof...(Indices)>
-            {
-                createSample(Indices)...
-            };
-        }
+    static consteval ValueType createSample(const std::size_t index)
+    {
+        return 0.42 - 0.5 * tools::cosine<double>(kTwoPiDividedBySampleCnt * index) + 0.08 * tools::cosine<double>(kFourPiDividedBySampleCnt * index);
+    }
 
-        static constexpr auto getWindowSamples(void)
-        {
-            return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
-        }
+    template <std::size_t... Indices>
+    static consteval auto createWindowSamples(std::index_sequence<Indices...>)
+    {
+        return std::array<ValueType, sizeof...(Indices)>{
+            createSample(Indices)...};
+    }
 
-        static constexpr double kTwoPiDividedBySampleCnt = 2.0 * constants::pi<double>() / SampleCnt::value;
-        static constexpr double kFourPiDividedBySampleCnt = 2.0 * kTwoPiDividedBySampleCnt;
-        static constexpr auto windowSamples_ = getWindowSamples();
+    static consteval auto getWindowSamples(void)
+    {
+        return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
+    }
 
-    public:
-        /** Fills the internal vector with values that represent a Blackman window within SampleCnt samples.
-            
-            1
-                       .
-                    .......                                  / 2Pi * n \               / 4Pi * n \
-                   .........         w(n) = 0.42 - 0.5 * cos|  ——————— | + 0.08 * cos |  ——————— |
-                  ...........                                \    N    /               \    N    /
-                 .............
-               .................
-            +————————————————————
-            0                    N-1
-		*/
-        void operator()(Complex* data) const
-        {
-            std::transform(data, data + SampleCnt::value, windowSamples_.begin(),data, ExecuteWindowOnComplexData<Complex>());
-        }
-    };
-}
+    static constexpr double kTwoPiDividedBySampleCnt = 2.0 * std::numbers::pi / SampleCnt::value;
+    static constexpr double kFourPiDividedBySampleCnt = 2.0 * kTwoPiDividedBySampleCnt;
+    static constexpr auto mWindowSamples = getWindowSamples();
+};
+
+} // namespace jeanbaptiste::windowing
+
+#endif // JEANBAPTISTE_WINDOWING_BLACKMANWINDOW_HPP_

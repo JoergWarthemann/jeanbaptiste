@@ -1,63 +1,65 @@
-#pragma once
+#ifndef JEANBAPTISTE_WINDOWING_COSINEWINDOW_HPP_
+#define JEANBAPTISTE_WINDOWING_COSINEWINDOW_HPP_
 
-#include "../basic/Abs.h"
-#include "../basic/SineCosine.h"
+#include <algorithm>
+#include <array>
+#include <span>
+
 #include <boost/math/constants/constants.hpp>
-#include "ExecuteWindowOnComplexData.h"
-#include <functional>
-#include <iostream>
-#include "../SubTask.h"
 
-namespace constants = boost::math::constants;
+#include "tools/SineCosine.hpp"
+#include "tools/SubTask.hpp"
+#include "windows/ExecuteWindowOnComplexData.hpp"
 
-namespace jeanbaptiste::windowing
-{
-    template <typename SampleCnt,
-              typename Complex>
-    class CosineWindow
-        : public SubTask<CosineWindow<SampleCnt, Complex>,
-                         Complex>
+namespace jeanbaptiste::windowing {
+
+template <typename SampleCnt, typename Complex>
+class CosineWindow
+    : public SubTask<CosineWindow<SampleCnt, Complex>, Complex> {
+public:
+    /**
+     * Fills the internal vector with values that represent a cosine window within SampleCnt samples.
+     *
+     *
+     *  1
+     *             ...
+     *          .........                      / Pi * n    Pi \
+     *        .............         w(n) = cos|  ——————— - —— |
+     *      .................                  \    N       2 /
+     *     ...................
+     *    .....................
+     *  +———————————————————————
+     *  0                      N-1
+     */
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
-        using ValueType = typename Complex::value_type;
+        std::transform(data.begin(), data.end(), mWindowSamples.begin(), data.begin(), ExecuteWindowOnComplexData<Complex>());
+    }
 
-        static constexpr ValueType createSample(const std::size_t index)
-        {
-            return jeanbaptiste::basic::cosine<double>(kPiDividedBySampleCnt  * index - constants::half_pi<double>());
-        }
+private:
+    using ValueType = typename Complex::value_type;
 
-        template<std::size_t... Indices>
-        static constexpr auto createWindowSamples(std::index_sequence<Indices...>)
-        {
-            return std::array<ValueType, sizeof...(Indices)>
-            {
-                createSample(Indices)...
-            };
-        }
+    static consteval ValueType createSample(const std::size_t index)
+    {
+        return tools::cosine<double>(kPiDividedBySampleCnt * index - boost::math::constants::half_pi<double>());
+    }
 
-        static constexpr auto getWindowSamples(void)
-        {
-            return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
-        }
+    template <std::size_t... Indices>
+    static consteval auto createWindowSamples(std::index_sequence<Indices...>)
+    {
+        return std::array<ValueType, sizeof...(Indices)>{
+            createSample(Indices)...};
+    }
 
-        static constexpr double kPiDividedBySampleCnt = constants::pi<double>() / SampleCnt::value;
-        static constexpr auto windowSamples_ = getWindowSamples();
+    static consteval auto getWindowSamples(void)
+    {
+        return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
+    }
 
-    public:
-        /** Fills the internal vector with values that represent a cosine window within SampleCnt samples.
-            
-            1
-                       ...
-                    .........                      / Pi * n    Pi \
-                  .............         w(n) = cos|  ——————— - —— |
-                .................                  \    N       2 /
-               ...................
-              .....................
-            +———————————————————————
-            0                      N-1
-		*/
-        void operator()(Complex* data) const
-        {
-            std::transform(data, data + SampleCnt::value, windowSamples_.begin(),data, ExecuteWindowOnComplexData<Complex>());
-        }
-    };
-}
+    static constexpr double kPiDividedBySampleCnt = boost::math::constants::pi<double>() / SampleCnt::value;
+    static constexpr auto mWindowSamples = getWindowSamples();
+};
+
+} // namespace jeanbaptiste::windowing
+
+#endif // JEANBAPTISTE_WINDOWING_COSINEWINDOW_HPP_

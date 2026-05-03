@@ -2,6 +2,7 @@
 #define JEANBAPTISTE_BASIC_SINECOSINE_HPP_
 
 #include <boost/math/constants/constants.hpp>
+#include <type_traits>
 
 /**
  * std::decay returns the underlying type by removing reference and const.
@@ -13,7 +14,7 @@
 
 namespace constants = boost::math::constants;
 
-namespace jeanbaptiste::basic {
+namespace jeanbaptiste::tools {
 namespace internal {
 
 /**
@@ -75,6 +76,6 @@ constexpr std::decay_t<T> cosine(const T x)
     // It differs when dealing with 4 or 8 byte datatypes respecting rounding errors.
     return internal::createHornerPolynomial<T>(1, (sizeof(T) > 4) ? 33 : 23, reducedX);
 }
-} // namespace jeanbaptiste::basic
+} // namespace jeanbaptiste::tools
 
 #endif // JEANBAPTISTE_BASIC_SINECOSINE_HPP_

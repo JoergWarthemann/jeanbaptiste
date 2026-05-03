@@ -1,61 +1,62 @@
-#pragma once
+#ifndef JEANBAPTISTE_WINDOWING_BARTLETTWINDOW_HPP_
+#define JEANBAPTISTE_WINDOWING_BARTLETTWINDOW_HPP_
 
-#include "../basic/Abs.h"
-#include "../basic/SineCosine.h"
-#include "ExecuteWindowOnComplexData.h"
-#include <functional>
-#include <iostream>
-#include "../SubTask.h"
+#include <algorithm>
+#include <array>
+#include <span>
 
-namespace jeanbaptiste::windowing
-{
-    template <typename SampleCnt,
-              typename Complex>
-    class BartlettWindow
-        : public SubTask<BartlettWindow<SampleCnt, Complex>,
-                         Complex>
+#include "tools/Abs.hpp"
+#include "tools/SubTask.hpp"
+#include "windows/ExecuteWindowOnComplexData.hpp"
+
+namespace jeanbaptiste::windowing {
+template <typename SampleCnt, typename Complex>
+class BartlettWindow
+    : public SubTask<BartlettWindow<SampleCnt, Complex>, Complex> {
+public:
+    /**
+     * Fills the internal vector with values that represent a Bartlett window within SampleCnt samples.
+     *
+     *  1
+     *                .                                 N
+     *              .....                         | n - — |
+     *            .........                             2
+     *          .............          w(n) = 1 - —————————
+     *        .................                       N
+     *      .....................                     —
+     *    .........................                   2
+     *  +———————————————————————————
+     *  0                        N-1
+     */
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
-        using ValueType = typename Complex::value_type;
+        std::transform(data.begin(), data.end(), mWindowSamples.begin(), data.begin(), ExecuteWindowOnComplexData<Complex>());
+    }
 
-        static constexpr ValueType createSample(const std::size_t index)
-        {
-            return 1.0 - basic::abs<ValueType>(index - static_cast<ValueType>(kHalfSampleCnt_)) / kHalfSampleCnt_;
-        }
+private:
+    using ValueType = typename Complex::value_type;
 
-        template<std::size_t... Indices>
-        static constexpr auto createWindowSamples(std::index_sequence<Indices...>)
-        {
-            return std::array<ValueType, sizeof...(Indices)>
-            {
-                createSample(Indices)...
-            };
-        }
+    static consteval ValueType createSample(const std::size_t index)
+    {
+        return 1.0 - tools::abs<ValueType>(index - static_cast<ValueType>(kHalfSampleCnt)) / kHalfSampleCnt;
+    }
 
-        static constexpr auto getWindowSamples(void)
-        {
-            return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
-        }
+    template <std::size_t... Indices>
+    static consteval auto createWindowSamples(std::index_sequence<Indices...>)
+    {
+        return std::array<ValueType, sizeof...(Indices)>{
+            createSample(Indices)...};
+    }
 
-        static constexpr unsigned kHalfSampleCnt_ = SampleCnt::value >> 1;
-        static constexpr auto windowSamples_ = getWindowSamples();
+    static consteval auto getWindowSamples(void)
+    {
+        return createWindowSamples(std::make_index_sequence<SampleCnt::value>{});
+    }
 
-    public:
-        /** Fills the internal vector with values that represent a Bartlett window within SampleCnt samples.
+    static constexpr unsigned kHalfSampleCnt = SampleCnt::value >> 1;
+    static constexpr auto mWindowSamples = getWindowSamples();
+};
 
-            1
-                          .                                 N
-                        .....                         | n - — |
-                      .........                             2
-                    .............          w(n) = 1 - —————————
-                  .................                       N
-                .....................                     —
-              .........................                   2
-            +———————————————————————————
-            0                        N-1
-		*/
-        void operator()(Complex* data) const
-        {
-            std::transform(data, data + SampleCnt::value, windowSamples_.begin(),data, ExecuteWindowOnComplexData<Complex>());
-        }
-    };
-}
+} // namespace jeanbaptiste::windowing
+
+#endif // JEANBAPTISTE_WINDOWING_BARTLETTWINDOW_HPP_

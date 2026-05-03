@@ -18,11 +18,11 @@ namespace jeanbaptiste::core {
  * \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
  * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
  * \param Complex ... The complex type.
-*/
-template<typename SampleCnt, typename DirectionFactor, typename Complex>
+ */
+template <typename SampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<SampleCnt> &&
-        std::is_integral_v<DirectionFactor> &&
-        std::is_floating_point_v<typename Complex::value_type>
+    std::is_integral_v<DirectionFactor> &&
+    std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT
     : public SubTask<Radix2DIT<SampleCnt, DirectionFactor, Complex>, Complex> {
 public:
@@ -36,7 +36,7 @@ private:
     {
         using ValueType = typename Complex::value_type;
 
-        // dualNodeDistance is the distance between elements (successive nodes) of a 
+        // dualNodeDistance is the distance between elements (successive nodes) of a
         // dual tuple, e.g. ..., 8, 4, 2, 1.
         auto dualNodeDistance = SampleCnt::value >> 1;
 
@@ -48,17 +48,16 @@ private:
         constexpr Complex twiddleMultiplier(
             static_cast<ValueType>(
                 -2.0 *
-                basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) *
-                basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                tools::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) *
+                tools::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
             static_cast<ValueType>(
                 DirectionFactor::value *
-                basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
+                tools::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
         // Create transform factor.
         Complex twiddleFactor(1.0, 0.0);
 
         // Run through dual nodes within the current group.
-        for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0)
-        {
+        for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0) {
             auto idxNode1 = idxNode0 + dualNodeDistance;
             // DIT radix-2 butterfly:
             // X[r]          = G[r] + H[r] * W^r
@@ -71,7 +70,7 @@ private:
             // node1: add prod of node2 and twiddle factor.
             // node2: diff of node1 - prod of node2 and twiddle factor.
             Complex product(twiddleFactor * data[idxNode1]);
-            data[idxNode1]  = data[idxNode0] - product;
+            data[idxNode1] = data[idxNode0] - product;
             data[idxNode0] += product;
 
             // Calculate the next transform factor via trigonometric recurrence.
@@ -86,20 +85,20 @@ private:
 /**
  * Specialization for case SampleCnt=4, direction=1 (forward).
  * \param Complex ... The complex type.
-*/
-template<typename Complex>
+ */
+template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
     : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 4u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
     {
-        // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since 
+        // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
         // Nodes 0 and 1.
         auto temp = data[groupNodeIdx + 1];
@@ -120,7 +119,7 @@ public:
         data[groupNodeIdx + 2] = data[groupNodeIdx] - temp;
         data[groupNodeIdx] += temp;
 
-        // 2nd stage butterfly between sequent nodes (distance: 2) - multiplication with twiddle factor of -j 
+        // 2nd stage butterfly between sequent nodes (distance: 2) - multiplication with twiddle factor of -j
         // results in a -90° rotation of the complex vector in the complex plane.
         // Nodes 1 and 3.
         temp.real(-data[groupNodeIdx + 3].imag());
@@ -136,20 +135,20 @@ private:
 /**
  * Specialization for case SampleCnt=4, direction=-1 (backward).
  * \param Complex ... The complex type.
-*/
-template<typename Complex>
+ */
+template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
     : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 4u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
     {
-        // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since 
+        // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
         // Nodes 0 and 1.
         auto temp = data[groupNodeIdx + 1];
@@ -170,14 +169,13 @@ public:
         data[groupNodeIdx + 2] = data[groupNodeIdx] - temp;
         data[groupNodeIdx] += temp;
 
-        // 2nd stage butterfly between sequent nodes (distance: 2) - multiplication with twiddle factor of -j 
+        // 2nd stage butterfly between sequent nodes (distance: 2) - multiplication with twiddle factor of -j
         // results in a -90° rotation of the complex vector in the complex plane.
         // Nodes 1 and 3.
         temp.real(data[groupNodeIdx + 3].imag());
         temp.imag(-data[groupNodeIdx + 3].real());
         data[groupNodeIdx + 3] = data[groupNodeIdx + 1] - temp;
         data[groupNodeIdx + 1] += temp;
-
     }
 
 private:
@@ -188,21 +186,21 @@ private:
  * Specialization for case SampleCnt=2.
  * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
  * \param Complex ... The complex type.
-*/
-template<typename DirectionFactor, typename Complex>
+ */
+template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<DirectionFactor> &&
-        std::is_floating_point_v<typename Complex::value_type>
+    std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
     : public SubTask<Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 2u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, 2u> data, unsigned groupNodeIdx = 0) const
     {
-        // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle 
+        // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle
         // factor is 1.
         auto temp = data[groupNodeIdx + 1];
         data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
@@ -217,36 +215,35 @@ private:
  * Specialization for case SampleCnt=1.
  * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
  * \param Complex ... The complex type.
-*/
-template<typename DirectionFactor, typename Complex>
+ */
+template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<DirectionFactor> &&
-        std::is_floating_point_v<typename Complex::value_type>
+    std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
     : public SubTask<Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 1u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value>, unsigned) const
+    void apply(std::span<Complex, 1u>, unsigned) const
     {}
 
 private:
     using SampleCnt = std::integral_constant<unsigned, 1>;
 };
 
-
 /**
  * Performs a radix 2 decimation in frequency FFT using template metaprogramming.
  * \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
  * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
  * \param Complex ... The complex type.
-*/
-template<typename SampleCnt, typename DirectionFactor, typename Complex>
+ */
+template <typename SampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<SampleCnt> &&
-        std::is_integral_v<DirectionFactor> &&
-        std::is_floating_point_v<typename Complex::value_type>
+    std::is_integral_v<DirectionFactor> &&
+    std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF
     : public SubTask<Radix2DIF<SampleCnt, DirectionFactor, Complex>, Complex> {
 public:
@@ -259,7 +256,7 @@ public:
     {
         using ValueType = typename Complex::value_type;
 
-        // dualNodeDistance is the distance between elements (successive nodes) of a 
+        // dualNodeDistance is the distance between elements (successive nodes) of a
         // dual tuple, e.g. ..., 8, 4, 2, 1.
         auto dualNodeDistance = SampleCnt::value >> 1;
 
@@ -267,17 +264,16 @@ public:
         constexpr Complex twiddleMultiplier(
             static_cast<ValueType>(
                 -2.0 *
-                basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) *
-                basic::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
+                tools::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>()) *
+                tools::sine<ValueType>(1.0 / SampleCnt::value * constants::pi<ValueType>())),
             static_cast<ValueType>(
                 DirectionFactor::value *
-                basic::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
+                tools::sine<ValueType>(2.0 / SampleCnt::value * constants::pi<ValueType>())));
         // Create transform factor.
         Complex twiddleFactor(1.0, 0.0);
 
         // Run through dual nodes within the current group.
-        for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0)
-        {
+        for (auto idxNode0 = groupNodeIdx, idxEnd = (groupNodeIdx + dualNodeDistance); idxNode0 < idxEnd; ++idxNode0) {
             auto idxNode1 = idxNode0 + dualNodeDistance;
             // DIF radix-2 butterfly:
             // g[l] = x[l] + x[l + N/2]
@@ -310,18 +306,18 @@ private:
 /**
  * Specialization for case SampleCnt=4, direction=1 (forward).
  * \param Complex ... The complex type.
-*/
-template<typename Complex>
+ */
+template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
     : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 4u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
@@ -360,8 +356,8 @@ private:
 /**
  * Specialization for case SampleCnt=4, direction=-1 (backward).
  * \param Complex ... The complex type.
-*/
-template<typename Complex>
+ */
+template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<
     std::integral_constant<unsigned, 4>,
@@ -369,12 +365,12 @@ class Radix2DIF<
     Complex>
     : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 4u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
@@ -414,21 +410,21 @@ private:
  * Specialization for case SampleCnt=2.
  * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
  * \param Complex ... The complex type.
-*/
-template<typename DirectionFactor, typename Complex>
+ */
+template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<DirectionFactor> &&
-        std::is_floating_point_v<typename Complex::value_type>
+    std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
     : public SubTask<Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 2u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, 2u> data, unsigned groupNodeIdx = 0) const
     {
-        // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle 
+        // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle
         // factor is 1.
         auto temp = data[groupNodeIdx + 1];
         data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
@@ -443,24 +439,24 @@ private:
  * Specialization for case SampleCnt=1.
  * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
  * \param Complex ... The complex type.
-*/
-template<typename DirectionFactor, typename Complex>
+ */
+template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<DirectionFactor> &&
-        std::is_floating_point_v<typename Complex::value_type>
+    std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
     : public SubTask<Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
 public:
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, 1u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, SampleCnt::value>, unsigned) const
+    void apply(std::span<Complex, 1u>, unsigned) const
     {}
 
 private:
     using SampleCnt = std::integral_constant<unsigned, 1>;
 };
 
-}
+} // namespace jeanbaptiste::core
 #endif // JEANBAPTISTE_RADIX2_HPP_

@@ -30,6 +30,9 @@
 * [x] turn mWorkingSet, mExpectedOutFFT and mExpectedOutIFFT into mInput and mOutput
 * [ ] make Algorithm, AlgorithmFactory, SubTask usable to instantiate Radix2 for tests
 * [ ] replace namespace name "jeanbaptiste" by shorter "jb"
+* [ ] unify usage of std::numbers or the more complete boost::math::constants for pi
+* [x] use clangd
+* [x] update window types
 
 --> rebuild Algorithm.hpp, then AlgorithmFactory - ignore Windowing for now
 --> add radix-4 and split-radix cases to Algorithm

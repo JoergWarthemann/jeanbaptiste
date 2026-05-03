@@ -8,9 +8,9 @@
 
 #include <gtest/gtest.h>
 
-#include "core/Radix2.hpp"
-#include "AlgorithmFixture.hpp"
 #include "AlgorithmFactory.hpp"
+#include "AlgorithmFixture.hpp"
+#include "core/Radix2.hpp"
 
 using namespace testing;
 
@@ -42,21 +42,19 @@ public:
 
 protected:
     bool mInitialized{};
-    //std::vector<std::complex<double>> mDataSetACopy;
+    // std::vector<std::complex<double>> mDataSetACopy;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     Radix2Tests,
     Radix2Test,
     ::testing::Values(
-        Radix2TestConfig{.testFileName = "square pulse (n=64)"}
-    )
-);
+        Radix2TestConfig{.testFileName = "square pulse (n=64)"}));
 
 TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dit)
 {
     mDataSetA.clear();
-    //mDataSetACopy.clear();
+    // mDataSetACopy.clear();
     mDataSetB.clear();
 
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
@@ -65,9 +63,10 @@ TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dit)
         mDataSetA,
         "fft.out",
         mDataSetB));
-    
+
     // Use factory to define algorithm.
-    jeanbaptiste::
+    // jeanbaptiste::
+
     // Run algorithm with mDataSetA
     // Check output against mDataSetB
 }
@@ -75,7 +74,7 @@ TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dit)
 TEST_P(Radix2Test, SuccessfullyCalculatesInverseRadix2Dit)
 {
     mDataSetA.clear();
-    //mDataSetACopy.clear();
+    // mDataSetACopy.clear();
     mDataSetB.clear();
 
     AlgorithmResultAnalysis::initialize(std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
