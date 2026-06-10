@@ -1,5 +1,5 @@
-#ifndef JEANBAPTISTE_BASIC_BITREVERSALINDEXSWAPPING_HPP_
-#define JEANBAPTISTE_BASIC_BITREVERSALINDEXSWAPPING_HPP_
+#ifndef JB_TOOLS_BITREVERSALINDEXSWAPPING_HPP_
+#define JB_TOOLS_BITREVERSALINDEXSWAPPING_HPP_
 
 #include <array>
 #include <span>
@@ -10,7 +10,7 @@
 
 namespace hana = boost::hana;
 
-namespace jeanbaptiste::basic {
+namespace jb::tools {
 /**
  * Applies bit reversal index swapping which brings calculations into the right order before/after having applied a FFT.
  * @param SampleCnt Count of samples used for bit reversal. Masks the significant sequence of bits in a 16 bit number.
@@ -99,6 +99,6 @@ public:
         }
     }
 };
-} // namespace jeanbaptiste::basic
+} // namespace jb::tools
 
-#endif // JEANBAPTISTE_BASIC_BITREVERSALINDEXSWAPPING_HPP_
+#endif // JB_TOOLS_BITREVERSALINDEXSWAPPING_HPP_

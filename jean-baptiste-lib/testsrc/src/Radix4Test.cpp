@@ -11,16 +11,16 @@ using namespace testing;
 
 namespace jb::testing {
 
-struct Radix2TestConfig {
+struct Radix4TestConfig {
     std::string_view testFileName;
     std::size_t stage;
 };
 
-class Radix2Test
-    : public TestWithParam<Radix2TestConfig>
+class Radix4Test
+    : public TestWithParam<Radix4TestConfig>
     , public AlgorithmFixture {
 public:
-    Radix2Test() = default;
+    Radix4Test() = default;
 
     void SetUp() override
     {
@@ -29,15 +29,15 @@ public:
         mInitialized = false;
     }
 
-    ~Radix2Test() override = default;
+    ~Radix4Test() override = default;
 
 protected:
     bool mInitialized{};
 
-    // Use factory to define algorithm Radix-2 DIT FFT algorithms for sample counts 2 ... 256.
+    // Use factory to define algorithm Radix-4 DIT FFT algorithms for sample counts 4 ... 256.
     jb::AlgorithmFactory<
-        1, 8,
-        jb::options::Radix_2,
+        1, 4,
+        jb::options::Radix_4,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Forward,
         jb::options::Window_None,
@@ -45,10 +45,10 @@ protected:
         std::complex<double>>
         mFFTFactory;
 
-    // Use factory to define algorithm Radix-2 DIT IFFT algorithms for sample counts 2 ... 256.
+    // Use factory to define algorithm Radix-4 DIT IFFT algorithms for sample counts 4 ... 256.
     jb::AlgorithmFactory<
-        1, 8,
-        jb::options::Radix_2,
+        1, 4,
+        jb::options::Radix_4,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Backward,
         jb::options::Window_None,
@@ -58,14 +58,12 @@ protected:
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    Radix2Tests,
-    Radix2Test,
+    Radix4Tests,
+    Radix4Test,
     ::testing::Values(
-        Radix2TestConfig{.testFileName = "square pulse (n=64)", .stage = 6},
-        Radix2TestConfig{.testFileName = "square pulse (n=128)", .stage = 7},
-        Radix2TestConfig{.testFileName = "cosine (n=128)", .stage = 7}));
+        Radix4TestConfig{.testFileName = "square pulse (n=64)", .stage = 3}));
 
-TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dit)
+TEST_P(Radix4Test, SuccessfullyCalculatesRadix4Dit)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -76,7 +74,7 @@ TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dit)
     verifyAlgorithm(mFFTFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix2Test, SuccessfullyCalculatesInverseRadix2Dit)
+TEST_P(Radix4Test, SuccessfullyCalculatesInverseRadix4Dit)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -87,7 +85,7 @@ TEST_P(Radix2Test, SuccessfullyCalculatesInverseRadix2Dit)
     verifyAlgorithm(mIFFtFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dif)
+TEST_P(Radix4Test, SuccessfullyCalculatesRadix4Dif)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -98,7 +96,7 @@ TEST_P(Radix2Test, SuccessfullyCalculatesRadix2Dif)
     verifyAlgorithm(mFFTFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix2Test, SuccessfullyCalculatesInverseRadix2Dif)
+TEST_P(Radix4Test, SuccessfullyCalculatesInverseRadix4Dif)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),

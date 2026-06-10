@@ -6,7 +6,7 @@
     "configurations": [
         {
             "type": "cppdbg",
-            "name": "(gdb) start selected target",
+            "name": "Launch x86b(gdb)",
             "cwd": "${workspaceFolder}",
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",

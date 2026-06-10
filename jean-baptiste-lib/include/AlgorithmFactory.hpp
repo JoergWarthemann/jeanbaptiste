@@ -1,4 +1,5 @@
-#pragma once
+#ifndef JB_ALGORITHM_FACTORY_HPP_
+#define JB_ALGORITHM_FACTORY_HPP_
 
 #include <cassert>
 #include <functional>
@@ -13,7 +14,8 @@
 
 namespace hana = boost::hana;
 
-namespace jeanbaptiste {
+namespace jb {
+
 /**
  * A factory for FFT algorithms of different stage. Each stage is used for a certain count of data samples.
  * \param Begin ... The starting index of supported FFT algorithm stages.
@@ -41,7 +43,15 @@ class AlgorithmFactory {
 
         return hana::unpack(stages, [](auto... stage) {
             // return hana::make_map(hana::make_pair(stage, hana::template_<Algorithm>(stage, hana::type_c<Radix>, hana::type_c<Decimation>, hana::type_c<Direction>, hana::type_c<Window>, hana::type_c<Normalization>, hana::type_c<Complex>))...);
-            return hana::make_map(hana::make_pair(stage, hana::type_c<Algorithm<decltype(stage)::value, Radix, Decimation, Direction, Window, Normalization, Complex>>)...);
+            return hana::make_map(hana::make_pair(
+                stage,
+                hana::type_c<Algorithm<decltype(stage)::value,
+                    Radix,
+                    Decimation,
+                    Direction,
+                    Window,
+                    Normalization,
+                    Complex>>)...);
         });
     }
 
@@ -79,4 +89,7 @@ public:
         return callback->second();
     }
 };
-} // namespace jeanbaptiste
+
+} // namespace jb
+
+#endif // JB_ALGORITHM_FACTORY_HPP_

@@ -1,15 +1,14 @@
-#ifndef JEANBAPTISTE_SUBTASK_HPP_
-#define JEANBAPTISTE_SUBTASK_HPP_
+#ifndef JB_SUBTASK_HPP_
+#define JB_SUBTASK_HPP_
 
 #include <span>
 
-namespace jeanbaptiste {
-
+namespace jb::tools {
 /**
  * Uses CRTP to define a unique interface for compile time sub tasks.
  * \param Derived ... The derived class being used in compile time inheritance.
  * \param Complex ... Complex data type.
-*/
+ */
 template <typename Derived, typename Complex>
 class SubTask {
 public:
@@ -24,6 +23,6 @@ public:
     }
 };
 
-} // namespace jeanbaptiste
+} // namespace jb::tools
 
-#endif // JEANBAPTISTE_SUBTASK_HPP_
+#endif // JB_TOOLS_SUBTASK_HPP_

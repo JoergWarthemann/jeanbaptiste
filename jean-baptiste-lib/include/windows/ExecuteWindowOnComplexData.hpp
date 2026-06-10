@@ -1,7 +1,7 @@
-#ifndef JEANBAPTISTE_WINDOWING_EXECUTEWINDOWONCOMPLEXDATA_HPP_
-#define JEANBAPTISTE_WINDOWING_EXECUTEWINDOWONCOMPLEXDATA_HPP_
+#ifndef JB_WINDOWS_EXECUTEWINDOWONCOMPLEXDATA_HPP_
+#define JB_WINDOWS_EXECUTEWINDOWONCOMPLEXDATA_HPP_
 
-namespace jeanbaptiste::windowing {
+namespace jb::windows {
 
 template <typename Complex>
 class ExecuteWindowOnComplexData {
@@ -12,6 +12,6 @@ public:
     }
 };
 
-} // namespace jeanbaptiste::windowing
+} // namespace jb::windows
 
-#endif // JEANBAPTISTE_WINDOWING_EXECUTEWINDOWONCOMPLEXDATA_HPP_
+#endif // JB_WINDOWS_EXECUTEWINDOWONCOMPLEXDATA_HPP_

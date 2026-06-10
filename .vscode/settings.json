@@ -1,4 +1,8 @@
 {
+    "[cpp]": {
+        "editor.formatOnSave": true,
+    },
+    "files.trimTrailingWhitespace": true,
     "cmake.useCMakePresets": "always",
     "cmake.configureOnOpen": true,
     "cmake.buildBeforeRun": true,
@@ -29,21 +33,14 @@
             "statusBarVisibility": "icon"
         }
     },
-    // IntelliSense is handled by clangd (ms-vscode.cmake-tools is kept for debugging)
+    // Clangd replaces the default IntelliSense engine.
     "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.path": "/usr/bin/clangd",
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
-    "editor.formatOnSave": true,
-    // Disable strikethrough for deprecated symbols (e.g. C-style typedef structs from external headers)
-    "editor.semanticTokenColorCustomizations": {
-        "[*]": {
-            "rules": {
-                "*.deprecated": {
-                    "strikeThrough": false
-                }
-            }
-        }
-    },
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    // Prevent displaying “deprecated” symbols as strikethroughs as this significantly reduces readability
+    // and there are many parts of the code (3th party) that cannot be updated.
+    "editor.showDeprecated": false,
     "search.useIgnoreFiles": false,
     "search.exclude": {
         "**/.git/**": true,
@@ -51,88 +48,14 @@
         "**/.cache/**": true
     },
     "files.associations": {
-        "qstring": "cpp",
-        "optional": "cpp",
-        "chrono": "cpp",
-        "mutex": "cpp",
-        "array": "cpp",
-        "atomic": "cpp",
-        "*.tcc": "cpp",
-        "cctype": "cpp",
-        "clocale": "cpp",
-        "cmath": "cpp",
-        "condition_variable": "cpp",
-        "cstddef": "cpp",
-        "cstdint": "cpp",
-        "cstdio": "cpp",
-        "cstdlib": "cpp",
-        "cstring": "cpp",
-        "ctime": "cpp",
-        "cwchar": "cpp",
-        "cwctype": "cpp",
-        "deque": "cpp",
-        "unordered_map": "cpp",
-        "vector": "cpp",
-        "exception": "cpp",
-        "fstream": "cpp",
-        "functional": "cpp",
-        "future": "cpp",
-        "initializer_list": "cpp",
-        "iomanip": "cpp",
-        "iosfwd": "cpp",
-        "iostream": "cpp",
-        "istream": "cpp",
-        "limits": "cpp",
-        "memory": "cpp",
-        "new": "cpp",
-        "ostream": "cpp",
-        "ratio": "cpp",
-        "sstream": "cpp",
-        "stdexcept": "cpp",
-        "streambuf": "cpp",
-        "string_view": "cpp",
-        "system_error": "cpp",
-        "thread": "cpp",
-        "type_traits": "cpp",
-        "tuple": "cpp",
-        "typeinfo": "cpp",
-        "utility": "cpp",
-        "variant": "cpp",
-        "cinttypes": "cpp",
-        "list": "cpp",
-        "map": "cpp",
-        "string": "cpp",
-        "numeric": "cpp",
-        "filesystem": "cpp",
-        "strstream": "cpp",
-        "bit": "cpp",
-        "cstdarg": "cpp",
-        "set": "cpp",
-        "unordered_set": "cpp",
-        "bitset": "cpp",
-        "complex": "cpp",
-        "typeindex": "cpp",
-        "shared_mutex": "cpp",
-        "csignal": "cpp",
-        "random": "cpp",
-        "semaphore": "cpp",
-        "charconv": "cpp",
-        "codecvt": "cpp",
-        "algorithm": "cpp",
-        "iterator": "cpp",
-        "memory_resource": "cpp",
-        "regex": "cpp",
-        "compare": "cpp",
-        "concepts": "cpp",
-        "numbers": "cpp",
-        "stop_token": "cpp",
-        "any": "cpp",
-        "ranges": "cpp",
-        "source_location": "cpp",
-        "coroutine": "cpp",
+        "*.cpp.in": "cpp",
+        "*.hpp.in": "cpp",
+        // Inline include files
         "*.inc": "cpp",
+        // Template implementation files
         "*.ipp": "cpp",
-        "qfontdatabase": "cpp"
+        // GCC Template implementation files (included by standard library headers)
+        "*.tcc": "cpp"
     },
     "files.exclude": {
         "**/.git/**": true,
@@ -143,6 +66,12 @@
         {
             "column": 120,
             "color": "#9c9c9c"
+        }
+    ],
+    "testMate.cpp.test.advancedExecutables": [
+        {
+            "name": "jb lib tests",
+            "pattern": "${workspaceFolder}/build/Debug/jean-baptiste-lib/*{test,Test,TEST,googletest}"
         }
     ]
 }

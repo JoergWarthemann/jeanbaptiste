@@ -8,7 +8,7 @@
 
 #include "tools/BitReversalIndexSwapping.hpp"
 
-namespace jeanbaptiste::testing {
+namespace jb::testing {
 
 class BitReversalTest
     : public ::testing::Test {
@@ -40,11 +40,9 @@ public:
 
 TEST_F(BitReversalTest, SuccessfullyReversesNumbersOn4BitBase)
 {
-    using namespace jeanbaptiste::basic;
-
     typedef std::integral_constant<int, 16> IndexCount;
 
-    constexpr BitReversalIndexSwapping<typename decltype(IndexCount{})::type, std::complex<double>> bitReversal{};
+    constexpr tools::BitReversalIndexSwapping<typename decltype(IndexCount{})::type, std::complex<double>> bitReversal{};
     auto data = generateOperatingData<double, IndexCount::value>();
     bitReversal(data);
 
@@ -56,11 +54,9 @@ TEST_F(BitReversalTest, SuccessfullyReversesNumbersOn4BitBase)
 
 TEST_F(BitReversalTest, SuccessfullyReversesNumbersOn8BitBase)
 {
-    using namespace jeanbaptiste::basic;
-
     typedef std::integral_constant<int, 256> IndexCount;
 
-    constexpr BitReversalIndexSwapping<typename decltype(IndexCount{})::type, std::complex<double>> bitReversal{};
+    constexpr tools::BitReversalIndexSwapping<typename decltype(IndexCount{})::type, std::complex<double>> bitReversal{};
     auto data = generateOperatingData<double, IndexCount::value>();
     bitReversal(data);
 
@@ -85,4 +81,4 @@ TEST_F(BitReversalTest, SuccessfullyReversesNumbersOn8BitBase)
     checkReversedOperatingData<double, unsigned char, IndexCount::value>(std::span{data}, std::span{eightBitLookup});
 }
 
-} // namespace jeanbaptiste::testing
+} // namespace jb::testing

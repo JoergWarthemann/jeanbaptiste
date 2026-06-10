@@ -1,5 +1,5 @@
-#ifndef JEANBAPTISTE_WINDOWING_COSINEWINDOW_HPP_
-#define JEANBAPTISTE_WINDOWING_COSINEWINDOW_HPP_
+#ifndef JB_WINDOWS_COSINEWINDOW_HPP_
+#define JB_WINDOWS_COSINEWINDOW_HPP_
 
 #include <algorithm>
 #include <array>
@@ -11,11 +11,11 @@
 #include "tools/SubTask.hpp"
 #include "windows/ExecuteWindowOnComplexData.hpp"
 
-namespace jeanbaptiste::windowing {
+namespace jb::windows {
 
 template <typename SampleCnt, typename Complex>
 class CosineWindow
-    : public SubTask<CosineWindow<SampleCnt, Complex>, Complex> {
+    : public tools::SubTask<CosineWindow<SampleCnt, Complex>, Complex> {
 public:
     /**
      * Fills the internal vector with values that represent a cosine window within SampleCnt samples.
@@ -60,6 +60,6 @@ private:
     static constexpr auto mWindowSamples = getWindowSamples();
 };
 
-} // namespace jeanbaptiste::windowing
+} // namespace jb::windows
 
-#endif // JEANBAPTISTE_WINDOWING_COSINEWINDOW_HPP_
+#endif // JB_WINDOWS_COSINEWINDOW_HPP_

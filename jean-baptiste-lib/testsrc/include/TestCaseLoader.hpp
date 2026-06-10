@@ -1,5 +1,5 @@
-#ifndef JEANBAPTISTE_TESTING_TESTCASELOADER_HPP_
-#define JEANBAPTISTE_TESTING_TESTCASELOADER_HPP_
+#ifndef JB_TESTING_TESTCASELOADER_HPP_
+#define JB_TESTING_TESTCASELOADER_HPP_
 
 #include <charconv>
 #include <complex>
@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-namespace jeanbaptiste::testing {
+namespace jb::testing {
 
 inline std::string_view trim(std::string_view str)
 {
@@ -18,17 +18,17 @@ inline std::string_view trim(std::string_view str)
     if (start == std::string_view::npos) {
         return std::string_view(); // All whitespace
     }
-    
+
     auto end = str.find_last_not_of(" \t\n\r\f\v");
-    
+
     return str.substr(start, end - start + 1);
 }
 
 /**
  * Converts a single string with 2 numbers into a complex number.
  * \param line ... The string.
-*/
-template<typename T>
+ */
+template <typename T>
 inline std::pair<T, T> extractComplexArguments(std::string_view line)
 {
     line = trim(line);
@@ -53,8 +53,8 @@ inline std::pair<T, T> extractComplexArguments(std::string_view line)
 /**
  * Converts a single string with 1 number into a number.
  * \param line ... The string.
-*/
-template<typename T>
+ */
+template <typename T>
 inline T extractRealNumber(std::string& line)
 {
     T result = T(0);
@@ -80,7 +80,7 @@ public:
      * \param dataSetA ... The data set A.
      * \param tagB ... Identifier of data set B.
      * \param dataSetB ... The data set B.
-    */
+     */
     bool getData(std::string_view tagA, std::vector<std::complex<double>>& dataSetA, std::string_view tagB,
         std::vector<std::complex<double>>& dataSetB);
 
@@ -90,7 +90,7 @@ public:
      * \param dataSetA ... The data set A.
      * \param tagB ... Identifier of data set B.
      * \param dataSetB ... The data set B.
-    */
+     */
     bool getData(std::string_view tagA, std::vector<double>& dataSetA, std::string_view tagB,
         std::vector<double>& dataSetB);
 
@@ -98,6 +98,6 @@ private:
     std::filesystem::path mFile{};
 };
 
-}
+} // namespace jb::testing
 
-#endif // JEANBAPTISTE_TESTING_TESTCASELOADER_HPP_
+#endif // JB_TESTING_TESTCASELOADER_HPP_

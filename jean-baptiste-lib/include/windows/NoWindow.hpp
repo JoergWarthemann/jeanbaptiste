@@ -1,9 +1,9 @@
-#ifndef JEANBAPTISTE_WINDOWING_NOWINDOW_HPP_
-#define JEANBAPTISTE_WINDOWING_NOWINDOW_HPP_
+#ifndef JB_WINDOWS_NOWINDOW_HPP_
+#define JB_WINDOWS_NOWINDOW_HPP_
 
 #include "tools/SubTask.hpp"
 
-namespace jeanbaptiste::windowing {
+namespace jb::windows {
 
 /**
  * Creates an empty window (rectangular) for a specified sample count.
@@ -12,12 +12,12 @@ namespace jeanbaptiste::windowing {
  */
 template <typename SampleCnt, typename Complex>
 class NoWindow
-    : public SubTask<NoWindow<SampleCnt, Complex>, Complex> {
+    : public tools::SubTask<NoWindow<SampleCnt, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, SampleCnt::value> data) const
     {}
 };
 
-} // namespace jeanbaptiste::windowing
+} // namespace jb::windows
 
-#endif // JEANBAPTISTE_WINDOWING_NOWINDOW_HPP_
+#endif // JB_WINDOWS_NOWINDOW_HPP_

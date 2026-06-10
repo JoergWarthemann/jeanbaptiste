@@ -1,12 +1,12 @@
-#ifndef JEANBAPTISTE_NORMALIZATION_DIVISIONBYLENGTHNORMALIZATION_HPP_
-#define JEANBAPTISTE_NORMALIZATION_DIVISIONBYLENGTHNORMALIZATION_HPP_
+#ifndef JB_NORMALIZATION_DIVISIONBYLENGTHNORMALIZATION_HPP_
+#define JB_NORMALIZATION_DIVISIONBYLENGTHNORMALIZATION_HPP_
 
 #include <span>
 #include <type_traits>
 
 #include "tools/SubTask.hpp"
 
-namespace jeanbaptiste::normalization {
+namespace jb::normalization {
 
 /**
  * Normalizes FFT results by dividing them by the length of the original signal (applying the factor 1/N to all samples).
@@ -15,13 +15,13 @@ namespace jeanbaptiste::normalization {
  * \param SampleCnt ... The count of samples to deal with.
  * \param DenominatorShiftFactor ... Additional shift factor applied to the normalization factors denominator in real FFT backward mode.
  * \param Complex ... Complex data type.
-*/
-template<typename SampleCnt, typename DenominatorShiftFactor, typename Complex>
-requires std::is_integral_v<SampleCnt> &&
-    std::is_integral_v<DenominatorShiftFactor> &&
+ */
+template <typename SampleCnt, typename DenominatorShiftFactor, typename Complex>
+    requires std::is_integral_v<typename SampleCnt::value_type> &&
+    std::is_integral_v<typename DenominatorShiftFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class DivisionByLengthNormalization
-    : public SubTask<DivisionByLengthNormalization<SampleCnt, DenominatorShiftFactor, Complex>, Complex> {
+    : public tools::SubTask<DivisionByLengthNormalization<SampleCnt, DenominatorShiftFactor, Complex>, Complex> {
 public:
     /**
      * Normalizes each element of data with 1/N.
@@ -46,6 +46,6 @@ private:
     }
 };
 
-}
+} // namespace jb::normalization
 
-#endif // JEANBAPTISTE_NORMALIZATION_DIVISIONBYLENGTHNORMALIZATION_HPP_
+#endif // JB_NORMALIZATION_DIVISIONBYLENGTHNORMALIZATION_HPP_

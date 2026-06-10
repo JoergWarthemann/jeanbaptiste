@@ -5,9 +5,9 @@
 * [x] use native cmake
   `/usr/bin/cmake`
 * [x] use native tools (compiler, stdlib)
-* [x] use natively installed gtest -> this is not feasable due to problems caused by a proprietary SDK - deactivate 
+* [x] use natively installed gtest -> this is not feasable due to problems caused by a proprietary SDK - deactivate
       proprietary SDK in cmake-kits.json ion this case
-* [x] unuse proprietary toolchain -> need to add toolchain in order to use the SDKs googletest - deactivate 
+* [x] unuse proprietary toolchain -> need to add toolchain in order to use the SDKs googletest - deactivate
       proprietary SDK in cmake-kits.json ion this case
 * [x] enable use of C++23
 * [x] write tests for range reduction
@@ -15,34 +15,36 @@
 * [ ] consider working in all algorithms on std::span, i.e. forward std::span only?
 * [ ] Replace all #pragma preprocessor commands by #ifdef
 * [x] Rewrite SubTask::operator() to use std::span (rewrite operator() as template function)
-* [ ] modernize Radix2 and Radix2Test
+* [x] modernize Radix2 and Radix2Test
+* [x] make Radix2Test go through all relevant test files
+* [ ] modernize Radix4 and Radix4Test
+* [ ] modernize SplitRadix and SplitRadixTest
 * [x] rewrite AlgorithmFixture.hpp using fold expressions and use it in Radix2Test.cpp
-* [ ] rewrite AlgorithmResultAnalysis.hpp and use it in Radix2Test.cpp to load sample data from files (use ranges)
+* [x] rewrite AlgorithmResultAnalysis.hpp and use it in Radix2Test.cpp to load sample data from files (use ranges)
 * [x] rewrite ExecutableAlgorithm.hpp (prefer = default for destructor?)
 * [ ] override virtual base class destructors and make them default at least
 
 * [x] use std::span for sample range in SubTask::operator()
 * [x] update TestCaseLoader to use std::string_view, std::filesystem
-* [ ] make Radix2Test go through all test files
 * [x] use std::format instead of boost::format
 * [x] use std::span for sample range in Radix2::operator()
 * [ ] use concepts
 * [x] turn mWorkingSet, mExpectedOutFFT and mExpectedOutIFFT into mInput and mOutput
 * [ ] make Algorithm, AlgorithmFactory, SubTask usable to instantiate Radix2 for tests
-* [ ] replace namespace name "jeanbaptiste" by shorter "jb"
+* [x] replace namespace name "jeanbaptiste" by shorter "jb"
 * [ ] unify usage of std::numbers or the more complete boost::math::constants for pi
 * [x] use clangd
 * [x] update window types
 
 --> rebuild Algorithm.hpp, then AlgorithmFactory - ignore Windowing for now
+--> update Radix4 technically like Radix2
 --> add radix-4 and split-radix cases to Algorithm
---> add NoNormalization, SquareRootNormalization, DivisionByLengthNormalization and NoWindow to shortcut functions in Algorithm - add more details later
 
 ------------------------------------------------------------------------------------------------------------------------
 
 std::vector<float> audio_samples = {1.0f, 2.0f, 3.0f, 4.0f};
 
-auto complex_view = audio_samples 
+auto complex_view = audio_samples
                     | std::views::transform( [&](const float& real){
                         return std::complex<float>(real, 0.0f);
                       });
@@ -70,8 +72,8 @@ int main() {
     std::vector<std::complex<float>> complex_samples(audio_samples.size());
 
     // Transform and store the results in the complex_samples vector
-    std::transform(audio_samples.begin(), audio_samples.end(), 
-                   complex_samples.begin(), 
+    std::transform(audio_samples.begin(), audio_samples.end(),
+                   complex_samples.begin(),
                    [](const float& real) {
                        return std::complex<float>(real, 0.0f);
                    });

@@ -1,5 +1,5 @@
-#ifndef JEANBAPTISTE_BASIC_SINECOSINE_HPP_
-#define JEANBAPTISTE_BASIC_SINECOSINE_HPP_
+#ifndef JB_BASIC_SINECOSINE_HPP_
+#define JB_BASIC_SINECOSINE_HPP_
 
 #include <boost/math/constants/constants.hpp>
 #include <type_traits>
@@ -14,7 +14,7 @@
 
 namespace constants = boost::math::constants;
 
-namespace jeanbaptiste::tools {
+namespace jb::tools {
 namespace internal {
 
 /**
@@ -76,6 +76,6 @@ constexpr std::decay_t<T> cosine(const T x)
     // It differs when dealing with 4 or 8 byte datatypes respecting rounding errors.
     return internal::createHornerPolynomial<T>(1, (sizeof(T) > 4) ? 33 : 23, reducedX);
 }
-} // namespace jeanbaptiste::tools
+} // namespace jb::tools
 
-#endif // JEANBAPTISTE_BASIC_SINECOSINE_HPP_
+#endif // JB_BASIC_SINECOSINE_HPP_

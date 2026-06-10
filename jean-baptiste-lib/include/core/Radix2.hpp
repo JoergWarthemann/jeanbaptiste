@@ -1,7 +1,6 @@
-#ifndef JEANBAPTISTE_RADIX2_HPP_
-#define JEANBAPTISTE_RADIX2_HPP_
+#ifndef JB_RADIX2_HPP_
+#define JB_RADIX2_HPP_
 
-#include <complex>
 #include <span>
 
 #include <boost/math/constants/constants.hpp>
@@ -11,7 +10,7 @@
 
 namespace constants = boost::math::constants;
 
-namespace jeanbaptiste::core {
+namespace jb::core {
 
 /**
  * Performs a radix 2 decimation in time FFT using template metaprogramming.
@@ -20,29 +19,28 @@ namespace jeanbaptiste::core {
  * \param Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<SampleCnt> &&
-    std::is_integral_v<DirectionFactor> &&
+    requires std::is_integral_v<typename SampleCnt::value_type> &&
+    std::is_integral_v<typename DirectionFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT
-    : public SubTask<Radix2DIT<SampleCnt, DirectionFactor, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIT<SampleCnt, DirectionFactor, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-private:
     void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         using ValueType = typename Complex::value_type;
 
         // dualNodeDistance is the distance between elements (successive nodes) of a
         // dual tuple, e.g. ..., 8, 4, 2, 1.
-        auto dualNodeDistance = SampleCnt::value >> 1;
+        constexpr auto dualNodeDistance = SampleCnt::value >> 1;
 
         // Recursion goes down. Calculation starts in the last recursion stage with 2 nodes and goes up: 4, 8, ...
-        recursionLevel_.apply(data, groupNodeIdx);
-        recursionLevel_.apply(data, groupNodeIdx + dualNodeDistance);
+        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx, dualNodeDistance));
+        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx + dualNodeDistance, dualNodeDistance));
 
         // Create twiddle factor multiplier for trigonometric recurrence.
         constexpr Complex twiddleMultiplier(
@@ -79,6 +77,7 @@ private:
         }
     }
 
+private:
     Radix2DIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
 };
 
@@ -89,7 +88,7 @@ private:
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
-    : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 4u> data) const
     {
@@ -139,7 +138,7 @@ private:
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
-    : public SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 4u> data) const
     {
@@ -188,10 +187,10 @@ private:
  * \param Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<DirectionFactor> &&
+    requires std::is_integral_v<typename DirectionFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
-    : public SubTask<Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 2u> data) const
     {
@@ -217,17 +216,17 @@ private:
  * \param Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<DirectionFactor> &&
+    requires std::is_integral_v<typename DirectionFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
-    : public SubTask<Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 1u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 1u>, unsigned) const
+    void apply(std::span<Complex, 1u>, unsigned = 0) const
     {}
 
 private:
@@ -241,11 +240,11 @@ private:
  * \param Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<SampleCnt> &&
-    std::is_integral_v<DirectionFactor> &&
+    requires std::is_integral_v<typename SampleCnt::value_type> &&
+    std::is_integral_v<typename DirectionFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF
-    : public SubTask<Radix2DIF<SampleCnt, DirectionFactor, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIF<SampleCnt, DirectionFactor, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, SampleCnt::value> data) const
     {
@@ -258,7 +257,7 @@ public:
 
         // dualNodeDistance is the distance between elements (successive nodes) of a
         // dual tuple, e.g. ..., 8, 4, 2, 1.
-        auto dualNodeDistance = SampleCnt::value >> 1;
+        constexpr auto dualNodeDistance = SampleCnt::value >> 1;
 
         // Create twiddle factor multiplier for trigonometric recurrence.
         constexpr Complex twiddleMultiplier(
@@ -295,8 +294,8 @@ public:
         }
 
         // Recursion goes down. Calculation starts in the last recursion stage with 2 nodes and goes up: 4, 8, ...
-        recursionLevel_.apply(data, groupNodeIdx);
-        recursionLevel_.apply(data, groupNodeIdx + dualNodeDistance);
+        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx, dualNodeDistance));
+        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx + dualNodeDistance, dualNodeDistance));
     }
 
 private:
@@ -310,7 +309,7 @@ private:
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
-    : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 4u> data) const
     {
@@ -363,7 +362,7 @@ class Radix2DIF<
     std::integral_constant<unsigned, 4>,
     std::integral_constant<int, -1>,
     Complex>
-    : public SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 4u> data) const
     {
@@ -412,10 +411,10 @@ private:
  * \param Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<DirectionFactor> &&
+    requires std::is_integral_v<typename DirectionFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
-    : public SubTask<Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 2u> data) const
     {
@@ -441,22 +440,22 @@ private:
  * \param Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<DirectionFactor> &&
+    requires std::is_integral_v<typename DirectionFactor::value_type> &&
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
-    : public SubTask<Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
+    : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
 public:
     void operator()(std::span<Complex, 1u> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 1u>, unsigned) const
+    void apply(std::span<Complex, 1u>, unsigned = 0) const
     {}
 
 private:
     using SampleCnt = std::integral_constant<unsigned, 1>;
 };
 
-} // namespace jeanbaptiste::core
-#endif // JEANBAPTISTE_RADIX2_HPP_
+} // namespace jb::core
+#endif // JB_RADIX2_HPP_

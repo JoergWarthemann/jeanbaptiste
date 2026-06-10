@@ -1,5 +1,5 @@
-#ifndef JEANBAPTISTE_WINDOWING_BARTLETTWINDOW_HPP_
-#define JEANBAPTISTE_WINDOWING_BARTLETTWINDOW_HPP_
+#ifndef JB_WINDOWS_BARTLETTWINDOW_HPP_
+#define JB_WINDOWS_BARTLETTWINDOW_HPP_
 
 #include <algorithm>
 #include <array>
@@ -9,10 +9,11 @@
 #include "tools/SubTask.hpp"
 #include "windows/ExecuteWindowOnComplexData.hpp"
 
-namespace jeanbaptiste::windowing {
+namespace jb::windows {
+
 template <typename SampleCnt, typename Complex>
 class BartlettWindow
-    : public SubTask<BartlettWindow<SampleCnt, Complex>, Complex> {
+    : public tools::SubTask<BartlettWindow<SampleCnt, Complex>, Complex> {
 public:
     /**
      * Fills the internal vector with values that represent a Bartlett window within SampleCnt samples.
@@ -57,6 +58,6 @@ private:
     static constexpr auto mWindowSamples = getWindowSamples();
 };
 
-} // namespace jeanbaptiste::windowing
+} // namespace jb::windows
 
-#endif // JEANBAPTISTE_WINDOWING_BARTLETTWINDOW_HPP_
+#endif // JB_WINDOWS_BARTLETTWINDOW_HPP_
