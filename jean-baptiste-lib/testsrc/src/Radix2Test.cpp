@@ -34,9 +34,9 @@ public:
 protected:
     bool mInitialized{};
 
-    // Use factory to define algorithm Radix-2 DIT FFT algorithms for sample counts 2 ... 256.
+    // Use factory to define algorithm Radix-2 DIT FFT algorithms for sample counts 64 ... 256.
     jb::AlgorithmFactory<
-        1, 8,
+        6, 8,
         jb::options::Radix_2,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Forward,
@@ -45,9 +45,9 @@ protected:
         std::complex<double>>
         mFFTFactory;
 
-    // Use factory to define algorithm Radix-2 DIT IFFT algorithms for sample counts 2 ... 256.
+    // Use factory to define algorithm Radix-2 DIT IFFT algorithms for sample counts 64 ... 256.
     jb::AlgorithmFactory<
-        1, 8,
+        6, 8,
         jb::options::Radix_2,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Backward,
