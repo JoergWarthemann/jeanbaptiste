@@ -72,10 +72,7 @@
         {
             "name": "jb lib tests",
             "pattern": "${workspaceFolder}/build/Debug/jean-baptiste-lib/*{test,Test,TEST}*",
-            "executableSuffixToInclude": [
-                "googletest"
-            ]
+            "cwd": "${workspaceFolder}"
         }
-    ],
-    "testMate.cpp.discovery.gracePeriodForMissing": 120
+    ]
 }
