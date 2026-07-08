@@ -9,9 +9,9 @@
 #include <boost/hana.hpp>
 
 #include "core/Radix2.hpp"
+#include "core/Radix4.hpp"
 #include "tools/BitReversalIndexSwapping.hpp"
 
-// #include "core/Radix4.h"
 // #include "core/RadixSplit24.h"
 #include "IExecutableAlgorithm.hpp"
 #include "Options.hpp"
@@ -29,18 +29,7 @@
 #include "windows/VonHannWindow.hpp"
 #include "windows/WelchWindow.hpp"
 
-// #include "windowing/BartlettWindow.h"
-// #include "windowing/BlackmanHarrisWindow.h"
-// #include "windowing/BlackmanWindow.h"
-// #include "windowing/CosineWindow.h"
-// #include "windowing/FlatTopWindow.h"
-// #include "windowing/HammingWindow.h"
-// #include "windowing/NoWindow.h"
-// #include "windowing/VonHannWindow.h"
-// #include "windowing/WelchWindow.h"
-
 namespace hana = boost::hana;
-// namespace jbo = jeanbaptiste::options;
 
 namespace jb {
 
@@ -71,8 +60,6 @@ public:
             });
         }
         else {
-            const auto bla1 = data.size();
-            const auto bla2 = R2SampleCnt::value;
             assert(data.size() == R2SampleCnt::value && "The size of the input data must be equal to 2^Stage.");
             hana::for_each(tupleOfSubTasks_, [&](const auto& subTask) {
                 subTask(std::span<Complex, R2SampleCnt::value>(data.data(), R2SampleCnt::value));
@@ -102,34 +89,35 @@ private:
      * Creates a value of the selected window type at compilation time.
      * \return value ... The selected value.
      */
+    template <typename SampleCnt>
     static consteval auto getWindowValue() noexcept
     {
         if constexpr (std::is_same_v<Window, options::Window_Bartlett>) {
-            return windows::BartlettWindow<R2SampleCnt, Complex>{};
+            return windows::BartlettWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_Blackman>) {
-            return windows::BlackmanWindow<R2SampleCnt, Complex>{};
+            return windows::BlackmanWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_BlackmanHarris>) {
-            return windows::BlackmanHarrisWindow<R2SampleCnt, Complex>{};
+            return windows::BlackmanHarrisWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_Cosine>) {
-            return windows::CosineWindow<R2SampleCnt, Complex>{};
+            return windows::CosineWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_FlatTop>) {
-            return windows::FlatTopWindow<R2SampleCnt, Complex>{};
+            return windows::FlatTopWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_Hamming>) {
-            return windows::HammingWindow<R2SampleCnt, Complex>{};
+            return windows::HammingWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_vonHann>) {
-            return windows::VonHannWindow<R2SampleCnt, Complex>{};
+            return windows::VonHannWindow<SampleCnt, Complex>{};
         }
         else if constexpr (std::is_same_v<Window, options::Window_Welch>) {
-            return windows::WelchWindow<R2SampleCnt, Complex>{};
+            return windows::WelchWindow<SampleCnt, Complex>{};
         }
         else {
-            return windows::NoWindow<R2SampleCnt, Complex>{};
+            return windows::NoWindow<SampleCnt, Complex>{};
         }
     }
 
@@ -158,56 +146,58 @@ private:
     {
         if constexpr (std::is_same_v<Decimation, options::Decimation_In_Time>) {
             return hana::make_tuple(
-                decltype(getWindowValue()){},
+                decltype(getWindowValue<R2SampleCnt>()){},
                 tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
                 core::Radix2DIT<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
                 decltype(getRadix2NormalizationValue()){});
         }
         else {
             return hana::make_tuple(
-                decltype(getWindowValue()){},
+                decltype(getWindowValue<R2SampleCnt>()){},
                 core::Radix2DIF<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
                 tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
                 decltype(getRadix2NormalizationValue()){});
         }
     }
 
-    /** Creates a value of the selected normalization type at compilation time.
-        \return value ... The selected value.
-    */
-    // TODO: add radix 4 case.
-    // static consteval auto getRadix4NormalizationValue() noexcept
-    // {
-    //     if constexpr (std::is_same_v<Normalization, jbo::Normalization_Division_By_Length>) {
-    //         return normalization::DivisionByLengthNormalization<R4SampleCnt, std::integral_constant<int, 0>, Complex>{};
-    //     }
-    //     else if constexpr (std::is_same_v<Normalization, jbo::Normalization_Square_Root>) {
-    //         return normalization::SquareRootNormalization<R4SampleCnt, std::integral_constant<int, 0>, Complex>{};
-    //     }
+    /**
+     * Creates a value of the selected normalization type at compilation time.
+     * \return value ... The selected value.
+     */
+    static consteval auto getRadix4NormalizationValue() noexcept
+    {
+        if constexpr (std::is_same_v<Normalization, options::Normalization_Division_By_Length>) {
+            return normalization::DivisionByLengthNormalization<R4SampleCnt, std::integral_constant<int, 0>, Complex>{};
+        }
+        else if constexpr (std::is_same_v<Normalization, options::Normalization_Square_Root>) {
+            return normalization::SquareRootNormalization<R4SampleCnt, std::integral_constant<int, 0>, Complex>{};
+        }
+        else {
+            return normalization::NoNormalization<R4SampleCnt, Complex>{};
+        }
+    }
 
-    //     return normalization::NoNormalization<R4SampleCnt, Complex>{};
-    // }
-
-    /** Creates a tupel of sub task type values belonging to a radix 4 task at compilation time.
-        \return hana::tuple ... A tuple of sub task type values.
-    */
-    // TODO: add radix 4 case.
-    // static consteval auto radix4SubTaskTypeValues() noexcept
-    // {
-    //     if constexpr (std::is_same_v<Decimation, jbo::Decimation_In_Time>) {
-    //         return hana::make_tuple(
-    //             decltype(getWindowValue()){},
-    //             basic::BitReversalIndexSwapping<R4SampleCnt, Complex>{},
-    //             core::Radix4DIT<R4SampleCnt, decltype(getDirectionValue()), Complex>{},
-    //             decltype(getRadix4NormalizationValue()){});
-    //     }
-
-    //     return hana::make_tuple(
-    //         decltype(getWindowValue()){},
-    //         core::Radix4DIF<R4SampleCnt, decltype(getDirectionValue()), Complex>{},
-    //         basic::BitReversalIndexSwapping<R4SampleCnt, Complex>{},
-    //         decltype(getRadix4NormalizationValue()){});
-    // }
+    /**
+     * Creates a tupel of sub task type values belonging to a radix-4 FFT task at compilation time.
+     * \return hana::tuple ... A tuple of sub task type values.
+     */
+    static consteval auto radix4SubTaskTypeValues() noexcept
+    {
+        if constexpr (std::is_same_v<Decimation, options::Decimation_In_Time>) {
+            return hana::make_tuple(
+                decltype(getWindowValue<R4SampleCnt>()){},
+                tools::BitReversalIndexSwapping<R4SampleCnt, Complex>{},
+                core::Radix4DIT<R4SampleCnt, decltype(getDirectionValue()), Complex>{},
+                decltype(getRadix4NormalizationValue()){});
+        }
+        else {
+            return hana::make_tuple(
+                decltype(getWindowValue<R4SampleCnt>()){},
+                core::Radix4DIF<R4SampleCnt, decltype(getDirectionValue()), Complex>{},
+                tools::BitReversalIndexSwapping<R4SampleCnt, Complex>{},
+                decltype(getRadix4NormalizationValue()){});
+        }
+    }
 
     /** Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
         \return hana::tuple ... A tuple of sub task type values.
@@ -230,19 +220,20 @@ private:
     //         decltype(getRadix2NormalizationValue()){});
     // }
 
-    /** Creates a tupel of sub task type values at compilation time. Sub tasks belong to a FFT task.
-        \return hana::tuple ... A tuple of sub task type values.
-    */
+    /**
+     * Creates a tupel of sub task type values at compilation time. Sub tasks belong to a FFT task.
+     * \return hana::tuple ... A tuple of sub task type values.
+     */
     static consteval auto createTupleOfSubTaskTypeValues() noexcept
     {
         if constexpr (std::is_same_v<Radix, options::Radix_2>) {
             return radix2SubTaskTypeValues();
         }
-        // TODO: add radix 4 and split radix 2-4 cases.
-        // else if constexpr (std::is_same_v<Radix, jbo::Radix_4>) {
-        //     return radix4SubTaskTypeValues();
-        // }
+        else if constexpr (std::is_same_v<Radix, options::Radix_4>) {
+            return radix4SubTaskTypeValues();
+        }
 
+        // TODO: add split radix 2-4 case.
         // return radixSplit24SubtaskTypeValues();
     }
 

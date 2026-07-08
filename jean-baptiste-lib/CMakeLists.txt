@@ -66,6 +66,7 @@ add_executable(${LIBRARY_NAME}-googletest
     ${JEAN_BAPTISTE_LIB_SOURCES}
     testsrc/src/BitReversalTest.cpp
     testsrc/src/Radix2Test.cpp
+    testsrc/src/Radix4Test.cpp
     testsrc/src/SinCosTest.cpp
 
     testsrc/include/AlgorithmFixture.hpp

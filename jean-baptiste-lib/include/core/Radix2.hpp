@@ -39,8 +39,8 @@ public:
         constexpr auto dualNodeDistance = SampleCnt::value >> 1;
 
         // Recursion goes down. Calculation starts in the last recursion stage with 2 nodes and goes up: 4, 8, ...
-        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx, dualNodeDistance));
-        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx + dualNodeDistance, dualNodeDistance));
+        mRecursionLevel.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx, dualNodeDistance));
+        mRecursionLevel.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx + dualNodeDistance, dualNodeDistance));
 
         // Create twiddle factor multiplier for trigonometric recurrence.
         constexpr Complex twiddleMultiplier(
@@ -78,7 +78,7 @@ public:
     }
 
 private:
-    Radix2DIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
+    Radix2DIT<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> mRecursionLevel;
 };
 
 /**
@@ -89,13 +89,16 @@ template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
     : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 4>;
+
 public:
-    void operator()(std::span<Complex, 4u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
@@ -126,9 +129,6 @@ public:
         data[groupNodeIdx + 3] = data[groupNodeIdx + 1] - temp;
         data[groupNodeIdx + 1] += temp;
     }
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 4>;
 };
 
 /**
@@ -139,13 +139,16 @@ template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
     : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 4>;
+
 public:
-    void operator()(std::span<Complex, 4u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes (distance: 1) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
@@ -176,9 +179,6 @@ public:
         data[groupNodeIdx + 3] = data[groupNodeIdx + 1] - temp;
         data[groupNodeIdx + 1] += temp;
     }
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 4>;
 };
 
 /**
@@ -191,13 +191,16 @@ template <typename DirectionFactor, typename Complex>
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
     : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 2>;
+
 public:
-    void operator()(std::span<Complex, 2u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 2u> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle
         // factor is 1.
@@ -205,9 +208,6 @@ public:
         data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
         data[groupNodeIdx] += temp;
     }
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 2>;
 };
 
 /**
@@ -220,17 +220,17 @@ template <typename DirectionFactor, typename Complex>
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
     : public tools::SubTask<Radix2DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 1>;
+
 public:
-    void operator()(std::span<Complex, 1u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 1u>, unsigned = 0) const
+    void apply(std::span<Complex, SampleCnt::value>, unsigned = 0) const
     {}
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 1>;
 };
 
 /**
@@ -294,12 +294,12 @@ public:
         }
 
         // Recursion goes down. Calculation starts in the last recursion stage with 2 nodes and goes up: 4, 8, ...
-        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx, dualNodeDistance));
-        recursionLevel_.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx + dualNodeDistance, dualNodeDistance));
+        mRecursionLevel.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx, dualNodeDistance));
+        mRecursionLevel.apply(std::span<Complex, dualNodeDistance>(data.data() + groupNodeIdx + dualNodeDistance, dualNodeDistance));
     }
 
 private:
-    Radix2DIF<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> recursionLevel_;
+    Radix2DIF<std::integral_constant<unsigned, SampleCnt::value / 2>, DirectionFactor, Complex> mRecursionLevel;
 };
 
 /**
@@ -310,13 +310,16 @@ template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
     : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 4>;
+
 public:
-    void operator()(std::span<Complex, 4u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
@@ -347,9 +350,6 @@ public:
         data[groupNodeIdx + 3] = data[groupNodeIdx + 2] - temp;
         data[groupNodeIdx + 2] += temp;
     }
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 4>;
 };
 
 /**
@@ -363,13 +363,16 @@ class Radix2DIF<
     std::integral_constant<int, -1>,
     Complex>
     : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 4>;
+
 public:
-    void operator()(std::span<Complex, 4u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 4u> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes (distance: 2) - no need for twiddle factor multiplies, since
         // twiddle factor is 1.
@@ -400,9 +403,6 @@ public:
         data[groupNodeIdx + 3] = data[groupNodeIdx + 2] - temp;
         data[groupNodeIdx + 2] += temp;
     }
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 4>;
 };
 
 /**
@@ -415,13 +415,16 @@ template <typename DirectionFactor, typename Complex>
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
     : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 2>;
+
 public:
-    void operator()(std::span<Complex, 2u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 2u> data, unsigned groupNodeIdx = 0) const
+    void apply(std::span<Complex, SampleCnt::value> data, unsigned groupNodeIdx = 0) const
     {
         // 1st stage butterfly between sequent nodes - no need for twiddle factor  multiplies, since twiddle
         // factor is 1.
@@ -429,9 +432,6 @@ public:
         data[groupNodeIdx + 1] = data[groupNodeIdx] - temp;
         data[groupNodeIdx] += temp;
     }
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 2>;
 };
 
 /**
@@ -444,17 +444,17 @@ template <typename DirectionFactor, typename Complex>
     std::is_floating_point_v<typename Complex::value_type>
 class Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
     : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
+private:
+    using SampleCnt = std::integral_constant<unsigned, 1>;
+
 public:
-    void operator()(std::span<Complex, 1u> data) const
+    void operator()(std::span<Complex, SampleCnt::value> data) const
     {
         apply(data);
     }
 
-    void apply(std::span<Complex, 1u>, unsigned = 0) const
+    void apply(std::span<Complex, SampleCnt::value>, unsigned = 0) const
     {}
-
-private:
-    using SampleCnt = std::integral_constant<unsigned, 1>;
 };
 
 } // namespace jb::core
