@@ -1,5 +1,5 @@
-#ifndef JB_RADIX4_HPP_
-#define JB_RADIX4_HPP_
+#ifndef JB_CORE_RADIX4_HPP_
+#define JB_CORE_RADIX4_HPP_
 
 #include <span>
 
@@ -13,9 +13,9 @@ namespace constants = boost::math::constants;
 namespace jb::core {
 /**
  * Performs a radix 4 decimation in time FFT using template metaprogramming.
- *    \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
- *    \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- *    \param Complex ... The complex type.
+ * \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
+ * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \param Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename SampleCnt::value_type> &&
@@ -490,4 +490,5 @@ public:
 };
 
 } // namespace jb::core
-#endif // JB_RADIX4_HPP_
+
+#endif // JB_CORE_RADIX4_HPP_

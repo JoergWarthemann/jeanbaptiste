@@ -12,16 +12,16 @@ using namespace testing;
 
 namespace jb::testing {
 
-struct Radix4TestConfig {
+struct RadixSplit24TestConfig {
     std::string_view testFileName;
     std::size_t stage;
 };
 
-class Radix4Test
-    : public TestWithParam<Radix4TestConfig>
+class RadixSplit24Test
+    : public TestWithParam<RadixSplit24TestConfig>
     , public AlgorithmFixture {
 public:
-    Radix4Test() = default;
+    RadixSplit24Test() = default;
 
     void SetUp() override
     {
@@ -30,15 +30,23 @@ public:
         mInitialized = false;
     }
 
-    ~Radix4Test() override = default;
+    ~RadixSplit24Test() override = default;
 
 protected:
     bool mInitialized{};
 
-    // Use factory to define algorithm Radix-4 DIT FFT algorithms for sample counts 4 ... 256.
+    // // Create Split-Radix-2-4 DIF FFT algorithms for sample counts 2 ... 256.
+    //     jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_None,
+    //         jbo::Normalization_Square_Root, std::complex<double>> fftFactory;
+
+    //     // Create Split-Radix-2-4 DIF IFFT algorithms for sample counts 2 ... 256.
+    //     jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Frequency, jbo::Direction_Backward, jbo::Window_None,
+    //         jbo::Normalization_Square_Root, std::complex<double>> ifftFactory;
+
+    // Use factory to define algorithm Split-Radix-2-4 DIT FFT algorithms for sample counts 2 ... 256.
     jb::AlgorithmFactory<
-        1, 4,
-        jb::options::Radix_4,
+        1, 8,
+        jb::options::Radix_Split_2_4,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Forward,
         jb::options::Window_None,
@@ -46,10 +54,10 @@ protected:
         std::complex<double>>
         mFFTDITFactory;
 
-    // Use factory to define algorithm Radix-4 DIF FFT algorithms for sample counts 4 ... 256.
+    // Use factory to define algorithm Split-Radix-2-4 DIF FFT algorithms for sample counts 2 ... 256.
     jb::AlgorithmFactory<
-        1, 4,
-        jb::options::Radix_4,
+        1, 8,
+        jb::options::Radix_Split_2_4,
         jb::options::Decimation_In_Frequency,
         jb::options::Direction_Forward,
         jb::options::Window_None,
@@ -57,10 +65,10 @@ protected:
         std::complex<double>>
         mFFTDIFFactory;
 
-    // Use factory to define algorithm Radix-4 DIT IFFT algorithms for sample counts 4 ... 256.
+    // Use factory to define algorithm Split-Radix-2-4 DIT IFFT algorithms for sample counts 2 ... 256.
     jb::AlgorithmFactory<
-        1, 4,
-        jb::options::Radix_4,
+        1, 8,
+        jb::options::Radix_Split_2_4,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Backward,
         jb::options::Window_None,
@@ -68,10 +76,10 @@ protected:
         std::complex<double>>
         mIFFTDITFactory;
 
-    // Use factory to define algorithm Radix-4 DIF IFFT algorithms for sample counts 4 ... 256.
+    // Use factory to define algorithm Split-Radix-2-4 DIF IFFT algorithms for sample counts 2 ... 256.
     jb::AlgorithmFactory<
-        1, 4,
-        jb::options::Radix_4,
+        1, 8,
+        jb::options::Radix_Split_2_4,
         jb::options::Decimation_In_Frequency,
         jb::options::Direction_Backward,
         jb::options::Window_None,
@@ -80,12 +88,12 @@ protected:
         mIFFTDIFFactory;
 };
 
-class Radix4OneOffTest : public Test {
+class RadixSplit24OneOffTest : public Test {
 protected:
-    // Use factory to define algorithm Radix-4 DIT FFT algorithms for sample counts 4 ... 256.
+    // Use factory to define algorithm Split-Radix-2-4 DIT FFT algorithms for sample counts 2 ... 256.
     jb::AlgorithmFactory<
-        1, 4,
-        jb::options::Radix_4,
+        1, 8,
+        jb::options::Radix_Split_2_4,
         jb::options::Decimation_In_Time,
         jb::options::Direction_Forward,
         jb::options::Window_None,
@@ -95,12 +103,12 @@ protected:
 };
 
 INSTANTIATE_TEST_SUITE_P(
-    Radix4Tests,
-    Radix4Test,
+    RadixSplit24Tests,
+    RadixSplit24Test,
     ::testing::Values(
-        Radix4TestConfig{.testFileName = "square pulse (n=64)", .stage = 3}));
+        RadixSplit24TestConfig{.testFileName = "square pulse (n=64)", .stage = 6}));
 
-TEST_P(Radix4Test, SuccessfullyCalculatesRadix4Dit)
+TEST_P(RadixSplit24Test, SuccessfullyCalculatesRadixSplit24Dit)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -111,7 +119,7 @@ TEST_P(Radix4Test, SuccessfullyCalculatesRadix4Dit)
     verifyAlgorithm(mFFTDITFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix4Test, SuccessfullyCalculatesInverseRadix4Dit)
+TEST_P(RadixSplit24Test, SuccessfullyCalculatesInverseRadixSplit24Dit)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -122,7 +130,7 @@ TEST_P(Radix4Test, SuccessfullyCalculatesInverseRadix4Dit)
     verifyAlgorithm(mIFFTDITFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix4Test, SuccessfullyCalculatesRadix4Dif)
+TEST_P(RadixSplit24Test, SuccessfullyCalculatesRadixSplit24Dif)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -133,7 +141,7 @@ TEST_P(Radix4Test, SuccessfullyCalculatesRadix4Dif)
     verifyAlgorithm(mFFTDIFFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix4Test, SuccessfullyCalculatesInverseRadix4Dif)
+TEST_P(RadixSplit24Test, SuccessfullyCalculatesInverseRadixSplit24Dif)
 {
     EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -144,7 +152,7 @@ TEST_P(Radix4Test, SuccessfullyCalculatesInverseRadix4Dif)
     verifyAlgorithm(mIFFTDIFFactory.getAlgorithm(GetParam().stage));
 }
 
-TEST_P(Radix4Test, SuccessfullyReconstructsInputWithRadix4DitRoundTrip)
+TEST_P(RadixSplit24Test, SuccessfullyReconstructsInputWithRadixSplit24DitRoundTrip)
 {
     ASSERT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -161,7 +169,7 @@ TEST_P(Radix4Test, SuccessfullyReconstructsInputWithRadix4DitRoundTrip)
     AlgorithmResultAnalysis::compareComplexDataSets(mDataSetA, expected);
 }
 
-TEST_P(Radix4Test, SuccessfullyReconstructsInputWithRadix4DifRoundTrip)
+TEST_P(RadixSplit24Test, SuccessfullyReconstructsInputWithRadixSplit24DifRoundTrip)
 {
     ASSERT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -178,7 +186,7 @@ TEST_P(Radix4Test, SuccessfullyReconstructsInputWithRadix4DifRoundTrip)
     AlgorithmResultAnalysis::compareComplexDataSets(mDataSetA, expected);
 }
 
-TEST_P(Radix4Test, MatchesRadix4DitAndDifForwardTransformation)
+TEST_P(RadixSplit24Test, MatchesRadixSplit24DitAndDifForwardTransformation)
 {
     ASSERT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -196,7 +204,7 @@ TEST_P(Radix4Test, MatchesRadix4DitAndDifForwardTransformation)
     AlgorithmResultAnalysis::compareComplexDataSets(ditData, difData);
 }
 
-TEST_P(Radix4Test, MatchesRadix4DitAndDifBackwardTransformation)
+TEST_P(RadixSplit24Test, MatchesRadixSplit24DitAndDifBackwardTransformation)
 {
     ASSERT_TRUE(AlgorithmResultAnalysis::initialize(
         std::format("{}/{}.xml", TEST_DATA_DIR, GetParam().testFileName),
@@ -214,22 +222,18 @@ TEST_P(Radix4Test, MatchesRadix4DitAndDifBackwardTransformation)
     AlgorithmResultAnalysis::compareComplexDataSets(ditData, difData);
 }
 
-TEST_F(Radix4OneOffTest, SuccessfullyCalculatesSmallestSupportedStage)
+TEST_F(RadixSplit24OneOffTest, SuccessfullyCalculatesSmallestSupportedStage)
 {
     using Complex = std::complex<double>;
 
     std::vector<Complex> data{
         {1.0, 0.0},
         {-1.0, 0.0},
-        {1.0, 0.0},
-        {-1.0, 0.0},
     };
 
     std::vector<Complex> expected{
         {0.0, 0.0},
-        {0.0, 0.0},
-        {2.0, 0.0},
-        {0.0, 0.0},
+        {std::sqrt(2.0), 0.0},
     };
 
     mFFTDITFactory.getAlgorithm(1)->operator()(data);
@@ -239,7 +243,7 @@ TEST_F(Radix4OneOffTest, SuccessfullyCalculatesSmallestSupportedStage)
 
 // Impulse and Constant Signals: These use stage 1, i.e. four samples. With square-root normalization, the scale factor
 // is 1/sqrt(4)=0.5
-TEST_F(Radix4OneOffTest, ForwardTransformationOfImpulseCalculatesFlatSpectrum)
+TEST_F(RadixSplit24OneOffTest, ForwardTransformationOfImpulseCalculatesFlatSpectrum)
 {
     using Complex = std::complex<double>;
 
@@ -257,12 +261,12 @@ TEST_F(Radix4OneOffTest, ForwardTransformationOfImpulseCalculatesFlatSpectrum)
         {0.5, 0.0},
     };
 
-    mFFTDITFactory.getAlgorithm(1)->operator()(data);
+    mFFTDITFactory.getAlgorithm(2)->operator()(data);
 
     AlgorithmResultAnalysis::compareComplexDataSets(data, expected);
 }
 
-TEST_F(Radix4OneOffTest, ForwardTransformationOfConstantSignalCalculatesOnlyDcComponent)
+TEST_F(RadixSplit24OneOffTest, ForwardTransformationOfConstantSignalCalculatesOnlyDcComponent)
 {
     using Complex = std::complex<double>;
 
@@ -280,13 +284,13 @@ TEST_F(Radix4OneOffTest, ForwardTransformationOfConstantSignalCalculatesOnlyDcCo
         {0.0, 0.0},
     };
 
-    mFFTDITFactory.getAlgorithm(1)->operator()(data);
+    mFFTDITFactory.getAlgorithm(2)->operator()(data);
 
     AlgorithmResultAnalysis::compareComplexDataSets(data, expected);
 }
 
 // Invalid Factory Stage Death Test: This only makes sense when assertions are enabled. In NDEBUG builds, the assert() in getAlgorithm() disappears, so the test should skip.
-TEST_F(Radix4OneOffTest, DiesWhenUsedWithUnknownStage)
+TEST_F(RadixSplit24OneOffTest, DiesWhenUsedWithUnknownStage)
 {
 #if defined(NDEBUG)
     GTEST_SKIP() << "AlgorithmFactory unknown-stage behavior is guarded by assert().";
@@ -294,7 +298,7 @@ TEST_F(Radix4OneOffTest, DiesWhenUsedWithUnknownStage)
     using Complex = std::complex<double>;
 
     EXPECT_DEATH(
-        static_cast<void>(mFFTDITFactory.getAlgorithm(5)),
+        static_cast<void>(mFFTDITFactory.getAlgorithm(9)),
         "Trying to find algorithm of unknown stage.");
 #endif
 }

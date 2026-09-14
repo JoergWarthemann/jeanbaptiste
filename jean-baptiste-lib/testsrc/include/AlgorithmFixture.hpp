@@ -11,8 +11,8 @@
 namespace jb::testing {
 
 /** Fixture for executable algorithms.
-    Provides common data and functions for algorithm tests.
-*/
+ *   Provides common data and functions for algorithm tests.
+ */
 class AlgorithmFixture {
 protected:
     using TAlgorithmType = std::unique_ptr<IExecutableAlgorithm<std::complex<double>>>;
@@ -28,14 +28,14 @@ public:
 
     void verifyAlgorithm(TAlgorithmType algorithm)
     {
-        algorithm->operator()(mDataSetA);
+        (*algorithm)(mDataSetA);
         AlgorithmResultAnalysis::compareComplexDataSets(mDataSetA, mDataSetB);
     }
 
     template <typename... Algorithm>
     void verifyAlgorithms(Algorithm... algorithm)
     {
-        verifyAlgorithm(algorithm...);
+        (verifyAlgorithm(algorithm), ...);
     }
 };
 

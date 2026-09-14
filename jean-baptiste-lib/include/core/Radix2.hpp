@@ -1,5 +1,5 @@
-#ifndef JB_RADIX2_HPP_
-#define JB_RADIX2_HPP_
+#ifndef JB_CORE_RADIX2_HPP_
+#define JB_CORE_RADIX2_HPP_
 
 #include <span>
 
@@ -358,10 +358,7 @@ public:
  */
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
-class Radix2DIF<
-    std::integral_constant<unsigned, 4>,
-    std::integral_constant<int, -1>,
-    Complex>
+class Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
     : public tools::SubTask<Radix2DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 private:
     using SampleCnt = std::integral_constant<unsigned, 4>;
@@ -458,4 +455,5 @@ public:
 };
 
 } // namespace jb::core
-#endif // JB_RADIX2_HPP_
+
+#endif // JB_CORE_RADIX2_HPP_

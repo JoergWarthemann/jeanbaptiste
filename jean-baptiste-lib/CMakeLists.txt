@@ -67,6 +67,7 @@ add_executable(${LIBRARY_NAME}-googletest
     testsrc/src/BitReversalTest.cpp
     testsrc/src/Radix2Test.cpp
     testsrc/src/Radix4Test.cpp
+    testsrc/src/RadixSplit24Test.cpp
     testsrc/src/SinCosTest.cpp
 
     testsrc/include/AlgorithmFixture.hpp

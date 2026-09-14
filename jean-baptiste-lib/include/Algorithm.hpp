@@ -3,16 +3,15 @@
 
 #include <cassert>
 #include <span>
-#include <tuple>
 #include <type_traits>
 
 #include <boost/hana.hpp>
 
 #include "core/Radix2.hpp"
 #include "core/Radix4.hpp"
+#include "core/RadixSplit24.hpp"
 #include "tools/BitReversalIndexSwapping.hpp"
 
-// #include "core/RadixSplit24.h"
 #include "IExecutableAlgorithm.hpp"
 #include "Options.hpp"
 
@@ -47,6 +46,8 @@ template <std::size_t Stage,
     typename Complex>
 class Algorithm : public IExecutableAlgorithm<Complex> {
 public:
+    ~Algorithm() override = default;
+
     /**
      * Executes all sub tasks sequentially.
      * \param[in] data ... View to an array of SampleCnt elements of type Complex.
@@ -199,26 +200,27 @@ private:
         }
     }
 
-    /** Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
-        \return hana::tuple ... A tuple of sub task type values.
-    */
-    // TODO: add radix split 2-4 case.
-    // static consteval auto radixSplit24SubtaskTypeValues() noexcept
-    // {
-    //     if constexpr (std::is_same_v<Decimation, jbo::Decimation_In_Time>) {
-    //         return hana::make_tuple(
-    //             decltype(getWindowValue()){},
-    //             basic::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
-    //             core::RadixSplit24DIT<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
-    //             decltype(getRadix2NormalizationValue()){});
-    //     }
-
-    //     return hana::make_tuple(
-    //         decltype(getWindowValue()){},
-    //         core::RadixSplit24DIF<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
-    //         basic::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
-    //         decltype(getRadix2NormalizationValue()){});
-    // }
+    /**
+     * Creates a tupel of sub task type values belonging to a split radix 2-4 task at compilation time.
+     * \return hana::tuple ... A tuple of sub task type values.
+     */
+    static consteval auto radixSplit24SubtaskTypeValues() noexcept
+    {
+        if constexpr (std::is_same_v<Decimation, options::Decimation_In_Time>) {
+            return hana::make_tuple(
+                decltype(getWindowValue<R2SampleCnt>()){},
+                tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
+                core::RadixSplit24DIT<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
+                decltype(getRadix2NormalizationValue()){});
+        }
+        else {
+            return hana::make_tuple(
+                decltype(getWindowValue<R2SampleCnt>()){},
+                core::RadixSplit24DIF<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
+                tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
+                decltype(getRadix2NormalizationValue()){});
+        }
+    }
 
     /**
      * Creates a tupel of sub task type values at compilation time. Sub tasks belong to a FFT task.
@@ -232,9 +234,9 @@ private:
         else if constexpr (std::is_same_v<Radix, options::Radix_4>) {
             return radix4SubTaskTypeValues();
         }
-
-        // TODO: add split radix 2-4 case.
-        // return radixSplit24SubtaskTypeValues();
+        else if constexpr (std::is_same_v<Radix, options::Radix_Split_2_4>) {
+            return radixSplit24SubtaskTypeValues();
+        }
     }
 
     using SubTaskTypes = decltype(createTupleOfSubTaskTypeValues());

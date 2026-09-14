@@ -12,17 +12,17 @@
 * [x] enable use of C++23
 * [x] write tests for range reduction
 * [x] use modern C++ concept for creation and control of work data in bit reversal test (ranges?)
-* [ ] consider working in all algorithms on std::span, i.e. forward std::span only?
+* [x] consider working in all algorithms on std::span, i.e. forward std::span only?
 * [ ] Replace all #pragma preprocessor commands by #ifdef
 * [x] Rewrite SubTask::operator() to use std::span (rewrite operator() as template function)
 * [x] modernize Radix2 and Radix2Test
 * [x] make Radix2Test go through all relevant test files
-* [ ] modernize Radix4 and Radix4Test
-* [ ] modernize SplitRadix and SplitRadixTest
+* [x] modernize Radix4 and Radix4Test
+* [ ] modernize SplitRadix and SplitRadixTest --> update Algorithm accordingly
 * [x] rewrite AlgorithmFixture.hpp using fold expressions and use it in Radix2Test.cpp
 * [x] rewrite AlgorithmResultAnalysis.hpp and use it in Radix2Test.cpp to load sample data from files (use ranges)
 * [x] rewrite ExecutableAlgorithm.hpp (prefer = default for destructor?)
-* [ ] override virtual base class destructors and make them default at least
+* [x] override virtual base class destructors and make them default at least
 
 * [x] use std::span for sample range in SubTask::operator()
 * [x] update TestCaseLoader to use std::string_view, std::filesystem
@@ -30,7 +30,7 @@
 * [x] use std::span for sample range in Radix2::operator()
 * [ ] use concepts
 * [x] turn mWorkingSet, mExpectedOutFFT and mExpectedOutIFFT into mInput and mOutput
-* [ ] make Algorithm, AlgorithmFactory, SubTask usable to instantiate Radix2 for tests
+* [x] make Algorithm, AlgorithmFactory, SubTask usable to instantiate Radix2 for tests
 * [x] replace namespace name "jeanbaptiste" by shorter "jb"
 * [ ] unify usage of std::numbers or the more complete boost::math::constants for pi
 * [x] use clangd
