@@ -10,8 +10,9 @@
 
 namespace jb::testing {
 
-/** Fixture for executable algorithms.
- *   Provides common data and functions for algorithm tests.
+/**
+ * Fixture for executable algorithms.
+ * Provides common data and functions for algorithm tests.
  */
 class AlgorithmFixture {
 protected:

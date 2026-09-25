@@ -1,10 +1,9 @@
 #ifndef JB_TESTING_TESTCASELOADER_HPP_
 #define JB_TESTING_TESTCASELOADER_HPP_
 
-#include <charconv>
 #include <complex>
 #include <filesystem>
-#include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -31,23 +30,17 @@ inline std::string_view trim(std::string_view str)
 template <typename T>
 inline std::pair<T, T> extractComplexArguments(std::string_view line)
 {
-    line = trim(line);
+    std::stringstream stream{std::string(trim(line))};
 
-    std::string_view::size_type posEnd = std::string_view::npos;
-    std::string_view::size_type posStart = std::string_view::npos;
-    if ((posStart = line.find('\t')) != std::string_view::npos) {
-        T real{}, imag{};
-
-        auto left = trim(line.substr(0, posStart));
-        auto right = trim(line.substr(posStart + 1));
-
-        real = static_cast<T>(std::strtod(left.data(), nullptr));
-        imag = static_cast<T>(std::strtod(right.data(), nullptr));
-
-        return {real, imag};
+    T real{};
+    if (!(stream >> real)) {
+        throw std::invalid_argument("Invalid complex number format");
     }
 
-    throw std::invalid_argument("Invalid complex number format");
+    T imag{};
+    stream >> imag;
+
+    return {real, imag};
 }
 
 /**
@@ -75,7 +68,7 @@ public:
     {}
 
     /**
-     * Opens the file and reads complex the test case data in.
+     * Opens the file and reads complex test case data in.
      * \param tagA ... Identifier of data set A.
      * \param dataSetA ... The data set A.
      * \param tagB ... Identifier of data set B.

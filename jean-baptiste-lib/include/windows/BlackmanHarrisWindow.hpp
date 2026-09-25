@@ -6,7 +6,6 @@
 #include <numbers>
 #include <span>
 
-
 #include "tools/Abs.hpp"
 #include "tools/SineCosine.hpp"
 #include "tools/SubTask.hpp"
@@ -15,6 +14,8 @@
 namespace jb::windows {
 
 template <typename SampleCnt, typename Complex>
+    requires std::is_integral_v<typename SampleCnt::value_type> &&
+    std::is_floating_point_v<typename Complex::value_type>
 class BlackmanHarrisWindow
     : public tools::SubTask<BlackmanHarrisWindow<SampleCnt, Complex>, Complex> {
 public:

@@ -13,6 +13,8 @@
 namespace jb::windows {
 
 template <typename SampleCnt, typename Complex>
+    requires std::is_integral_v<typename SampleCnt::value_type> &&
+    std::is_floating_point_v<typename Complex::value_type>
 class FlatTopWindow
     : public tools::SubTask<FlatTopWindow<SampleCnt, Complex>, Complex> {
 public:

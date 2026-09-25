@@ -11,6 +11,8 @@ namespace jb::windows {
  * \param Complex ... The complex type.
  */
 template <typename SampleCnt, typename Complex>
+    requires std::is_integral_v<typename SampleCnt::value_type> &&
+    std::is_floating_point_v<typename Complex::value_type>
 class NoWindow
     : public tools::SubTask<NoWindow<SampleCnt, Complex>, Complex> {
 public:

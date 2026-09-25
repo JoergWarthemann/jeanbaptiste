@@ -13,12 +13,12 @@
 * [x] write tests for range reduction
 * [x] use modern C++ concept for creation and control of work data in bit reversal test (ranges?)
 * [x] consider working in all algorithms on std::span, i.e. forward std::span only?
-* [ ] Replace all #pragma preprocessor commands by #ifdef
+* [x] Replace all #pragma preprocessor commands by #ifdef
 * [x] Rewrite SubTask::operator() to use std::span (rewrite operator() as template function)
 * [x] modernize Radix2 and Radix2Test
 * [x] make Radix2Test go through all relevant test files
 * [x] modernize Radix4 and Radix4Test
-* [ ] modernize SplitRadix and SplitRadixTest --> update Algorithm accordingly
+* [x] modernize SplitRadix and SplitRadixTest --> update Algorithm accordingly
 * [x] rewrite AlgorithmFixture.hpp using fold expressions and use it in Radix2Test.cpp
 * [x] rewrite AlgorithmResultAnalysis.hpp and use it in Radix2Test.cpp to load sample data from files (use ranges)
 * [x] rewrite ExecutableAlgorithm.hpp (prefer = default for destructor?)
@@ -28,17 +28,20 @@
 * [x] update TestCaseLoader to use std::string_view, std::filesystem
 * [x] use std::format instead of boost::format
 * [x] use std::span for sample range in Radix2::operator()
-* [ ] use concepts
+* [x] use concepts
 * [x] turn mWorkingSet, mExpectedOutFFT and mExpectedOutIFFT into mInput and mOutput
 * [x] make Algorithm, AlgorithmFactory, SubTask usable to instantiate Radix2 for tests
 * [x] replace namespace name "jeanbaptiste" by shorter "jb"
 * [ ] unify usage of std::numbers or the more complete boost::math::constants for pi
 * [x] use clangd
 * [x] update window types
+* [x] add concepts to window types
+* [x] add automated window tests
+* [ ] add real FFT implementation
+* [ ] add real FFt tests
 
---> rebuild Algorithm.hpp, then AlgorithmFactory - ignore Windowing for now
---> update Radix4 technically like Radix2
---> add radix-4 and split-radix cases to Algorithm
+--> Window tests: add window type to configuration struct
+--
 
 ------------------------------------------------------------------------------------------------------------------------
 

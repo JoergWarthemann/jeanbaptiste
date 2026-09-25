@@ -10,7 +10,6 @@
 
 #include "Algorithm.hpp"
 #include "IExecutableAlgorithm.hpp"
-// #include "SubTask.h"
 
 namespace hana = boost::hana;
 
@@ -42,7 +41,6 @@ class AlgorithmFactory {
         auto stages = hana::make_range(hana::int_c<Begin>, hana::int_c<End>);
 
         return hana::unpack(stages, [](auto... stage) {
-            // return hana::make_map(hana::make_pair(stage, hana::template_<Algorithm>(stage, hana::type_c<Radix>, hana::type_c<Decimation>, hana::type_c<Direction>, hana::type_c<Window>, hana::type_c<Normalization>, hana::type_c<Complex>))...);
             return hana::make_map(hana::make_pair(
                 stage,
                 hana::type_c<Algorithm<decltype(stage)::value,
