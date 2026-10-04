@@ -95,25 +95,12 @@ public:
     {
         mDataSetA.clear();
         mDataSetB.clear();
-        mInitialized = false;
     }
 
     ~WindowTest() override = default;
 
 protected:
     static constexpr std::size_t kSampleCnt{128};
-
-    bool mInitialized{};
-
-    jb::AlgorithmFactory<
-        1, 8,
-        jb::options::Radix_2,
-        jb::options::Decimation_In_Time,
-        jb::options::Direction_Forward,
-        typename TConfig::WindowOption,
-        jb::options::Normalization_Square_Root,
-        std::complex<double>>
-        mFFTDITFactory;
 };
 
 using WindowTypes = ::testing::Types<
@@ -146,6 +133,45 @@ TYPED_TEST(WindowTest, SuccessfullyCalculatesWindowSamples)
     win(std::span<Complex, TestFixture::kSampleCnt>(TestFixture::mDataSetA.data(), TestFixture::kSampleCnt));
 
     AlgorithmResultAnalysis::compareComplexDataSets(TestFixture::mDataSetA, TestFixture::mDataSetB);
+}
+
+TYPED_TEST(WindowTest, SuccessfullyCalculateFFTOnWindowedData)
+{
+    constexpr auto kStage{7};
+
+    std::vector<std::complex<double>> dataSetA;
+    std::vector<std::complex<double>> dataSetB;
+
+    jb::AlgorithmFactory<
+        kStage, kStage + 1,
+        jb::options::Radix_2,
+        jb::options::Decimation_In_Time,
+        jb::options::Direction_Forward,
+        typename TypeParam::WindowOption,
+        jb::options::Normalization_Square_Root,
+        std::complex<double>>
+        fftFactory;
+    jb::AlgorithmFactory<
+        kStage, kStage + 1,
+        jb::options::Radix_2,
+        jb::options::Decimation_In_Time,
+        jb::options::Direction_Backward,
+        jb::options::Window_None,
+        jb::options::Normalization_Square_Root,
+        std::complex<double>>
+        ifftFactory;
+
+    EXPECT_TRUE(AlgorithmResultAnalysis::initialize(
+        std::format("{}/{}.xml", TEST_DATA_DIR, TypeParam::testFileName),
+        "win.in", dataSetA,
+        "win.out", dataSetB));
+
+    auto fft = fftFactory.getAlgorithm(kStage);
+    auto ifft = ifftFactory.getAlgorithm(kStage);
+
+    (*fft)(dataSetA);
+    (*ifft)(dataSetA);
+    AlgorithmResultAnalysis::compareComplexDataSets(dataSetA, dataSetB);
 }
 
 } // namespace jb::testing

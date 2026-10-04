@@ -9,6 +9,9 @@ set(JEAN_BAPTISTE_LIB_SOURCES
     include/AlgorithmFactory.hpp
     include/IExecutableAlgorithm.hpp
     include/Options.hpp
+    include/RealAlgorithm.hpp
+    include/SampleCount.hpp
+    include/core/FftKernel.hpp
     include/core/Radix2.hpp
     include/core/Radix4.hpp
     include/core/RadixSplit24.hpp
@@ -21,6 +24,7 @@ set(JEAN_BAPTISTE_LIB_SOURCES
     include/tools/Ceil.hpp
     include/tools/Floor.hpp
     include/tools/HeronSquareRoot.hpp
+    include/tools/RealFft.hpp
     include/tools/RealComplexConversion.hpp
     include/tools/Round.hpp
     include/tools/SineCosine.hpp
@@ -68,6 +72,7 @@ add_executable(${LIBRARY_NAME}-googletest
     testsrc/src/Radix2Test.cpp
     testsrc/src/Radix4Test.cpp
     testsrc/src/RadixSplit24Test.cpp
+    testsrc/src/RealFftTest.cpp
     testsrc/src/SinCosTest.cpp
     testsrc/src/WindowTest.cpp
 

@@ -7,6 +7,8 @@
 
 #include <boost/hana.hpp>
 
+#include "RealAlgorithm.hpp"
+#include "SampleCount.hpp"
 #include "core/Radix2.hpp"
 #include "core/Radix4.hpp"
 #include "core/RadixSplit24.hpp"
@@ -43,7 +45,8 @@ template <std::size_t Stage,
     typename Direction,
     typename Window,
     typename Normalization,
-    typename Complex>
+    typename Complex,
+    typename Data = options::Data_Complex>
 class Algorithm : public IExecutableAlgorithm<Complex> {
 public:
     ~Algorithm() override = default;
@@ -54,7 +57,10 @@ public:
      */
     void operator()(std::span<Complex> data) const override
     {
-        if constexpr (std::is_same_v<Radix, options::Radix_4>) {
+        if constexpr (std::is_same_v<Data, options::Data_Real>) {
+            RealAlgorithm<Stage, Radix, Decimation, Direction, Window, Normalization, Complex>{}(data);
+        }
+        else if constexpr (std::is_same_v<Radix, options::Radix_4>) {
             assert(data.size() == R4SampleCnt::value && "The size of the input data must be equal to 4^Stage.");
             hana::for_each(tupleOfSubTasks_, [&](const auto& subTask) {
                 subTask(std::span<Complex, R4SampleCnt::value>(data.data(), R4SampleCnt::value));
@@ -69,8 +75,8 @@ public:
     }
 
 private:
-    using R2SampleCnt = std::integral_constant<int, 1 << Stage>;
-    using R4SampleCnt = std::integral_constant<int, 1 << (Stage << 1)>;
+    using R2SampleCnt = typename SampleCount<Stage, options::Radix_2, options::Data_Complex>::External;
+    using R4SampleCnt = typename SampleCount<Stage, options::Radix_4, options::Data_Complex>::External;
 
     /**
      * Creates a value of the selected direction type (FFT or iFFT) at compilation time.

@@ -28,7 +28,8 @@ template <std::size_t Begin,
     typename Direction,
     typename Window,
     typename Normalization,
-    typename Complex>
+    typename Complex,
+    typename Data = options::Data_Complex>
 class AlgorithmFactory {
     /**
      * Create a map of FFT algorithm stages at compile time.
@@ -49,7 +50,8 @@ class AlgorithmFactory {
                     Direction,
                     Window,
                     Normalization,
-                    Complex>>)...);
+                    Complex,
+                    Data>>)...);
         });
     }
 

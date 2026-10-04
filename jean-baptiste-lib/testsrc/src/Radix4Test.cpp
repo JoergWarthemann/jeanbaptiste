@@ -27,14 +27,11 @@ public:
     {
         mDataSetA.clear();
         mDataSetB.clear();
-        mInitialized = false;
     }
 
     ~Radix4Test() override = default;
 
 protected:
-    bool mInitialized{};
-
     // Use factory to define algorithm Radix-4 DIT FFT algorithms for sample counts 4 ... 256.
     jb::AlgorithmFactory<
         1, 4,

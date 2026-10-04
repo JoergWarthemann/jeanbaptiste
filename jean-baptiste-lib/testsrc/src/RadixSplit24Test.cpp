@@ -27,14 +27,11 @@ public:
     {
         mDataSetA.clear();
         mDataSetB.clear();
-        mInitialized = false;
     }
 
     ~RadixSplit24Test() override = default;
 
 protected:
-    bool mInitialized{};
-
     // // Create Split-Radix-2-4 DIF FFT algorithms for sample counts 2 ... 256.
     //     jb::AlgorithmFactory<1, 8, jbo::Radix_Split_2_4, jbo::Decimation_In_Frequency, jbo::Direction_Forward, jbo::Window_None,
     //         jbo::Normalization_Square_Root, std::complex<double>> fftFactory;

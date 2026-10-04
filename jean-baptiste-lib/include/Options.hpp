@@ -4,6 +4,8 @@
 namespace jb::options {
 struct Direction_Forward {};
 struct Direction_Backward {};
+struct Data_Complex {};
+struct Data_Real {};
 struct Decimation_In_Frequency {};
 struct Decimation_In_Time {};
 struct Normalization_No {};
