@@ -44,14 +44,14 @@ namespace jb {
 
 /**
  * Defines a tuple of executable sub tasks which belong to an algorithm, e.g. FFT, normalization, bit reversal.
- * \param Stage ... The count of stages inside an algorithm. E.g. Stages = 4 -> sample count = 2^4
- * \param Radix ... The radix used for the FFT (e.g., Radix_2, Radix_4, Radix_Split_2_4).
- * \param Decimation ... The decimation strategy used for the FFT (e.g., Decimation_InTime, Decimation_InFrequency).
- * \param Direction ... The direction of the FFT (e.g., Direction_Forward, Direction_Backward).
- * \param Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
- * \param Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
- * \param Complex ... The complex data type.
- * \param Data ... The data type (e.g., Data_Complex, Data_Real).
+ * \tparam Stage ... The count of stages inside an algorithm. E.g. Stages = 4 -> sample count = 2^4
+ * \tparam Radix ... The radix used for the FFT (e.g., Radix_2, Radix_4, Radix_Split_2_4).
+ * \tparam Decimation ... The decimation strategy used for the FFT (e.g., Decimation_InTime, Decimation_InFrequency).
+ * \tparam Direction ... The direction of the FFT (e.g., Direction_Forward, Direction_Backward).
+ * \tparam Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
+ * \tparam Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
+ * \tparam Complex ... The complex data type.
+ * \tparam Data ... The data type (e.g., Data_Complex, Data_Real).
  */
 template <std::size_t Stage,
     typename Radix,
@@ -108,6 +108,7 @@ private:
 
     /**
      * Creates a value of the selected window type at compilation time.
+     * \tparam SampleCnt ... The sample count for which the window is created.
      * \return value ... The selected value.
      */
     template <typename SampleCnt>

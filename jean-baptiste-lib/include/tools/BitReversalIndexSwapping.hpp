@@ -13,8 +13,8 @@ namespace hana = boost::hana;
 namespace jb::tools {
 /**
  * Applies bit reversal index swapping which brings calculations into the right order before/after having applied a FFT.
- * @param SampleCnt Count of samples used for bit reversal. Masks the significant sequence of bits in a 16 bit number.
- * @param Complex Complex data type.
+ * \tparam SampleCnt Count of samples used for bit reversal. Masks the significant sequence of bits in a 16 bit number.
+ * \tparam Complex Complex data type.
  */
 template <typename SampleCnt, typename Complex>
 class BitReversalIndexSwapping
@@ -49,8 +49,8 @@ class BitReversalIndexSwapping
 
     /**
      * Calculates the bit reversed counterpart of a given index.
-     * @param index The input number.
-     * @param std::size_t The bit reversed counterpart of input.
+     * \param index The input number.
+     * \param std::size_t The bit reversed counterpart of input.
      */
     static constexpr std::size_t getReverseIndex(const std::size_t index)
     {

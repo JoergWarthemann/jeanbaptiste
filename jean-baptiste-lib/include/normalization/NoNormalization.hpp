@@ -10,8 +10,8 @@ namespace jb::normalization {
 
 /**
  * Does not normalize FFT results.
- * \param SampleCnt ... The count of samples to deal with.
- * \param Complex ... Complex data type.
+ * \tparam SampleCnt ... The count of samples to deal with.
+ * \tparam Complex ... Complex data type.
  */
 template <typename SampleCnt, typename Complex>
     requires std::is_integral_v<typename SampleCnt::value_type> &&

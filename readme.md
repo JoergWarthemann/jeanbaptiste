@@ -37,12 +37,9 @@
 * [x] update window types
 * [x] add concepts to window types
 * [x] add automated window tests
-* [ ] add real FFT implementation
-    --> apply last reorganization step and let Algorithm use FftKernel too
-* [ ] add real FFt tests
+* [x] add real FFT implementation
+* [x] add real FFt tests
 
---> Window tests: add window type to configuration struct
---
 
 ------------------------------------------------------------------------------------------------------------------------
 

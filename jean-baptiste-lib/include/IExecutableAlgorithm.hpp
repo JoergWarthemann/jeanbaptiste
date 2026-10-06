@@ -6,7 +6,7 @@
 namespace jb {
 /**
  * Defines a unique interface for dynamic algorithms.
- * @param Complex Complex data type.
+ * \tparam Complex Complex data type.
  */
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>

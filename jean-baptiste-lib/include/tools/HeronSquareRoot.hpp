@@ -7,20 +7,17 @@ namespace jb::tools {
 
 /**
  * Recursively calculates an estimation of the square root of an integer.
- * \param[in] seriesStart ... The point to start the recursion.
- * \param[in] seriesEnd ... The end point of the recursion.
- * \param[in] radicant ... The radicand that is to be square rooted.
- * \param[in] guess ... The current approach to the actual resulting value.
+ * \tparam T ... The type of the resulting square root (default is double).
+ * \param seriesStart ... The point to start the recursion.
+ * \param seriesEnd ... The end point of the recursion.
+ * \param radicant ... The radicand that is to be square rooted.
+ * \param guess ... The current approach to the actual resulting value.
  */
 template <typename T = double>
     requires std::is_floating_point_v<T> ||
     std::is_integral_v<T>
-constexpr std::decay_t<T> squareRoot(const std::size_t seriesStart, const std::size_t seriesEnd,
-    const std::size_t radicant, const double guess)
+constexpr std::decay_t<T> squareRoot(std::size_t seriesStart, std::size_t seriesEnd, std::size_t radicant, double guess)
 {
-    // static_assert(std::is_floating_point<T>::value ||std::is_integral<T>::value,
-    //     "Trying to calculate the square root on a non integral or floating point type.");
-
     // Special cases that stop the recursion:
     // - square root of 1 is 1
     // - square root of 0 is 0
@@ -37,8 +34,7 @@ constexpr std::decay_t<T> squareRoot(const std::size_t seriesStart, const std::s
 
 template <typename T = double>
     requires std::is_floating_point_v<T> || std::is_integral_v<T>
-constexpr std::decay_t<T> squareRoot(const std::size_t seriesStart, const std::size_t seriesEnd,
-    const std::size_t radicant)
+constexpr std::decay_t<T> squareRoot(std::size_t seriesStart, std::size_t seriesEnd, std::size_t radicant)
 {
     return squareRoot(seriesStart, seriesEnd, radicant, radicant / 2.0);
 }

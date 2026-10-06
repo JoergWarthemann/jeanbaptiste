@@ -17,9 +17,15 @@ namespace jb {
 
 /**
  * A factory for FFT algorithms of different stage. Each stage is used for a certain count of data samples.
- * \param Begin ... The starting index of supported FFT algorithm stages.
- * \param End ... The end index of supported FFT algorithm stages.
- * \param Complex ... The complex data type.
+ * \tparam Begin ... The starting index of supported FFT algorithm stages.
+ * \tparam End ... The end index of supported FFT algorithm stages.
+ * \tparam Radix ... The radix used in the FFT algorithm.
+ * \tparam Decimation ... The decimation type used in the FFT algorithm.
+ * \tparam Direction ... The direction of the FFT (forward or backward).
+ * \tparam Window ... The windowing function applied to the input data.
+ * \tparam Normalization ... The normalization method applied to the FFT results.
+ * \tparam Complex ... The complex data type.
+ * \tparam Data ... The data type used in the FFT algorithm.
  */
 template <std::size_t Begin,
     std::size_t End,
