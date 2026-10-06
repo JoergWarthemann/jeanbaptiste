@@ -14,9 +14,9 @@ namespace jb::core {
 
 /**
  * Performs a radix 2 decimation in time FFT using template metaprogramming.
- * \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
- * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- * \param Complex ... The complex type.
+ * \tparam SampleCnt ... The count of samples to be processed in this recursion level (stage)
+ * \tparam DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \tparam Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename SampleCnt::value_type> &&
@@ -83,7 +83,7 @@ private:
 
 /**
  * Specialization for case SampleCnt=4, direction=1 (forward).
- * \param Complex ... The complex type.
+ * \tparam Complex ... The complex type.
  */
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
@@ -133,7 +133,7 @@ public:
 
 /**
  * Specialization for case SampleCnt=4, direction=-1 (backward).
- * \param Complex ... The complex type.
+ * \tparam Complex ... The complex type.
  */
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
@@ -183,8 +183,8 @@ public:
 
 /**
  * Specialization for case SampleCnt=2.
- * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- * \param Complex ... The complex type.
+ * \tparam DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename DirectionFactor::value_type> &&
@@ -212,8 +212,8 @@ public:
 
 /**
  * Specialization for case SampleCnt=1.
- * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- * \param Complex ... The complex type.
+ * \tparam DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename DirectionFactor::value_type> &&
@@ -235,9 +235,9 @@ public:
 
 /**
  * Performs a radix 2 decimation in frequency FFT using template metaprogramming.
- * \param SampleCnt ... The count of samples to be processed in this recursion level (stage)
- * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- * \param Complex ... The complex type.
+ * \tparam SampleCnt ... The count of samples to be processed in this recursion level (stage)
+ * \tparam DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \tparam Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename SampleCnt::value_type> &&
@@ -304,7 +304,7 @@ private:
 
 /**
  * Specialization for case SampleCnt=4, direction=1 (forward).
- * \param Complex ... The complex type.
+ * \tparam Complex ... The complex type.
  */
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
@@ -354,7 +354,7 @@ public:
 
 /**
  * Specialization for case SampleCnt=4, direction=-1 (backward).
- * \param Complex ... The complex type.
+ * \tparam Complex ... The complex type.
  */
 template <typename Complex>
     requires std::is_floating_point_v<typename Complex::value_type>
@@ -404,8 +404,8 @@ public:
 
 /**
  * Specialization for case SampleCnt=2.
- * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- * \param Complex ... The complex type.
+ * \tparam DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename DirectionFactor::value_type> &&
@@ -433,8 +433,8 @@ public:
 
 /**
  * Specialization for case SampleCnt=1.
- * \param DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
- * \param Complex ... The complex type.
+ * \tparam DirectionFactor ... Specifies the direction of the DFT (forward: 1, backward: -1)
+ * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename DirectionFactor::value_type> &&

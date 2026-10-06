@@ -1,3 +1,19 @@
+/**
+ * Helpers for executing a 2N-sample real FFT using an N-sample complex FFT.
+ *
+ * This file provides the real-FFT data layout steps used around the internal
+ * complex FFT:
+ * - pack 2N real-valued input samples into N complex samples,
+ * - recombine the even and odd frequency components,
+ * - unpack the packed result into the external 2N-sample layout.
+ *
+ * The real FFT step halves the sample count seen by the internal complex FFT.
+ * Radix-2 and split-radix algorithms therefore use an internal FFT length that
+ * is one power of two smaller than the external real-FFT length. Radix-4 uses
+ * the same internal lengths as the complex radix-4 implementation, so the
+ * external real-FFT length is twice the internal complex length.
+ */
+
 #ifndef JB_TOOLS_REALFFT_HPP_
 #define JB_TOOLS_REALFFT_HPP_
 

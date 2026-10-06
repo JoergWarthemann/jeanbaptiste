@@ -1,3 +1,14 @@
+/**
+ * Real-valued FFT algorithm wrapper.
+ *
+ * Orchestrates the full real FFT pipeline around the core complex FFT for a
+ * selected stage, radix, decimation strategy, direction, window, normalization,
+ * and complex sample type. Forward transforms pack 2N real samples, run the
+ * internal N-sample complex FFT, then recombine and unpack the spectrum.
+ * Inverse transforms apply the inverse recombination before the internal FFT,
+ * then unpack the complex samples back into the 2N real-valued layout.
+ */
+
 #ifndef JB_REALALGORITHM_HPP_
 #define JB_REALALGORITHM_HPP_
 
@@ -24,6 +35,18 @@
 
 namespace jb {
 
+/**
+ * Real-valued FFT algorithm wrapper.
+ *
+ * Defines a tuple of executable sub tasks which belong to an algorithm, e.g. FFT, normalization, bit reversal.
+ * \param Stage ... The count of stages inside an algorithm. E.g. Stages = 4 -> sample count = 2^4
+ * \param Radix ... The radix used for the FFT (e.g., Radix_2, Radix_4, Radix_Split_2_4).
+ * \param Decimation ... The decimation strategy used for the FFT (e.g., Decimation_InTime, Decimation_InFrequency).
+ * \param Direction ... The direction of the FFT (e.g., Direction_Forward, Direction_Backward).
+ * \param Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
+ * \param Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
+ * \param Complex ... The complex data type.
+ */
 template <std::size_t Stage,
     typename Radix,
     typename Decimation,
@@ -112,15 +135,34 @@ private:
         tools::RealFftInputPacking<InternalSampleCnt, decltype(getDirectionValue()), Complex>{}(externalData);
 
         if constexpr (decltype(getDirectionValue())::value == 1) {
-            core::FftKernel<Radix, Decimation, decltype(getDirectionValue()), Complex>{}.template apply<InternalSampleCnt>(internalData);
-            tools::RealFftEvenOddRecombination<InternalSampleCnt, decltype(getDirectionValue()), Complex>{}(internalData);
+            core::FftKernel<
+                Radix,
+                Decimation,
+                decltype(getDirectionValue()),
+                Complex>{}
+                .template apply<InternalSampleCnt>(internalData);
+            tools::RealFftEvenOddRecombination<
+                InternalSampleCnt,
+                decltype(getDirectionValue()),
+                Complex>{}(internalData);
         }
         else {
-            tools::RealFftEvenOddRecombination<InternalSampleCnt, decltype(getDirectionValue()), Complex>{}(internalData);
-            core::FftKernel<Radix, Decimation, decltype(getDirectionValue()), Complex>{}.template apply<InternalSampleCnt>(internalData);
+            tools::RealFftEvenOddRecombination<
+                InternalSampleCnt,
+                decltype(getDirectionValue()),
+                Complex>{}(internalData);
+            core::FftKernel<
+                Radix,
+                Decimation,
+                decltype(getDirectionValue()),
+                Complex>{}
+                .template apply<InternalSampleCnt>(internalData);
         }
 
-        tools::RealFftOutputUnpacking<InternalSampleCnt, decltype(getDirectionValue()), Complex>{}(externalData);
+        tools::RealFftOutputUnpacking<
+            InternalSampleCnt,
+            decltype(getDirectionValue()),
+            Complex>{}(externalData);
         decltype(getNormalizationValue<ExternalSampleCnt>()){}(externalData);
     }
 };

@@ -1,3 +1,14 @@
+/**
+ * Executable FFT algorithm template for complex and real data.
+ *
+ * Builds the selected FFT pipeline from compile-time options for stage, radix,
+ * decimation strategy, direction, window, normalization, complex sample type,
+ * and data type. Complex FFTs are executed as a tuple of sub-tasks consisting
+ * of windowing, radix kernel execution, bit-reversal placement, and
+ * normalization. Real FFTs are delegated to RealAlgorithm, which wraps the core
+ * complex FFT with real-input packing and output unpacking.
+ */
+
 #ifndef JB_ALGORITHM_HPP_
 #define JB_ALGORITHM_HPP_
 
@@ -9,10 +20,7 @@
 
 #include "RealAlgorithm.hpp"
 #include "SampleCount.hpp"
-#include "core/Radix2.hpp"
-#include "core/Radix4.hpp"
-#include "core/RadixSplit24.hpp"
-#include "tools/BitReversalIndexSwapping.hpp"
+#include "core/FftKernel.hpp"
 
 #include "IExecutableAlgorithm.hpp"
 #include "Options.hpp"
@@ -37,7 +45,13 @@ namespace jb {
 /**
  * Defines a tuple of executable sub tasks which belong to an algorithm, e.g. FFT, normalization, bit reversal.
  * \param Stage ... The count of stages inside an algorithm. E.g. Stages = 4 -> sample count = 2^4
+ * \param Radix ... The radix used for the FFT (e.g., Radix_2, Radix_4, Radix_Split_2_4).
+ * \param Decimation ... The decimation strategy used for the FFT (e.g., Decimation_InTime, Decimation_InFrequency).
+ * \param Direction ... The direction of the FFT (e.g., Direction_Forward, Direction_Backward).
+ * \param Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
+ * \param Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
  * \param Complex ... The complex data type.
+ * \param Data ... The data type (e.g., Data_Complex, Data_Real).
  */
 template <std::size_t Stage,
     typename Radix,
@@ -151,20 +165,10 @@ private:
      */
     static consteval auto radix2SubTaskTypeValues() noexcept
     {
-        if constexpr (std::is_same_v<Decimation, options::Decimation_In_Time>) {
-            return hana::make_tuple(
-                decltype(getWindowValue<R2SampleCnt>()){},
-                tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
-                core::Radix2DIT<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
-                decltype(getRadix2NormalizationValue()){});
-        }
-        else {
-            return hana::make_tuple(
-                decltype(getWindowValue<R2SampleCnt>()){},
-                core::Radix2DIF<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
-                tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
-                decltype(getRadix2NormalizationValue()){});
-        }
+        return hana::make_tuple(
+            decltype(getWindowValue<R2SampleCnt>()){},
+            core::FftKernel<options::Radix_2, Decimation, decltype(getDirectionValue()), Complex>{},
+            decltype(getRadix2NormalizationValue()){});
     }
 
     /**
@@ -190,20 +194,10 @@ private:
      */
     static consteval auto radix4SubTaskTypeValues() noexcept
     {
-        if constexpr (std::is_same_v<Decimation, options::Decimation_In_Time>) {
-            return hana::make_tuple(
-                decltype(getWindowValue<R4SampleCnt>()){},
-                tools::BitReversalIndexSwapping<R4SampleCnt, Complex>{},
-                core::Radix4DIT<R4SampleCnt, decltype(getDirectionValue()), Complex>{},
-                decltype(getRadix4NormalizationValue()){});
-        }
-        else {
-            return hana::make_tuple(
-                decltype(getWindowValue<R4SampleCnt>()){},
-                core::Radix4DIF<R4SampleCnt, decltype(getDirectionValue()), Complex>{},
-                tools::BitReversalIndexSwapping<R4SampleCnt, Complex>{},
-                decltype(getRadix4NormalizationValue()){});
-        }
+        return hana::make_tuple(
+            decltype(getWindowValue<R4SampleCnt>()){},
+            core::FftKernel<options::Radix_4, Decimation, decltype(getDirectionValue()), Complex>{},
+            decltype(getRadix4NormalizationValue()){});
     }
 
     /**
@@ -212,20 +206,10 @@ private:
      */
     static consteval auto radixSplit24SubtaskTypeValues() noexcept
     {
-        if constexpr (std::is_same_v<Decimation, options::Decimation_In_Time>) {
-            return hana::make_tuple(
-                decltype(getWindowValue<R2SampleCnt>()){},
-                tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
-                core::RadixSplit24DIT<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
-                decltype(getRadix2NormalizationValue()){});
-        }
-        else {
-            return hana::make_tuple(
-                decltype(getWindowValue<R2SampleCnt>()){},
-                core::RadixSplit24DIF<R2SampleCnt, decltype(getDirectionValue()), Complex>{},
-                tools::BitReversalIndexSwapping<R2SampleCnt, Complex>{},
-                decltype(getRadix2NormalizationValue()){});
-        }
+        return hana::make_tuple(
+            decltype(getWindowValue<R2SampleCnt>()){},
+            core::FftKernel<options::Radix_Split_2_4, Decimation, decltype(getDirectionValue()), Complex>{},
+            decltype(getRadix2NormalizationValue()){});
     }
 
     /**
