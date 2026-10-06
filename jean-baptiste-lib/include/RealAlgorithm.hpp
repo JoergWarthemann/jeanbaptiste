@@ -19,10 +19,10 @@
 #include "Options.hpp"
 #include "SampleCount.hpp"
 #include "core/FftKernel.hpp"
+#include "core/RealFft.hpp"
 #include "normalization/DivisionByLengthNormalization.hpp"
 #include "normalization/NoNormalization.hpp"
 #include "normalization/SquareRootNormalization.hpp"
-#include "tools/RealFft.hpp"
 #include "windows/BartlettWindow.hpp"
 #include "windows/BlackmanHarrisWindow.hpp"
 #include "windows/BlackmanWindow.hpp"
@@ -39,13 +39,13 @@ namespace jb {
  * Real-valued FFT algorithm wrapper.
  *
  * Defines a tuple of executable sub tasks which belong to an algorithm, e.g. FFT, normalization, bit reversal.
- * \param Stage ... The count of stages inside an algorithm. E.g. Stages = 4 -> sample count = 2^4
- * \param Radix ... The radix used for the FFT (e.g., Radix_2, Radix_4, Radix_Split_2_4).
- * \param Decimation ... The decimation strategy used for the FFT (e.g., Decimation_InTime, Decimation_InFrequency).
- * \param Direction ... The direction of the FFT (e.g., Direction_Forward, Direction_Backward).
- * \param Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
- * \param Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
- * \param Complex ... The complex data type.
+ * \tparam Stage ... The count of stages inside an algorithm. E.g. Stages = 4 -> sample count = 2^4
+ * \tparam Radix ... The radix used for the FFT (e.g., Radix_2, Radix_4, Radix_Split_2_4).
+ * \tparam Decimation ... The decimation strategy used for the FFT (e.g., Decimation_InTime, Decimation_InFrequency).
+ * \tparam Direction ... The direction of the FFT (e.g., Direction_Forward, Direction_Backward).
+ * \tparam Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
+ * \tparam Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
+ * \tparam Complex ... The complex data type.
  */
 template <std::size_t Stage,
     typename Radix,
@@ -132,7 +132,10 @@ private:
         auto internalData = std::span<Complex, InternalSampleCnt::value>(data.data(), InternalSampleCnt::value);
 
         decltype(getWindowValue<ExternalSampleCnt>()){}(externalData);
-        tools::RealFftInputPacking<InternalSampleCnt, decltype(getDirectionValue()), Complex>{}(externalData);
+        core::RealFftInputPacking<
+            InternalSampleCnt,
+            decltype(getDirectionValue()),
+            Complex>{}(externalData);
 
         if constexpr (decltype(getDirectionValue())::value == 1) {
             core::FftKernel<
@@ -141,13 +144,13 @@ private:
                 decltype(getDirectionValue()),
                 Complex>{}
                 .template apply<InternalSampleCnt>(internalData);
-            tools::RealFftEvenOddRecombination<
+            core::RealFftEvenOddRecombination<
                 InternalSampleCnt,
                 decltype(getDirectionValue()),
                 Complex>{}(internalData);
         }
         else {
-            tools::RealFftEvenOddRecombination<
+            core::RealFftEvenOddRecombination<
                 InternalSampleCnt,
                 decltype(getDirectionValue()),
                 Complex>{}(internalData);
@@ -159,7 +162,7 @@ private:
                 .template apply<InternalSampleCnt>(internalData);
         }
 
-        tools::RealFftOutputUnpacking<
+        core::RealFftOutputUnpacking<
             InternalSampleCnt,
             decltype(getDirectionValue()),
             Complex>{}(externalData);

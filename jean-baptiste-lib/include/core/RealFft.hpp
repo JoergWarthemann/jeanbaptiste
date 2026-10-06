@@ -14,8 +14,8 @@
  * external real-FFT length is twice the internal complex length.
  */
 
-#ifndef JB_TOOLS_REALFFT_HPP_
-#define JB_TOOLS_REALFFT_HPP_
+#ifndef JB_CORE_REALFFT_HPP_
+#define JB_CORE_REALFFT_HPP_
 
 #include <span>
 #include <type_traits>
@@ -26,13 +26,13 @@
 
 namespace constants = boost::math::constants;
 
-namespace jb::tools {
+namespace jb::core {
 
 /**
  * Prepares the input data for the real FFT by reorganizing the samples.
- * \param InternalSampleCnt ... The internal sample count for the real FFT.
- * \param DirectionFactor ... The direction of the FFT (forward or inverse).
- * \param Complex ... The complex type used for the FFT data.
+ * \tparam InternalSampleCnt ... The internal sample count for the real FFT.
+ * \tparam DirectionFactor ... The direction of the FFT (forward or inverse).
+ * \tparam Complex ... The complex type used for the FFT data.
  */
 template <typename InternalSampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename InternalSampleCnt::value_type> &&
@@ -62,9 +62,9 @@ public:
  * packed real input into the spectrum of a 2N-sample real FFT. For an inverse
  * transform, applies the inverse recombination before unpacking the real data.
  *
- * \param InternalSampleCnt ... The internal sample count for the real FFT.
- * \param DirectionFactor ... The direction of the FFT (forward or inverse).
- * \param Complex ... The complex type used for the FFT data.
+ * \tparam InternalSampleCnt ... The internal sample count for the real FFT.
+ * \tparam DirectionFactor ... The direction of the FFT (forward or inverse).
+ * \tparam Complex ... The complex type used for the FFT data.
  */
 template <typename InternalSampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename InternalSampleCnt::value_type> &&
@@ -136,9 +136,9 @@ public:
  * conjugate-symmetric 2N-sample complex spectrum. For an inverse transform,
  * unpacks N complex samples into 2N real-valued samples.
  *
- * \param InternalSampleCnt ... The internal sample count for the real FFT.
- * \param DirectionFactor ... The direction of the FFT (forward or inverse).
- * \param Complex ... The complex type used for the FFT data.
+ * \tparam InternalSampleCnt ... The internal sample count for the real FFT.
+ * \tparam DirectionFactor ... The direction of the FFT (forward or inverse).
+ * \tparam Complex ... The complex type used for the FFT data.
  */
 template <typename InternalSampleCnt, typename DirectionFactor, typename Complex>
     requires std::is_integral_v<typename InternalSampleCnt::value_type> &&
@@ -172,6 +172,6 @@ public:
     }
 };
 
-} // namespace jb::tools
+} // namespace jb::core
 
-#endif // JB_TOOLS_REALFFT_HPP_
+#endif // JB_CORE_REALFFT_HPP_
