@@ -39,6 +39,8 @@
 * [x] add automated window tests
 * [x] add real FFT implementation
 * [x] add real FFt tests
+* [x] add ring buffer to tools
+* [ ] add overlap-add tooling
 
 
 ------------------------------------------------------------------------------------------------------------------------

@@ -15,7 +15,7 @@ set(JEAN_BAPTISTE_LIB_SOURCES
     include/core/Radix2.hpp
     include/core/Radix4.hpp
     include/core/RadixSplit24.hpp
-    include/core/SplitRadix.hpp
+    include/core/RealFft.hpp
     include/normalization/DivisionByLengthNormalization.hpp
     include/normalization/NoNormalization.hpp
     include/normalization/SquareRootNormalization.hpp
@@ -24,8 +24,7 @@ set(JEAN_BAPTISTE_LIB_SOURCES
     include/tools/Ceil.hpp
     include/tools/Floor.hpp
     include/tools/HeronSquareRoot.hpp
-    include/tools/RealFft.hpp
-    include/tools/RealComplexConversion.hpp
+    include/tools/RingBuffer.hpp
     include/tools/Round.hpp
     include/tools/SineCosine.hpp
     include/tools/SubTask.hpp
@@ -73,14 +72,16 @@ add_executable(${LIBRARY_NAME}-googletest
     testsrc/src/Radix4Test.cpp
     testsrc/src/RadixSplit24Test.cpp
     testsrc/src/RealFftTest.cpp
+    testsrc/src/RingBufferCapacityTest.cpp
+    testsrc/src/RingBufferGetValuesTest.cpp
+    testsrc/src/RingBufferinsertLValuesTest.cpp
+    testsrc/src/RingBufferinsertRValuesTest.cpp
     testsrc/src/SinCosTest.cpp
     testsrc/src/WindowTest.cpp
 
     testsrc/include/AlgorithmFixture.hpp
     testsrc/include/AlgorithmResultAnalysis.hpp
-    testsrc/include/StringConversion.hpp
     testsrc/include/TestCaseLoader.hpp
-    testsrc/include/WindowingAnalysis.hpp
     testsrc/src/main.cpp
     testsrc/src/TestCaseLoader.cpp
     )
