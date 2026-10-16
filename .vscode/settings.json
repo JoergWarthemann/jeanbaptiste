@@ -1,0 +1,78 @@
+{
+    "[cpp]": {
+        "editor.formatOnSave": true,
+    },
+    "files.trimTrailingWhitespace": true,
+    "cmake.useCMakePresets": "always",
+    "cmake.configureOnOpen": true,
+    "cmake.buildBeforeRun": true,
+    "cmake.clearOutputBeforeBuild": false,
+    "cmake.debugConfig": {
+        "type": "cppdbg",
+        "MIMode": "gdb",
+        "miDebuggerPath": "/usr/bin/gdb"
+    },
+    "cmake.options.statusBarVisibility": "visible",
+    "cmake.options.advanced": {
+        "testPreset": {
+            "statusBarVisibility": "icon",
+        },
+        "ctest": {
+            "statusBarVisibility": "icon"
+        },
+        "packagePreset": {
+            "statusBarVisibility": "icon"
+        },
+        "cpack": {
+            "statusBarVisibility": "icon"
+        },
+        "workflowPreset": {
+            "statusBarVisibility": "icon"
+        },
+        "workflow": {
+            "statusBarVisibility": "icon"
+        }
+    },
+    // Clangd replaces the default IntelliSense engine.
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.path": "/usr/bin/clangd",
+    "C_Cpp.clang_format_path": "/usr/bin/clang-format",
+    "editor.inlayHints.enabled": "offUnlessPressed",
+    // Prevent displaying “deprecated” symbols as strikethroughs as this significantly reduces readability
+    // and there are many parts of the code (3th party) that cannot be updated.
+    "editor.showDeprecated": false,
+    "search.useIgnoreFiles": false,
+    "search.exclude": {
+        "**/.git/**": true,
+        "**/build/**": true,
+        "**/.cache/**": true
+    },
+    "files.associations": {
+        "*.cpp.in": "cpp",
+        "*.hpp.in": "cpp",
+        // Inline include files
+        "*.inc": "cpp",
+        // Template implementation files
+        "*.ipp": "cpp",
+        // GCC Template implementation files (included by standard library headers)
+        "*.tcc": "cpp"
+    },
+    "files.exclude": {
+        "**/.git/**": true,
+        "**/build/**": true,
+        "**/.cache/**": true
+    },
+    "editor.rulers": [
+        {
+            "column": 120,
+            "color": "#9c9c9c"
+        }
+    ],
+    "testMate.cpp.test.advancedExecutables": [
+        {
+            "name": "jb lib tests",
+            "pattern": "${workspaceFolder}/build/Debug/jean-baptiste-lib/*{test,Test,TEST}*",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

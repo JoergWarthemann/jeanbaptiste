@@ -1,0 +1,33 @@
+InheritParentConfig: false
+
+Checks: >
+    -*,
+    bugprone-unchecked-optional-access,
+    cppcoreguidelines-init-variables,
+    cppcoreguidelines-avoid-const-or-ref-data-members,
+    cppcoreguidelines-virtual-class-destructor,
+    cppcoreguidelines-pro-type-const-cast,
+    readability-function-size,
+    readability-simplify-boolean-expr,
+    readability-named-parameter,
+    readability-non-const-parameter,
+    modernize-concat-nested-namespaces,
+    modernize-deprecated-headers,
+    modernize-use-auto,
+    modernize-loop-convert,
+    modernize-use-using,
+    modernize-use-equals-default,
+    modernize-return-braced-init-list,
+    performance-for-range-copy,
+    performance-unnecessary-copy-initialization,
+    performance-inefficient-algorithm,
+    misc-unused-parameters,
+    misc-redundant-expression,
+    misc-include-cleaner,
+    misc-definitions-in-headers,
+    misc-const-correctness,
+
+
+CheckOptions:
+    - { key: readability-function-size.LineThreshold,           value: 100 }
+    - { key: readability-function-size.NestingThreshold,        value: 5 }
