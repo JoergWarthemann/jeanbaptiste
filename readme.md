@@ -41,6 +41,8 @@
 * [x] add real FFt tests
 * [x] add ring buffer to tools
 * [ ] add overlap-add tooling
+* [ ] add JUCE app inspect
+* [ ] target_link_libraries of jean-baptiste-lib
 
 
 ------------------------------------------------------------------------------------------------------------------------

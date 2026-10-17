@@ -14,7 +14,7 @@ endif()
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Disable cmake searching the system for local Boost installation.  
+# Disable cmake searching the system for local Boost installation.
 set(BOOST_ROOT "" CACHE PATH "Boost library path")
 set(Boost_NO_SYSTEM_PATHS on CACHE BOOL "Do not search system for Boost")
 
@@ -22,7 +22,7 @@ set(Boost_NO_SYSTEM_PATHS on CACHE BOOL "Do not search system for Boost")
 project(
     jeanbaptiste
     VERSION 0.0.1
-    DESCRIPTION "Implements FFT algorithms"
+    DESCRIPTION "Implements DSP algorithms"
     LANGUAGES CXX C)
 
 set(ROOT_SOURCE_DIR "${PROJECT_SOURCE_DIR}")
@@ -31,5 +31,5 @@ add_custom_target(build-jean-baptiste-tests)
 
 enable_testing()
 
-add_subdirectory(jean-baptiste-app)
+add_subdirectory(inspect)
 add_subdirectory(jean-baptiste-lib)
