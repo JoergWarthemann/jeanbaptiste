@@ -35,6 +35,7 @@
     },
     // Clangd replaces the default IntelliSense engine.
     "C_Cpp.intelliSenseEngine": "disabled",
+    "C_Cpp.errorSquiggles": "disabled",
     "clangd.path": "/usr/bin/clangd",
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "editor.inlayHints.enabled": "offUnlessPressed",

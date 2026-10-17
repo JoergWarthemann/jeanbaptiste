@@ -28,7 +28,7 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 
 #find_package(Boost 1.68.0 COMPONENTS)
 find_package(Boost 1.68.0 REQUIRED COMPONENTS unit_test_framework filesystem)
-if(Boost_FOUND)   
+if(Boost_FOUND)
     # Set boost include directory.
     include_directories(${Boost_INCLUDE_DIRS})
 
