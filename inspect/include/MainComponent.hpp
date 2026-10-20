@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INSPECT_MAINCOMPONENT_HPP_
+#define INSPECT_MAINCOMPONENT_HPP_
 
 // CMake builds don't use an AppConfig.h, so it's safe to include juce module headers
 // directly. If you need to remain compatible with Projucer-generated builds, and
@@ -6,24 +7,32 @@
 // you could `#include <JuceHeader.h>` here instead, to make all your module headers visible.
 #include <juce_gui_extra/juce_gui_extra.h>
 
-//==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
+#include "AudioOutput.hpp"
+#include "FftProcessor.hpp"
+#include "FilePlayerProcessor.hpp"
+
+namespace inspect {
+
+/**
+ * Main component that manages the audio output and file player processor.
+ */
 class MainComponent final : public juce::Component
 {
 public:
-    //==============================================================================
-    MainComponent();
+    explicit MainComponent(const juce::File& audioFile = {});
 
-    //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
 
 private:
-    //==============================================================================
-    // Your private member variables go here...
+    AudioOutput mAudioOutput;
+    AudioOutput::Node::Ptr mFilePlayerNode; // owns the processor below
+    FilePlayerProcessor* mpFilePlayer = nullptr;
+    juce::String mStatus;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
+
+} // namespace inspect
+
+#endif // INSPECT_MAINCOMPONENT_HPP_

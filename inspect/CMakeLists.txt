@@ -3,6 +3,9 @@ project(inspect VERSION 0.1.0 LANGUAGES C CXX)
 
 set(COMPONENT_NAME inspect)
 
+set(Boost_INCLUDE_DIR /usr/lib/boost_1_88_0/include)
+set(Boost_LIBRARY_DIR /usr/lib/boost_1_88_0/lib)
+
 set(JUCE_SOURCE_DIR "" CACHE PATH "JUCE source directory")
 if (NOT JUCE_SOURCE_DIR AND DEFINED ENV{JUCE_SOURCE_DIR})
   set(JUCE_SOURCE_DIR "$ENV{JUCE_SOURCE_DIR}" CACHE PATH "JUCE source directory" FORCE)
@@ -18,6 +21,11 @@ if (NOT EXISTS "${JUCE_SOURCE_DIR}/CMakeLists.txt")
 endif()
 add_subdirectory("${JUCE_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/JUCE")
 
+find_package(Boost COMPONENTS system REQUIRED)
+if(NOT Boost_FOUND)
+    message(FATAL_ERROR "Boost library was not found")
+endif()
+
 juce_add_gui_app(inspect
     # VERSION ...                       # Set this if the app version is different to the project version
     # ICON_BIG ...                      # ICON_* arguments specify a path to an image file to use as an icon
@@ -32,7 +40,14 @@ juce_generate_juce_header(${COMPONENT_NAME})
 
 target_sources(${COMPONENT_NAME}
     PRIVATE
+        include/AudioOutput.hpp
+        include/FftProcessor.hpp
+        include/FilePlayerProcessor.hpp
         include/MainComponent.hpp
+        include/SpectrumQueue.hpp
+        src/AudioOutput.cpp
+        src/FftProcessor.cpp
+        src/FilePlayerProcessor.cpp
         src/Main.cpp
         src/MainComponent.cpp)
 
@@ -48,6 +63,8 @@ target_compile_definitions(${COMPONENT_NAME}
         JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:inspect,JUCE_VERSION>")
 
 target_link_libraries(${COMPONENT_NAME}
+    INTERFACE
+        Boost::boost Boost::system
     PRIVATE
         jean-baptiste-lib
         juce::juce_audio_utils

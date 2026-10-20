@@ -14,12 +14,15 @@ public:
     bool moreThanOneInstanceAllowed() override { return true; }
 
     //==============================================================================
-    void initialise(const juce::String& commandLine) override
+    void initialise([[maybe_unused]]const juce::String& commandLine) override
     {
         // This method is where you should put your application's initialisation code..
-        juce::ignoreUnused(commandLine);
+        // TODO: Remove temporary hardcoded path.
+        //const auto path = commandLine.unquoted().trim();
+        const juce::String path {"/home/mr-gray/data/projects/source/jeanbaptiste/inSpect_test.wav"};
+        const auto audioFile = path.isEmpty() ? juce::File() : juce::File::getCurrentWorkingDirectory().getChildFile(path);
 
-        mainWindow.reset(new MainWindow(getApplicationName()));
+        mainWindow.reset(new MainWindow(getApplicationName(), audioFile));
     }
 
     void shutdown() override
@@ -52,13 +55,13 @@ public:
     */
     class MainWindow final : public juce::DocumentWindow {
     public:
-        explicit MainWindow(juce::String name)
+        MainWindow(juce::String name, const juce::File& audioFile)
             : DocumentWindow(name,
                   juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(backgroundColourId),
                   allButtons)
         {
             setUsingNativeTitleBar(true);
-            setContentOwned(new MainComponent(), true);
+            setContentOwned(new inspect::MainComponent(audioFile), true);
 
 #if JUCE_IOS || JUCE_ANDROID
             setFullScreen(true);

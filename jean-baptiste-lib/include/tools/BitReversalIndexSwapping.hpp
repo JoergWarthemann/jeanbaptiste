@@ -58,8 +58,8 @@ class BitReversalIndexSwapping
         std::size_t value2 = ((value1 & 0xCCCC) >> 2) | ((value1 & 0x3333) << 2);
         std::size_t value3 = ((value2 & 0xF0F0) >> 4) | ((value2 & 0x0F0F) << 4);
 
-        return ((value3 & 0xFF00) >> 8) |
-            ((value3 & 0x00FF) << 8) >> cSignificantBitShiftLookupTable[hana::int_c<SampleCnt::value>];
+        return (((value3 & 0xFF00) >> 8) |
+            ((value3 & 0x00FF) << 8)) >> cSignificantBitShiftLookupTable[hana::int_c<SampleCnt::value>];
     }
 
     static constexpr std::size_t createReverseIndicesPair(const std::size_t index)

@@ -42,7 +42,8 @@
 * [x] add ring buffer to tools
 * [ ] add overlap-add tooling
 * [ ] add JUCE app inspect
-* [ ] target_link_libraries of jean-baptiste-lib
+* [ ] create a GUI thread and a spectrum GUI component capable to process FFT data
+* [ ] use boost::lockfree::spsc_queue to transfer data from audio thread to GUI thread
 
 
 ------------------------------------------------------------------------------------------------------------------------
