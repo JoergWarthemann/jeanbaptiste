@@ -1,4 +1,4 @@
-#include "FftProcessor.hpp"
+#include "SpectrumProcessor.hpp"
 
 #include "AlgorithmFactory.hpp"
 #include "Options.hpp"
@@ -25,28 +25,26 @@ constexpr double kBinScale = 2.0 / (spectrum::kFftSize * kWindowCoherentGain);
 
 } // namespace
 
-FftProcessor::FftProcessor()
+SpectrumProcessor::SpectrumProcessor()
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
                          .withOutput("Output", juce::AudioChannelSet::stereo(), true))
 {
 }
 
-FftProcessor::~FftProcessor() = default;
+SpectrumProcessor::~SpectrumProcessor() = default;
 
 //==============================================================================
-void FftProcessor::prepareToPlay(double, int)
+void SpectrumProcessor::prepareToPlay(double, int)
 {
     mAlgorithm = FftFactory{}.getAlgorithm(spectrum::kFftStage);
     mFftData.assign(spectrum::kFftSize, Complex{});
 
-    mRing.fill(0.0f);
-    mWritePosition = 0;
+    mRing.reset(spectrum::kFftSize);
     mSamplesSinceLastFrame = 0;
-    mNumValidSamples = 0;
 }
 
-void FftProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+void SpectrumProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
 
@@ -55,6 +53,7 @@ void FftProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuff
         return;
     }
 
+    // Mix down all input channels to a single mono signal.
     const float channelWeight = 1.0f / static_cast<float>(numChannels);
     for (int i = 0; i < buffer.getNumSamples(); ++i) {
         float mix = 0.0f;
@@ -62,39 +61,36 @@ void FftProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuff
             mix += buffer.getSample(channel, i);
         }
 
+        // Push the mixed and scaled sample into the ring buffer for FFT analysis.
         pushSample(mix * channelWeight);
     }
 }
 
-bool FftProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+bool SpectrumProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
     const auto& in = layouts.getMainInputChannelSet();
     return in == layouts.getMainOutputChannelSet() && (in == juce::AudioChannelSet::mono() || in == juce::AudioChannelSet::stereo());
 }
 
 //==============================================================================
-void FftProcessor::pushSample(float sample) noexcept
+void SpectrumProcessor::pushSample(float sample) noexcept
 {
-    mRing[mWritePosition] = sample;
-    mWritePosition = (mWritePosition + 1) & (spectrum::kFftSize - 1);
+    mRing.insert(Complex(sample, 0.0));
 
-    mNumValidSamples = std::min(mNumValidSamples + 1, spectrum::kFftSize);
     if (++mSamplesSinceLastFrame < spectrum::kHopSize) {
         return;
     }
 
     mSamplesSinceLastFrame = 0;
-    if (mNumValidSamples == spectrum::kFftSize) {
+    if (mRing.currentSize() == spectrum::kFftSize) {
         analyseLatestFrame();
     }
 }
 
-void FftProcessor::analyseLatestFrame() noexcept
+void SpectrumProcessor::analyseLatestFrame() noexcept
 {
-    // mWritePosition is the oldest sample of the ring.
-    for (std::size_t i = 0; i < spectrum::kFftSize; ++i) {
-        mFftData[i] = Complex(mRing[(mWritePosition + i) & (spectrum::kFftSize - 1)], 0.0);
-    }
+    // Copies the last kFftSize samples, oldest first.
+    mRing.copy(mFftData.data(), spectrum::kFftSize);
 
     (*mAlgorithm)(mFftData);
 

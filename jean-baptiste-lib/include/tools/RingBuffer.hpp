@@ -65,7 +65,7 @@ auto make_forward_iterator(Iterator iterator)
  * \return Function ... The function object.
  */
 template <typename Iterator, typename Function>
-Function enumerate(Iterator first, Iterator last, typename std::iterator_traits<Iterator>::difference_type initial, Function func)
+Function enumerate(Iterator first, Iterator last, std::size_t initial, Function func)
 {
     for (; first != last; ++first, ++initial) {
         func(initial, std::forward<typename std::iterator_traits<Iterator>::value_type>(*first));
@@ -570,7 +570,7 @@ private:
                 start + size,
                 std::is_lvalue_reference<SourceType&&>{});
 
-            auto numberOfRemaining = static_cast<int>(numberOfElements - size);
+            const auto numberOfRemaining = numberOfElements - size;
             auto startOfRemaining = wrapForward(start + size, tmpCapacity);
 
             if (numberOfRemaining > 0) {

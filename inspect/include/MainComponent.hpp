@@ -8,20 +8,19 @@
 #include <juce_gui_extra/juce_gui_extra.h>
 
 #include "AudioOutput.hpp"
-#include "FftProcessor.hpp"
 #include "FilePlayerProcessor.hpp"
+#include "SpectrumProcessor.hpp"
 
 namespace inspect {
 
 /**
  * Main component that manages the audio output and file player processor.
  */
-class MainComponent final : public juce::Component
-{
+class MainComponent final : public juce::Component {
 public:
     explicit MainComponent(const juce::File& audioFile = {});
 
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
 private:
@@ -30,7 +29,7 @@ private:
     FilePlayerProcessor* mpFilePlayer = nullptr;
     juce::String mStatus;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)
 };
 
 } // namespace inspect

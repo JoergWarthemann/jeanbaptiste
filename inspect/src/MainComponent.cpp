@@ -7,7 +7,7 @@ MainComponent::MainComponent(const juce::File& audioFile)
     auto player = std::make_unique<FilePlayerProcessor>();
     mpFilePlayer = player.get();
     mFilePlayerNode = mAudioOutput.addProcessor(std::move(player));
-    auto fftNode = mAudioOutput.addProcessor(std::make_unique<FftProcessor>());
+    auto fftNode = mAudioOutput.addProcessor(std::make_unique<SpectrumProcessor>());
     mAudioOutput.connectChain({mFilePlayerNode, fftNode});
 
     if (audioFile == juce::File()) {

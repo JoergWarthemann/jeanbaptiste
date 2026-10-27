@@ -1,7 +1,6 @@
-#ifndef INSPECT_FFTPROCESSOR_HPP_
-#define INSPECT_FFTPROCESSOR_HPP_
+#ifndef INSPECT_SPECTRUMPROCESSOR_HPP_
+#define INSPECT_SPECTRUMPROCESSOR_HPP_
 
-#include <array>
 #include <complex>
 #include <memory>
 #include <type_traits>
@@ -11,6 +10,7 @@
 
 #include "IExecutableAlgorithm.hpp"
 #include "SpectrumQueue.hpp"
+#include "tools/RingBuffer.hpp"
 
 namespace inspect {
 
@@ -19,10 +19,10 @@ namespace inspect {
  * of the channel mix is computed every spectrum::kHopSize samples and pushed to a lock-free queue for the GUI.
  * processBlock never allocates or locks. If the GUI doesn't keep up and the queue is full, frames are dropped.
  */
-class FftProcessor final : public juce::AudioProcessor {
+class SpectrumProcessor final : public juce::AudioProcessor {
 public:
-    FftProcessor();
-    ~FftProcessor() override;
+    SpectrumProcessor();
+    ~SpectrumProcessor() override;
 
     /**
      * Gets the queue which receives the spectrum frames.
@@ -70,16 +70,14 @@ private:
     std::shared_ptr<spectrum::Queue> mQueue = std::make_shared<spectrum::Queue>();
     std::unique_ptr<jb::IExecutableAlgorithm<Complex>> mAlgorithm;
 
-    std::array<float, spectrum::kFftSize> mRing{}; // the most recent kFftSize samples
+    jb::tools::RingBuffer<Complex> mRing; // the most recent kFftSize samples, sized in prepareToPlay
     std::vector<Complex> mFftData; // in-place FFT buffer, sized in prepareToPlay
     spectrum::Frame mFrame;
-    std::size_t mWritePosition = 0;
     std::size_t mSamplesSinceLastFrame = 0;
-    std::size_t mNumValidSamples = 0;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FftProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumProcessor)
 };
 
 } // namespace inspect
 
-#endif // INSPECT_FFTPROCESSOR_HPP_
+#endif // INSPECT_SPECTRUMPROCESSOR_HPP_

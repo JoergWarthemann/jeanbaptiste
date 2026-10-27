@@ -41,15 +41,15 @@ juce_generate_juce_header(${COMPONENT_NAME})
 target_sources(${COMPONENT_NAME}
     PRIVATE
         include/AudioOutput.hpp
-        include/FftProcessor.hpp
         include/FilePlayerProcessor.hpp
         include/MainComponent.hpp
+        include/SpectrumProcessor.hpp
         include/SpectrumQueue.hpp
         src/AudioOutput.cpp
-        src/FftProcessor.cpp
         src/FilePlayerProcessor.cpp
         src/Main.cpp
-        src/MainComponent.cpp)
+        src/MainComponent.cpp
+        src/SpectrumProcessor.cpp)
 
 target_include_directories(${COMPONENT_NAME}
     PRIVATE
