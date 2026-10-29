@@ -77,6 +77,7 @@ add_executable(${LIBRARY_NAME}-googletest
     testsrc/src/RingBufferinsertLValuesTest.cpp
     testsrc/src/RingBufferinsertRValuesTest.cpp
     testsrc/src/SinCosTest.cpp
+    testsrc/src/WindowPlacementTest.cpp
     testsrc/src/WindowTest.cpp
 
     testsrc/include/AlgorithmFixture.hpp

@@ -17,6 +17,7 @@
 #ifndef JB_CORE_REALFFT_HPP_
 #define JB_CORE_REALFFT_HPP_
 
+#include <cstddef>
 #include <span>
 #include <type_traits>
 
@@ -161,7 +162,7 @@ public:
         }
         else {
             // Go through samples and reorganize them.
-            for (auto idxNode = InternalSampleCnt::value; idxNode-- > 0;) {
+            for (std::size_t idxNode = InternalSampleCnt::value; idxNode-- > 0;) {
                 const auto packedSample = data[idxNode];
                 data[2 * idxNode].real(packedSample.real());
                 data[2 * idxNode].imag(0.0);

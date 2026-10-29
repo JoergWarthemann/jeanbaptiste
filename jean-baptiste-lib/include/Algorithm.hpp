@@ -3,9 +3,10 @@
  *
  * Builds the selected FFT pipeline from compile-time options for stage, radix,
  * decimation strategy, direction, window, normalization, complex sample type,
- * and data type. Complex FFTs are executed as a tuple of sub-tasks consisting
- * of windowing, radix kernel execution, bit-reversal placement, and
- * normalization. Real FFTs are delegated to RealAlgorithm, which wraps the core
+ * data type, and window placement. Complex FFTs are executed as a tuple of
+ * sub-tasks consisting of windowing, radix kernel execution (including
+ * bit-reversal placement), and normalization. The window is applied either
+ * before or after the radix kernel. Real FFTs are delegated to RealAlgorithm, which wraps the core
  * complex FFT with real-input packing and output unpacking.
  */
 
@@ -52,6 +53,8 @@ namespace jb {
  * \tparam Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
  * \tparam Complex ... The complex data type.
  * \tparam Data ... The data type (e.g., Data_Complex, Data_Real).
+ * \tparam WindowPlacement ... Whether the window is applied to the input (Window_Before) or to the result (Window_After)
+ *                           of the transform. Use Window_Before for analysis and Window_After for synthesis.
  */
 template <std::size_t Stage,
     typename Radix,
@@ -60,8 +63,14 @@ template <std::size_t Stage,
     typename Window,
     typename Normalization,
     typename Complex,
-    typename Data = options::Data_Complex>
+    typename Data = options::Data_Complex,
+    typename WindowPlacement = options::Window_Before>
 class Algorithm : public IExecutableAlgorithm<Complex> {
+    static_assert(
+        std::is_same_v<WindowPlacement, options::Window_Before> ||
+            std::is_same_v<WindowPlacement, options::Window_After>,
+        "WindowPlacement must be options::Window_Before or options::Window_After.");
+
 public:
     ~Algorithm() override = default;
 
@@ -72,7 +81,7 @@ public:
     void operator()(std::span<Complex> data) const override
     {
         if constexpr (std::is_same_v<Data, options::Data_Real>) {
-            RealAlgorithm<Stage, Radix, Decimation, Direction, Window, Normalization, Complex>{}(data);
+            RealAlgorithm<Stage, Radix, Decimation, Direction, Window, Normalization, Complex, WindowPlacement>{}(data);
         }
         else if constexpr (std::is_same_v<Radix, options::Radix_4>) {
             assert(data.size() == R4SampleCnt::value && "The size of the input data must be equal to 4^Stage.");
@@ -91,6 +100,22 @@ public:
 private:
     using R2SampleCnt = typename SampleCount<Stage, options::Radix_2, options::Data_Complex>::External;
     using R4SampleCnt = typename SampleCount<Stage, options::Radix_4, options::Data_Complex>::External;
+
+    /**
+     * Puts the sub tasks into execution order. The window runs first (Window_Before) or right after the kernel (Window_After).
+     * Normalization always runs last.
+     * \return hana::tuple ... A tuple of sub task type values in execution order.
+     */
+    template <typename WindowTask, typename KernelTask, typename NormalizationTask>
+    static consteval auto getSubTaskOrderWithRespectToWindowPlacement(WindowTask window, KernelTask kernel, NormalizationTask normalization) noexcept
+    {
+        if constexpr (std::is_same_v<WindowPlacement, options::Window_After>) {
+            return hana::make_tuple(kernel, window, normalization);
+        }
+        else {
+            return hana::make_tuple(window, kernel, normalization);
+        }
+    }
 
     /**
      * Creates a value of the selected direction type (FFT or iFFT) at compilation time.
@@ -166,7 +191,7 @@ private:
      */
     static consteval auto radix2SubTaskTypeValues() noexcept
     {
-        return hana::make_tuple(
+        return getSubTaskOrderWithRespectToWindowPlacement(
             decltype(getWindowValue<R2SampleCnt>()){},
             core::FftKernel<options::Radix_2, Decimation, decltype(getDirectionValue()), Complex>{},
             decltype(getRadix2NormalizationValue()){});
@@ -195,7 +220,7 @@ private:
      */
     static consteval auto radix4SubTaskTypeValues() noexcept
     {
-        return hana::make_tuple(
+        return getSubTaskOrderWithRespectToWindowPlacement(
             decltype(getWindowValue<R4SampleCnt>()){},
             core::FftKernel<options::Radix_4, Decimation, decltype(getDirectionValue()), Complex>{},
             decltype(getRadix4NormalizationValue()){});
@@ -207,7 +232,7 @@ private:
      */
     static consteval auto radixSplit24SubtaskTypeValues() noexcept
     {
-        return hana::make_tuple(
+        return getSubTaskOrderWithRespectToWindowPlacement(
             decltype(getWindowValue<R2SampleCnt>()){},
             core::FftKernel<options::Radix_Split_2_4, Decimation, decltype(getDirectionValue()), Complex>{},
             decltype(getRadix2NormalizationValue()){});

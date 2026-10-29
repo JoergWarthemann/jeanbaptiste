@@ -16,6 +16,7 @@ inline constexpr std::size_t kQueueCapacity = 16;
 
 /**
  * One spectrum snapshot shared between the audio thread (producer) and the GUI thread (consumer).
+ * Holds the spectrum after manipulation, i.e. what is heard.
  * Linear magnitudes where a full-scale sine reads 1.0 at its bin. Bin k is at k * sampleRate / kFftSize Hz.
  */
 struct Frame {

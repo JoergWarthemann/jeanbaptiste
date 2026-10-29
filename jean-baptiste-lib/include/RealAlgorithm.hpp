@@ -2,8 +2,8 @@
  * Real-valued FFT algorithm wrapper.
  *
  * Orchestrates the full real FFT pipeline around the core complex FFT for a
- * selected stage, radix, decimation strategy, direction, window, normalization,
- * and complex sample type. Forward transforms pack 2N real samples, run the
+ * selected stage, radix, decimation strategy, direction, window, window placement,
+ * normalization, and complex sample type. Forward transforms pack 2N real samples, run the
  * internal N-sample complex FFT, then recombine and unpack the spectrum.
  * Inverse transforms apply the inverse recombination before the internal FFT,
  * then unpack the complex samples back into the 2N real-valued layout.
@@ -46,6 +46,8 @@ namespace jb {
  * \tparam Window ... The window function applied to the input data (e.g., Window_Hamming, Window_Blackman).
  * \tparam Normalization ... The normalization method applied to the FFT output (e.g., Normalization_No, Normalization_Division_By_Length).
  * \tparam Complex ... The complex data type.
+ * \tparam WindowPlacement ... Whether the window is applied to the input (Window_Before) or to the result (Window_After)
+ *                           of the transform. The window always acts on the 2N-sample external layout.
  */
 template <std::size_t Stage,
     typename Radix,
@@ -53,8 +55,14 @@ template <std::size_t Stage,
     typename Direction,
     typename Window,
     typename Normalization,
-    typename Complex>
+    typename Complex,
+    typename WindowPlacement = options::Window_Before>
 class RealAlgorithm {
+    static_assert(
+        std::is_same_v<WindowPlacement, options::Window_Before> ||
+            std::is_same_v<WindowPlacement, options::Window_After>,
+        "WindowPlacement must be options::Window_Before or options::Window_After.");
+
 public:
     void operator()(std::span<Complex> data) const
     {
@@ -131,7 +139,9 @@ private:
         auto externalData = std::span<Complex, ExternalSampleCnt::value>(data.data(), ExternalSampleCnt::value);
         auto internalData = std::span<Complex, InternalSampleCnt::value>(data.data(), InternalSampleCnt::value);
 
-        decltype(getWindowValue<ExternalSampleCnt>()){}(externalData);
+        if constexpr (std::is_same_v<WindowPlacement, options::Window_Before>) {
+            decltype(getWindowValue<ExternalSampleCnt>()){}(externalData);
+        }
         core::RealFftInputPacking<
             InternalSampleCnt,
             decltype(getDirectionValue()),
@@ -166,6 +176,11 @@ private:
             InternalSampleCnt,
             decltype(getDirectionValue()),
             Complex>{}(externalData);
+
+        if constexpr (std::is_same_v<WindowPlacement, options::Window_After>) {
+            decltype(getWindowValue<ExternalSampleCnt>()){}(externalData);
+        }
+
         decltype(getNormalizationValue<ExternalSampleCnt>()){}(externalData);
     }
 };

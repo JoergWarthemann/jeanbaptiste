@@ -23,7 +23,7 @@ public:
      * Does nothing.
      * \param[in] data ... Span of SampleCnt elements of type Complex.
      */
-    void operator()(std::span<Complex, SampleCnt::value> data) const
+    void operator()(std::span<Complex, SampleCnt::value>) const
     {}
 };
 

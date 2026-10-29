@@ -8,7 +8,7 @@ class ExecuteWindowOnComplexData {
 public:
     Complex operator()(const Complex& factor1, const Complex::value_type& factor2)
     {
-        return Complex(factor1.real() * factor2, factor1.imag());
+        return Complex(factor1.real() * factor2, factor1.imag() * factor2);
     }
 };
 

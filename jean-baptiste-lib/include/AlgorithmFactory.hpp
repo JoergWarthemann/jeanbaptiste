@@ -22,10 +22,11 @@ namespace jb {
  * \tparam Radix ... The radix used in the FFT algorithm.
  * \tparam Decimation ... The decimation type used in the FFT algorithm.
  * \tparam Direction ... The direction of the FFT (forward or backward).
- * \tparam Window ... The windowing function applied to the input data.
+ * \tparam Window ... The windowing function.
  * \tparam Normalization ... The normalization method applied to the FFT results.
  * \tparam Complex ... The complex data type.
  * \tparam Data ... The data type used in the FFT algorithm.
+ * \tparam WindowPlacement ... Whether the window is applied before (Window_Before) or after (Window_After) the transform.
  */
 template <std::size_t Begin,
     std::size_t End,
@@ -35,7 +36,8 @@ template <std::size_t Begin,
     typename Window,
     typename Normalization,
     typename Complex,
-    typename Data = options::Data_Complex>
+    typename Data = options::Data_Complex,
+    typename WindowPlacement = options::Window_Before>
 class AlgorithmFactory {
     /**
      * Create a map of FFT algorithm stages at compile time.
@@ -57,7 +59,8 @@ class AlgorithmFactory {
                     Window,
                     Normalization,
                     Complex,
-                    Data>>)...);
+                    Data,
+                    WindowPlacement>>)...);
         });
     }
 
