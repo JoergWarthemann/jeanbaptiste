@@ -1,6 +1,7 @@
 #ifndef INSPECT_SPECTRUMPROCESSOR_HPP_
 #define INSPECT_SPECTRUMPROCESSOR_HPP_
 
+#include <array>
 #include <complex>
 #include <memory>
 #include <span>
@@ -11,6 +12,7 @@
 
 #include "IExecutableAlgorithm.hpp"
 #include "SpectrumQueue.hpp"
+#include "tools/OverlapAdd.hpp"
 #include "tools/RingBuffer.hpp"
 
 namespace inspect {
@@ -18,7 +20,7 @@ namespace inspect {
 /**
  * Spectral processing node (STFT with overlap-add). The channel mix is analysed every spectrum::kHopSize samples
  * with a real FFT (jean-baptiste-lib) and a sine window, the spectrum is handed to manipulateSpectrum(), transformed
- * back with an inverse FFT and overlap-added. The analysis window is applied by the forward transform, the synthesis
+ * back with an inverse FFT and overlap-added (jb::tools::OverlapAdd). The analysis window is applied by the forward transform, the synthesis
  * window by the inverse transform (jb::options::Window_Before / Window_After). The result replaces the audio in the
  * buffer (identical on all channels). Sine analysis and synthesis windows with 50 % overlap reconstruct the input
  * perfectly as long as manipulateSpectrum() leaves the spectrum untouched.
@@ -101,11 +103,16 @@ private:
 
     jb::tools::RingBuffer<Complex> mRing; // the most recent kFftSize samples, sized in prepareToPlay
     std::vector<Complex> mFftData; // in-place FFT buffer, sized in prepareToPlay
-    std::vector<double> mOverlapAdd; // circular accumulator, mOverlapPosition is the oldest unread output sample
-    double mMagnitudeScale = 1.0; // makes a full-scale sine read 1.0 at its bin
+    jb::tools::OverlapAdd<
+        std::integral_constant<int, spectrum::kFftSize>,
+        std::integral_constant<int, spectrum::kHopSize>,
+        Complex>
+        mOverlapAdd;
+    std::array<double, spectrum::kHopSize> mPending{}; // the finished output samples of the last frame
+    double mMagnitudeScale{1.0}; // makes a full-scale sine read 1.0 at its bin
     spectrum::Frame mFrame;
-    std::size_t mOverlapPosition = 0;
-    std::size_t mSamplesSinceLastFrame = 0;
+    std::size_t mPendingPosition{0}; // the next sample of mPending to output
+    std::size_t mSamplesSinceLastFrame{0};
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectrumProcessor)
 };

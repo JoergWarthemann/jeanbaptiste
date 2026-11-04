@@ -24,6 +24,7 @@ set(JEAN_BAPTISTE_LIB_SOURCES
     include/tools/Ceil.hpp
     include/tools/Floor.hpp
     include/tools/HeronSquareRoot.hpp
+    include/tools/OverlapAdd.hpp
     include/tools/RingBuffer.hpp
     include/tools/Round.hpp
     include/tools/SineCosine.hpp
@@ -68,6 +69,7 @@ find_library(GOOGLEMOCK_LIB libgmock.a)
 add_executable(${LIBRARY_NAME}-googletest
     ${JEAN_BAPTISTE_LIB_SOURCES}
     testsrc/src/BitReversalTest.cpp
+    testsrc/src/OverlapAddTest.cpp
     testsrc/src/Radix2Test.cpp
     testsrc/src/Radix4Test.cpp
     testsrc/src/RadixSplit24Test.cpp

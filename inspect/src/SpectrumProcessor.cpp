@@ -60,8 +60,9 @@ void SpectrumProcessor::prepareToPlay(double, int)
     // w(n) = sin(pi * n / N) is cot(pi / (2 * N)).
     mMagnitudeScale = 2.0 * std::tan(std::numbers::pi / (2.0 * spectrum::kFftSize));
 
-    mOverlapAdd.assign(spectrum::kFftSize, 0.0);
-    mOverlapPosition = 0;
+    mOverlapAdd.reset();
+    mPending.fill(0.0);
+    mPendingPosition = 0;
 
     mRing.reset(spectrum::kFftSize);
     mSamplesSinceLastFrame = 0;
@@ -106,10 +107,10 @@ void SpectrumProcessor::manipulateSpectrum(std::span<Complex, spectrum::kNumBins
 //==============================================================================
 float SpectrumProcessor::processSample(float input) noexcept
 {
-    // The output sample is finished and read before the input is added, which makes the latency exactly kFftSize.
-    const float output = static_cast<float>(mOverlapAdd[mOverlapPosition]);
-    mOverlapAdd[mOverlapPosition] = 0.0;
-    mOverlapPosition = (mOverlapPosition + 1) % spectrum::kFftSize;
+    // The finished samples of the last frame are output one by one. The next frame completes right after the last of
+    // them has been output, which makes the latency exactly kFftSize.
+    const float output = static_cast<float>(mPending[mPendingPosition]);
+    mPendingPosition = (mPendingPosition + 1) % spectrum::kHopSize;
 
     mRing.insert(Complex(input, 0.0));
 
@@ -135,10 +136,9 @@ void SpectrumProcessor::processLatestFrame() noexcept
     publishSpectrum();
     (*mInverse)(mFftData);
 
-    // The frame starts at the oldest sample which has not been output yet, which is mOverlapPosition.
-    for (std::size_t i = 0; i < spectrum::kFftSize; ++i) {
-        mOverlapAdd[(mOverlapPosition + i) % spectrum::kFftSize] += mFftData[i].real();
-    }
+    // Adds the frame to the tail of the previous ones and takes the samples which are finished now.
+    mOverlapAdd(std::span<const Complex, spectrum::kFftSize>(mFftData.data(), spectrum::kFftSize), mPending);
+    mPendingPosition = 0;
 }
 
 void SpectrumProcessor::publishSpectrum() noexcept

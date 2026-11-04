@@ -17,7 +17,6 @@
 #ifndef JB_CORE_REALFFT_HPP_
 #define JB_CORE_REALFFT_HPP_
 
-#include <cstddef>
 #include <span>
 #include <type_traits>
 
