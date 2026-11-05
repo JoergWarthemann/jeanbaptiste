@@ -1,6 +1,7 @@
 #ifndef INSPECT_SPECTRUMPROCESSOR_HPP_
 #define INSPECT_SPECTRUMPROCESSOR_HPP_
 
+#include <algorithm>
 #include <array>
 #include <complex>
 #include <memory>
@@ -103,11 +104,8 @@ private:
         std::array<double, spectrum::kHopSize> pending{};
     };
 
-    /**
-     * Takes the next output sample and feeds one input sample.
-     * \return The output sample, which is the input from kFftSize samples ago after spectral processing.
-     */
-    float exchangeSample(float input, ChannelState& channel) noexcept;
+    void exchangeSamples(std::span<float> samples, std::span<const double> output, ChannelState& channel) noexcept;
+
     void processSampleFrameAndSpectrum(int numChannels) noexcept;
     void publishSpectrum(int numChannels) noexcept;
 

@@ -1,5 +1,6 @@
 #include "SpectrumProcessor.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <numbers>
 
@@ -80,21 +81,24 @@ void SpectrumProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mid
         return;
     }
 
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-        // Process each sample for all channels, exchanging it with the output from the pending buffer.
-        for (int channel = 0; channel < numChannels; ++channel) {
-            buffer.setSample(
-                channel,
-                sample,
-                exchangeSample(
-                    buffer.getSample(channel, sample),
-                    mChannels[static_cast<std::size_t>(channel)]));
+    const auto numSamples = static_cast<std::size_t>(buffer.getNumSamples());
+    // Process the buffer in chunks of hop size, exchanging samples with the ring buffer and pending output.
+    for (std::size_t offset = 0; offset < numSamples;) {
+        // Determine how many samples to process in this chunk, which is the minimum of the remaining samples
+        // and the remaining space in the current hop.
+        const auto count = std::min(numSamples - offset, spectrum::kHopSize - mSamplesSinceLastFrame);
+
+        for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+            auto& channel = mChannels[static_cast<std::size_t>(channelIndex)];
+            auto samples = std::span<float>{buffer.getWritePointer(channelIndex), numSamples}.subspan(offset, count);
+            auto output = std::span<const double>{channel.pending}.subspan(mPendingPosition, count);
+            exchangeSamples(samples, output, channel);
         }
 
-        // Advance the pending position and check if a new frame should be processed.
-        mPendingPosition = (mPendingPosition + 1) % spectrum::kHopSize;
-        // The pending position wraps around the hop size, ensuring overlap-add works correctly.
-        if (++mSamplesSinceLastFrame == spectrum::kHopSize) {
+        offset += count;
+        mPendingPosition = (mPendingPosition + count) % spectrum::kHopSize;
+        mSamplesSinceLastFrame += count;
+        if (mSamplesSinceLastFrame == spectrum::kHopSize) {
             mSamplesSinceLastFrame = 0;
             if (mChannels.front().ring.currentSize() == spectrum::kFftSize) {
                 processSampleFrameAndSpectrum(numChannels);
@@ -102,6 +106,7 @@ void SpectrumProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mid
         }
     }
 
+    // Silence buffer channels that weren't processed, preventing stale or undefined samples from reaching the output.
     for (int channel = numChannels; channel < buffer.getNumChannels(); ++channel) {
         buffer.clear(channel, 0, buffer.getNumSamples());
     }
@@ -117,14 +122,15 @@ void SpectrumProcessor::manipulateSpectrum(std::span<Complex, spectrum::kNumBins
 {
 }
 
-//==============================================================================
-float SpectrumProcessor::exchangeSample(float input, ChannelState& channel) noexcept
+void SpectrumProcessor::exchangeSamples(std::span<float> samples, std::span<const double> output, ChannelState& channel) noexcept
 {
-    // The finished samples of the last frame are output one by one. The next frame completes right after the last of
-    // them has been output, which makes the latency exactly kFftSize.
-    const float output = static_cast<float>(channel.pending[mPendingPosition]);
-    channel.ring.insert(Complex(input, 0.0));
-    return output;
+    for (float input : samples) {
+        channel.ring.insert(Complex{input, 0.0});
+    }
+
+    std::ranges::transform(output, samples.begin(), [](double sample) {
+        return static_cast<float>(sample);
+    });
 }
 
 void SpectrumProcessor::processSampleFrameAndSpectrum(int numChannels) noexcept
