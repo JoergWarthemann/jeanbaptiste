@@ -52,19 +52,20 @@ SpectrumProcessor::~SpectrumProcessor() = default;
 //==============================================================================
 void SpectrumProcessor::prepareToPlay(double, int)
 {
-    mForward = ForwardFactory{}.getAlgorithm(spectrum::kFftStage);
-    mInverse = InverseFactory{}.getAlgorithm(spectrum::kFftStage);
-    mFftData.assign(spectrum::kFftSize, Complex{});
+    for (auto& channel : mChannels) {
+        channel.forward = ForwardFactory{}.getAlgorithm(spectrum::kFftStage);
+        channel.inverse = InverseFactory{}.getAlgorithm(spectrum::kFftStage);
+        channel.fftData.assign(spectrum::kFftSize, Complex{});
+        channel.overlapAdd.reset();
+        channel.pending.fill(0.0);
+        channel.ring.reset(spectrum::kFftSize);
+    }
 
     // A sine of amplitude A at bin k gives |X[k]| = A / 2 * sum(w), and the sum of the sine window
     // w(n) = sin(pi * n / N) is cot(pi / (2 * N)).
     mMagnitudeScale = 2.0 * std::tan(std::numbers::pi / (2.0 * spectrum::kFftSize));
 
-    mOverlapAdd.reset();
-    mPending.fill(0.0);
     mPendingPosition = 0;
-
-    mRing.reset(spectrum::kFftSize);
     mSamplesSinceLastFrame = 0;
 
     setLatencySamples(static_cast<int>(spectrum::kFftSize));
@@ -75,22 +76,34 @@ void SpectrumProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mid
     juce::ScopedNoDenormals noDenormals;
 
     const int numChannels = std::min(buffer.getNumChannels(), getTotalNumInputChannels());
-    if (numChannels == 0 || mForward == nullptr) {
+    if (numChannels == 0 || mChannels.front().forward == nullptr) {
         return;
     }
 
-    // Mix down all input channels to a single mono signal, process it and write the result to all channels.
-    const float channelWeight = 1.0f / static_cast<float>(numChannels);
-    for (int i = 0; i < buffer.getNumSamples(); ++i) {
-        float mix = 0.0f;
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+        // Process each sample for all channels, exchanging it with the output from the pending buffer.
         for (int channel = 0; channel < numChannels; ++channel) {
-            mix += buffer.getSample(channel, i);
+            buffer.setSample(
+                channel,
+                sample,
+                exchangeSample(
+                    buffer.getSample(channel, sample),
+                    mChannels[static_cast<std::size_t>(channel)]));
         }
 
-        const float processed = processSample(mix * channelWeight);
-        for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-            buffer.setSample(channel, i, processed);
+        // Advance the pending position and check if a new frame should be processed.
+        mPendingPosition = (mPendingPosition + 1) % spectrum::kHopSize;
+        // The pending position wraps around the hop size, ensuring overlap-add works correctly.
+        if (++mSamplesSinceLastFrame == spectrum::kHopSize) {
+            mSamplesSinceLastFrame = 0;
+            if (mChannels.front().ring.currentSize() == spectrum::kFftSize) {
+                processSampleFrameAndSpectrum(numChannels);
+            }
         }
+    }
+
+    for (int channel = numChannels; channel < buffer.getNumChannels(); ++channel) {
+        buffer.clear(channel, 0, buffer.getNumSamples());
     }
 }
 
@@ -105,46 +118,45 @@ void SpectrumProcessor::manipulateSpectrum(std::span<Complex, spectrum::kNumBins
 }
 
 //==============================================================================
-float SpectrumProcessor::processSample(float input) noexcept
+float SpectrumProcessor::exchangeSample(float input, ChannelState& channel) noexcept
 {
     // The finished samples of the last frame are output one by one. The next frame completes right after the last of
     // them has been output, which makes the latency exactly kFftSize.
-    const float output = static_cast<float>(mPending[mPendingPosition]);
-    mPendingPosition = (mPendingPosition + 1) % spectrum::kHopSize;
-
-    mRing.insert(Complex(input, 0.0));
-
-    if (++mSamplesSinceLastFrame < spectrum::kHopSize) {
-        return output;
-    }
-
-    mSamplesSinceLastFrame = 0;
-    if (mRing.currentSize() == spectrum::kFftSize) {
-        processLatestFrame();
-    }
-
+    const float output = static_cast<float>(channel.pending[mPendingPosition]);
+    channel.ring.insert(Complex(input, 0.0));
     return output;
 }
 
-void SpectrumProcessor::processLatestFrame() noexcept
+void SpectrumProcessor::processSampleFrameAndSpectrum(int numChannels) noexcept
 {
-    // Copies the last kFftSize samples, oldest first.
-    mRing.copy(mFftData.data(), spectrum::kFftSize);
+    for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+        auto& channel = mChannels[static_cast<std::size_t>(channelIndex)];
+        channel.ring.copy(channel.fftData.data(), spectrum::kFftSize);
+        (*channel.forward)(channel.fftData);
+        manipulateSpectrum(std::span<Complex, spectrum::kNumBins>(channel.fftData.data(), spectrum::kNumBins));
+    }
 
-    (*mForward)(mFftData);
-    manipulateSpectrum(std::span<Complex, spectrum::kNumBins>(mFftData.data(), spectrum::kNumBins));
-    publishSpectrum();
-    (*mInverse)(mFftData);
+    publishSpectrum(numChannels);
 
-    // Adds the frame to the tail of the previous ones and takes the samples which are finished now.
-    mOverlapAdd(std::span<const Complex, spectrum::kFftSize>(mFftData.data(), spectrum::kFftSize), mPending);
+    for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
+        auto& channel = mChannels[static_cast<std::size_t>(channelIndex)];
+        (*channel.inverse)(channel.fftData);
+        channel.overlapAdd(
+            std::span<const Complex, spectrum::kFftSize>(channel.fftData.data(), spectrum::kFftSize),
+            channel.pending);
+    }
+
     mPendingPosition = 0;
 }
 
-void SpectrumProcessor::publishSpectrum() noexcept
+void SpectrumProcessor::publishSpectrum(int numChannels) noexcept
 {
     for (std::size_t bin = 0; bin < spectrum::kNumBins; ++bin) {
-        mFrame.magnitude[bin] = static_cast<float>(std::abs(mFftData[bin]) * mMagnitudeScale);
+        double magnitude = 0.0;
+        for (int channel = 0; channel < numChannels; ++channel) {
+            magnitude += std::abs(mChannels[static_cast<std::size_t>(channel)].fftData[bin]);
+        }
+        mFrame.magnitude[bin] = static_cast<float>(magnitude * mMagnitudeScale / numChannels);
     }
 
     // DC and Nyquist have no mirrored counterpart, so they must not be doubled.

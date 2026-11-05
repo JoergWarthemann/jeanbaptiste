@@ -40,11 +40,12 @@
 * [x] add real FFT implementation
 * [x] add real FFt tests
 * [x] add ring buffer to tools
-* [ ] add overlap-add tooling
+* [x] add overlap-add tooling
 * [ ] create a GUI thread and a spectrum GUI component capable to process FFT data
 * [ ] use boost::lockfree::spsc_queue to transfer data from audio thread to GUI thread
 * [x] extend Algorithmn to support windowing before or after processing
-* [ ] establish 2 FFTs for each channel in order to have stereo sound after resynthesis
+* [x] establish 2 FFTs for each channel in order to have stereo sound after resynthesis
+* [x] analyze whether there are a lot of copy operations when using mRing, mFftData, mPending and mFrame
 * [ ] add a knob for spectrum changes, shifting frequencies up or down
 
 ------------------------------------------------------------------------------------------------------------------------
