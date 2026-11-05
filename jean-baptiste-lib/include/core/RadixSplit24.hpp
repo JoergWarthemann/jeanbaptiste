@@ -5,6 +5,7 @@
 
 #include <boost/math/constants/constants.hpp>
 
+#include "core/CoreConcepts.hpp"
 #include "tools/SineCosine.hpp"
 #include "tools/SubTask.hpp"
 
@@ -19,9 +20,7 @@ namespace jb::core {
  * \tparam Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename SampleCnt::value_type> &&
-    std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires FftParameters<SampleCnt, DirectionFactor, Complex>
 class RadixSplit24DIT
     : public tools::SubTask<RadixSplit24DIT<SampleCnt, DirectionFactor, Complex>, Complex> {
 public:
@@ -146,7 +145,7 @@ private:
  * \tparam Complex ... The complex type.
  */
 template <typename Complex>
-    requires std::is_floating_point_v<typename Complex::value_type>
+    requires ComplexLike<Complex>
 class RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
     : public tools::SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
 private:
@@ -210,7 +209,7 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename Complex>
-    requires std::is_floating_point_v<typename Complex::value_type>
+    requires ComplexLike<Complex>
 class RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
     : public tools::SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 private:
@@ -275,8 +274,8 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires IntegralConstant<DirectionFactor> &&
+    ComplexLike<Complex>
 class RadixSplit24DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
     : public tools::SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
 private:
@@ -299,8 +298,8 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires IntegralConstant<DirectionFactor> &&
+    ComplexLike<Complex>
 class RadixSplit24DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
     : public tools::SubTask<RadixSplit24DIT<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
 private:
@@ -324,9 +323,7 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename SampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename SampleCnt::value_type> &&
-    std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires FftParameters<SampleCnt, DirectionFactor, Complex>
 class RadixSplit24DIF
     : public tools::SubTask<RadixSplit24DIF<SampleCnt, DirectionFactor, Complex>, Complex> {
 public:
@@ -450,7 +447,7 @@ private:
  * \tparam Complex ... The complex type.
  */
 template <typename Complex>
-    requires std::is_floating_point_v<typename Complex::value_type>
+    requires ComplexLike<Complex>
 class RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>
     : public tools::SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, 1>, Complex>, Complex> {
 private:
@@ -512,7 +509,7 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename Complex>
-    requires std::is_floating_point_v<typename Complex::value_type>
+    requires ComplexLike<Complex>
 class RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>
     : public tools::SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 4>, std::integral_constant<int, -1>, Complex>, Complex> {
 private:
@@ -575,8 +572,8 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires IntegralConstant<DirectionFactor> &&
+    ComplexLike<Complex>
 class RadixSplit24DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>
     : public tools::SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 2>, DirectionFactor, Complex>, Complex> {
 private:
@@ -599,8 +596,8 @@ public:
  * \tparam Complex ... The complex type.
  */
 template <typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires IntegralConstant<DirectionFactor> &&
+    ComplexLike<Complex>
 class RadixSplit24DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>
     : public tools::SubTask<RadixSplit24DIF<std::integral_constant<unsigned, 1>, DirectionFactor, Complex>, Complex> {
 private:

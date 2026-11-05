@@ -11,6 +11,7 @@ set(JEAN_BAPTISTE_LIB_SOURCES
     include/Options.hpp
     include/RealAlgorithm.hpp
     include/SampleCount.hpp
+    include/core/CoreConcepts.hpp
     include/core/FftKernel.hpp
     include/core/Radix2.hpp
     include/core/Radix4.hpp

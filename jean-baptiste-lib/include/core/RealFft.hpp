@@ -22,6 +22,7 @@
 
 #include <boost/math/constants/constants.hpp>
 
+#include "core/CoreConcepts.hpp"
 #include "tools/SineCosine.hpp"
 
 namespace constants = boost::math::constants;
@@ -35,9 +36,7 @@ namespace jb::core {
  * \tparam Complex ... The complex type used for the FFT data.
  */
 template <typename InternalSampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename InternalSampleCnt::value_type> &&
-    std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires FftParameters<InternalSampleCnt, DirectionFactor, Complex>
 class RealFftInputPacking {
 public:
     void operator()(std::span<Complex, 2 * InternalSampleCnt::value> data) const
@@ -67,9 +66,7 @@ public:
  * \tparam Complex ... The complex type used for the FFT data.
  */
 template <typename InternalSampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename InternalSampleCnt::value_type> &&
-    std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires FftParameters<InternalSampleCnt, DirectionFactor, Complex>
 class RealFftEvenOddRecombination {
 public:
     void operator()(std::span<Complex, InternalSampleCnt::value> data) const
@@ -141,9 +138,7 @@ public:
  * \tparam Complex ... The complex type used for the FFT data.
  */
 template <typename InternalSampleCnt, typename DirectionFactor, typename Complex>
-    requires std::is_integral_v<typename InternalSampleCnt::value_type> &&
-    std::is_integral_v<typename DirectionFactor::value_type> &&
-    std::is_floating_point_v<typename Complex::value_type>
+    requires FftParameters<InternalSampleCnt, DirectionFactor, Complex>
 class RealFftOutputUnpacking {
 public:
     void operator()(std::span<Complex, 2 * InternalSampleCnt::value> data) const
