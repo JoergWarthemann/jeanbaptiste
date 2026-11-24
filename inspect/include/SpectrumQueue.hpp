@@ -10,8 +10,10 @@ namespace inspect::spectrum {
 
 inline constexpr std::size_t kFftStage = 11;
 inline constexpr std::size_t kFftSize = std::size_t{1} << kFftStage;
-inline constexpr std::size_t kHopSize = kFftSize / 2; // 50 % overlap
+inline constexpr std::size_t kHopSize = kFftSize / 4; // 75 % overlap
 inline constexpr std::size_t kNumBins = kFftSize / 2 + 1; // DC ... Nyquist
+// The squared sine windows of the overlapping frames add up to kFftSize / (2 * kHopSize), which is undone by this gain.
+inline constexpr double kOverlapGain = 2.0 * static_cast<double>(kHopSize) / static_cast<double>(kFftSize);
 inline constexpr std::size_t kQueueCapacity = 16;
 
 /**

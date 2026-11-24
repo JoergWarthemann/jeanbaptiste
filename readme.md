@@ -43,10 +43,14 @@
 * [x] add overlap-add tooling
 * [ ] create a GUI thread and a spectrum GUI component capable to process FFT data
 * [ ] use boost::lockfree::spsc_queue to transfer data from audio thread to GUI thread
+* [ ] document PitchShifter
 * [x] extend Algorithmn to support windowing before or after processing
 * [x] establish 2 FFTs for each channel in order to have stereo sound after resynthesis
 * [x] analyze whether there are a lot of copy operations when using mRing, mFftData, mPending and mFrame
-* [ ] add a knob for spectrum changes, shifting frequencies up or down
+* [x] add a knob for spectrum changes, shifting frequencies up or down
+* [ ] calculate kOverlapGain and mMagnitudeScale based on the window function (The gain is the reciprocal of the sum of the overlapping w²(n), because the window is applied twice (Window_Before and Window_After).)
+* [ ] add a knob to change the speed of a sound while keeping the frequencies
+* [ ] turn PitchShifter into a template, use reduceRange() in SineCosine instead of PitchShifter::wrapPhase()
 
 ------------------------------------------------------------------------------------------------------------------------
 

@@ -164,7 +164,7 @@ public:
     }
 
     /**
-     * Copies the sample feeded sampleBackwards samples ago.
+     * Copies a single sample from the buffer.
      * e.g. get(0) Returns the last feeded sample.
      * get(capacity_ - 1) Returns the oldest sample.
      * get(capacity_ * n) returns the last feeded sample.
@@ -178,7 +178,7 @@ public:
     }
 
     /**
-     * Copies the last numberOfElements samples from buffer_ into destination.
+     * Copies the last numberOfElements samples into destination.
      * Attention: destination needs to have enough space for numberOfElements samples.
      * \param destination ... Pointer to an array of Element.
      * \param numberOfElements ... The number of elements that are to be copied into destination.

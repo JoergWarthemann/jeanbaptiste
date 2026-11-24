@@ -27,7 +27,7 @@ using ForwardFactory = jb::AlgorithmFactory<
 
 // The matching inverse with the same sine window applied to the result (synthesis).
 // Division by the length makes forward + inverse an identity, and the sine windows reconstruct
-// the signal when overlap-added with 50 % overlap.
+// the signal when overlap-added with 75 % overlap.
 using InverseFactory = jb::AlgorithmFactory<
     spectrum::kFftStage, spectrum::kFftStage + 1,
     jb::options::Radix_2,
@@ -60,6 +60,7 @@ void SpectrumProcessor::prepareToPlay(double, int)
         channel.overlapAdd.reset();
         channel.pending.fill(0.0);
         channel.ring.reset(spectrum::kFftSize);
+        channel.pitchShifter.prepare(spectrum::kFftSize, spectrum::kHopSize);
     }
 
     // A sine of amplitude A at bin k gives |X[k]| = A / 2 * sum(w), and the sum of the sine window
@@ -82,24 +83,30 @@ void SpectrumProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::Mid
     }
 
     const auto numSamples = static_cast<std::size_t>(buffer.getNumSamples());
-    // Process the buffer in chunks of hop size, exchanging samples with the ring buffer and pending output.
+    // Split the buffer into chunks of hop size and process each chunk.
+    // Incomplete blocks are getting completed in the next block.
+    //   [ b0 | b1 | b2 | b3 | b4 | b5 | b6 | b7 | b8 | b9 ]
+    //     ╰─── chunk 1 ────╯ ╰─── chunk 2 ────╯ ╰─ chunk 3 ─╯
     for (std::size_t offset = 0; offset < numSamples;) {
-        // Determine how many samples to process in this chunk, which is the minimum of the remaining samples
-        // and the remaining space in the current hop.
+        // Determine how many samples to process in this chunk: min of remaining space in current hop and
+        // remaining samples in the buffer.
         const auto count = std::min(numSamples - offset, spectrum::kHopSize - mSamplesSinceLastFrame);
 
         for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
             auto& channel = mChannels[static_cast<std::size_t>(channelIndex)];
             auto samples = std::span<float>{buffer.getWritePointer(channelIndex), numSamples}.subspan(offset, count);
             auto output = std::span<const double>{channel.pending}.subspan(mPendingPosition, count);
+            // Exchange the current chunk of samples with the pending output for this channel.
             exchangeSamples(samples, output, channel);
         }
 
         offset += count;
         mPendingPosition = (mPendingPosition + count) % spectrum::kHopSize;
         mSamplesSinceLastFrame += count;
+        // If we've accumulated enough samples for a hop, process the frame and spectrum.
         if (mSamplesSinceLastFrame == spectrum::kHopSize) {
             mSamplesSinceLastFrame = 0;
+            // Check if the ring buffer has enough samples for an FFT frame before processing.
             if (mChannels.front().ring.currentSize() == spectrum::kFftSize) {
                 processSampleFrameAndSpectrum(numChannels);
             }
@@ -118,8 +125,17 @@ bool SpectrumProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
     return in == layouts.getMainOutputChannelSet() && (in == juce::AudioChannelSet::mono() || in == juce::AudioChannelSet::stereo());
 }
 
-void SpectrumProcessor::manipulateSpectrum(std::span<Complex, spectrum::kNumBins>) noexcept
+void SpectrumProcessor::manipulateSpectrum(std::size_t channel, std::span<Complex, spectrum::kNumBins> bins) noexcept
 {
+    static constexpr float kPitchShiftThreshold{1e-6f};
+    auto& shifter = mChannels[channel].pitchShifter;
+    const float semitones = mPitchSemitones.load(std::memory_order_relaxed);
+    if (std::abs(semitones) < kPitchShiftThreshold) {
+        shifter.passThrough(bins);
+        return;
+    }
+
+    shifter.process(bins, std::exp2(static_cast<double>(semitones) / 12.0));
 }
 
 void SpectrumProcessor::exchangeSamples(std::span<float> samples, std::span<const double> output, ChannelState& channel) noexcept
@@ -139,7 +155,9 @@ void SpectrumProcessor::processSampleFrameAndSpectrum(int numChannels) noexcept
         auto& channel = mChannels[static_cast<std::size_t>(channelIndex)];
         channel.ring.copy(channel.fftData.data(), spectrum::kFftSize);
         (*channel.forward)(channel.fftData);
-        manipulateSpectrum(std::span<Complex, spectrum::kNumBins>(channel.fftData.data(), spectrum::kNumBins));
+        manipulateSpectrum(
+            static_cast<std::size_t>(channelIndex),
+            std::span<Complex, spectrum::kNumBins>(channel.fftData.data(), spectrum::kNumBins));
     }
 
     publishSpectrum(numChannels);
@@ -147,9 +165,25 @@ void SpectrumProcessor::processSampleFrameAndSpectrum(int numChannels) noexcept
     for (int channelIndex = 0; channelIndex < numChannels; ++channelIndex) {
         auto& channel = mChannels[static_cast<std::size_t>(channelIndex)];
         (*channel.inverse)(channel.fftData);
+        // Create pending samples as the input samples for the next FFT by using the inverse FFT output to create
+        // overlapping data.
+        // input hops:     [ hop 0 ][ hop 1 ][ hop 2 ][ hop 3 ][ hop 4 ][ hop 5 ]
+        // ring N=16:      [  ..... frame k, covers hops 0..3 ......  ]
+        //                          [  ..... frame k+1, hops 1..4 ..... ]
+        //                                   (75 % overlap, one frame per hop)
+        // frame k ready:                                   ▲ at the end of hop 3
+        // pending (k):                                     [ q(k) played during hop 4 ]
+        // output hops:    [ silence ][ silence ][ silence ][ silence ][ q(k) ][ q(k+1) ]
+        //
+        // The input of hop 0 comes out of hop 4, so the delay is N = kFftSize samples (setLatencySamples).
         channel.overlapAdd(
             std::span<const Complex, spectrum::kFftSize>(channel.fftData.data(), spectrum::kFftSize),
             channel.pending);
+        // Analysis and synthesis both apply the window, so the overlapping frames add up to sum(w^2) = N / (2 * H) = 2
+        // instead of 1. kOverlapGain removes that factor.
+        std::ranges::transform(channel.pending, channel.pending.begin(), [](double sample) {
+            return sample * spectrum::kOverlapGain;
+        });
     }
 
     mPendingPosition = 0;

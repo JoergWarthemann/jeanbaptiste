@@ -43,12 +43,14 @@ target_sources(${COMPONENT_NAME}
         include/AudioOutput.hpp
         include/FilePlayerProcessor.hpp
         include/MainComponent.hpp
+        include/PitchShifter.hpp
         include/SpectrumProcessor.hpp
         include/SpectrumQueue.hpp
         src/AudioOutput.cpp
         src/FilePlayerProcessor.cpp
         src/Main.cpp
         src/MainComponent.cpp
+        src/PitchShifter.cpp
         src/SpectrumProcessor.cpp)
 
 target_include_directories(${COMPONENT_NAME}

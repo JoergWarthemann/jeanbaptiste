@@ -27,6 +27,9 @@ private:
     AudioOutput mAudioOutput;
     AudioOutput::Node::Ptr mFilePlayerNode; // owns the processor below
     FilePlayerProcessor* mpFilePlayer = nullptr;
+    SpectrumProcessor* mpSpectrumProcessor = nullptr; // owned by its graph node
+    juce::Slider mPitchKnob;
+    juce::Label mPitchLabel;
     juce::String mStatus;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainComponent)

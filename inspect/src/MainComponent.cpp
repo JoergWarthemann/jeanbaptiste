@@ -7,8 +7,26 @@ MainComponent::MainComponent(const juce::File& audioFile)
     auto player = std::make_unique<FilePlayerProcessor>();
     mpFilePlayer = player.get();
     mFilePlayerNode = mAudioOutput.addProcessor(std::move(player));
-    auto fftNode = mAudioOutput.addProcessor(std::make_unique<SpectrumProcessor>());
+    auto spectrumProcessor = std::make_unique<SpectrumProcessor>();
+    mpSpectrumProcessor = spectrumProcessor.get();
+    auto fftNode = mAudioOutput.addProcessor(std::move(spectrumProcessor));
     mAudioOutput.connectChain({mFilePlayerNode, fftNode});
+
+    mPitchKnob.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+    mPitchKnob.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    mPitchKnob.setRange(-12.0, 12.0, 0.01);
+    mPitchKnob.setDoubleClickReturnValue(true, 0.0);
+    mPitchKnob.setTextValueSuffix(" st");
+    mPitchKnob.setValue(0.0, juce::dontSendNotification);
+    mPitchKnob.onValueChange = [this] {
+        mpSpectrumProcessor->setPitchShift(static_cast<float>(mPitchKnob.getValue()));
+    };
+    addAndMakeVisible(mPitchKnob);
+
+    mPitchLabel.setText("Pitch", juce::dontSendNotification);
+    mPitchLabel.setJustificationType(juce::Justification::centred);
+    mPitchLabel.attachToComponent(&mPitchKnob, false);
+    addAndMakeVisible(mPitchLabel);
 
     if (audioFile == juce::File()) {
         mStatus = "No audio file given.";
@@ -36,14 +54,12 @@ void MainComponent::paint(juce::Graphics& g)
 
     g.setFont(juce::FontOptions(16.0f));
     g.setColour(juce::Colours::white);
-    g.drawText(mStatus, getLocalBounds(), juce::Justification::centred, true);
+    g.drawText(mStatus, getLocalBounds().removeFromTop(30), juce::Justification::centred, true);
 }
 
 void MainComponent::resized()
 {
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+    mPitchKnob.setBounds(getLocalBounds().withSizeKeepingCentre(120, 140));
 }
 
 } // namespace inspect
